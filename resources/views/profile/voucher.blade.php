@@ -8,7 +8,7 @@
 @section('content')
     <div class="container">
         <div class="card border-0">
-            <div class="card-body p-0">
+            <div class="card-body">
                 @if(session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif

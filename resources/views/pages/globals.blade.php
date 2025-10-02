@@ -4,9 +4,9 @@
 @section('content')
     <div class="container">
         <div class="card border-0">
-            <div class="card-body p-0">
+            <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-striped">
+                    <table class="table table-striped mb-0">
                         <thead class="table-dark">
                             <tr>
                                 <th scope="col">{{ __('Message') }}</th>

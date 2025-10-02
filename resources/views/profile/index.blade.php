@@ -41,7 +41,7 @@
         <div class="card border-0">
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-striped">
+                    <table class="table table-striped mb-0">
                         @if(config('global.server.version') === 'vSRO')
                             <tbody>
                             <tr>
