@@ -39,11 +39,9 @@
                 <a href="{{ route('profile.donate') }}" class="btn btn-outline-secondary {{ request()->routeIs('profile.donate') ? 'active' : '' }}">{{ __('Donate') }}</a>
                 <a href="{{ route('profile.silk-history') }}" class="btn btn-outline-secondary {{ request()->routeIs('profile.silk-history') ? 'active' : '' }}">{{ __('Silk History') }}</a>
                 <a href="{{ route('profile.voucher') }}" class="btn btn-outline-secondary {{ request()->routeIs('profile.voucher') ? 'active' : '' }}">{{ __('Voucher') }}</a>
+                <a href="{{ route('profile.referral') }}" class="btn btn-outline-secondary {{ request()->routeIs('profile.referral') ? 'active' : '' }}">{{ __('Referral') }}</a>
                 <a href="{{ route('profile.vote') }}" class="btn btn-outline-secondary {{ request()->routeIs('profile.vote') ? 'active' : '' }}">{{ __('Vote4Silk') }}</a>
-
-                @if(config('global.referral.enabled', true))
-                    <a href="{{ route('profile.referral') }}" class="btn btn-outline-secondary {{ request()->routeIs('profile.referral') ? 'active' : '' }}">{{ __('Referral') }}</a>
-                @endif
+                <a href="{{ route('logout') }}" class="btn btn-outline-secondary" onclick="event.preventDefault(); fetch('{{ route('logout') }}', {method:'POST', headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}'}}).then(()=>window.location.href='{{ url('/') }}')">{{ __('Logout') }}</a>
             </div>
         </div>
     </div>

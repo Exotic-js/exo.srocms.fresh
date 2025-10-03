@@ -56,20 +56,19 @@
                     </div>
 
                     <div class="mt-5">
-                        <h5>Invited Users ({{ $usedInvites->count() }})</h5>
-                        @if ($usedInvites->isNotEmpty())
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead class="table-dark">
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Username</th>
-                                        <th>Registered At</th>
-                                        <th>Points</th>
-                                        <th>Status</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Username</th>
+                                    <th>Registered At</th>
+                                    <th>Points</th>
+                                    <th>Status</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @if ($usedInvites->isNotEmpty())
                                     @foreach ($usedInvites as $index => $inviteLog)
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
@@ -85,12 +84,14 @@
                                             </td>
                                         </tr>
                                     @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @else
-                            <div class="alert alert-info">No invited users yet.</div>
-                        @endif
+                                @else
+                                    <tr>
+                                        <td class="text-center" colspan="6">No invited users yet.</td>
+                                    </tr>
+                                @endif
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 @else
                     <div class="alert alert-warning">
