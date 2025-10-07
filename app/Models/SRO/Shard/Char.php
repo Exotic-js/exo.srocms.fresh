@@ -100,7 +100,7 @@ class Char extends Model
                     ->leftJoin('_CharTradeConflictJob', '_CharTradeConflictJob.CharID', '=', '_Char.CharID');
             }
 
-            $query->join('_Guild', '_Char.GuildID', '=', '_Guild.ID')
+            $query->leftJoin('_Guild', '_Char.GuildID', '=', '_Guild.ID')
                 ->join('_Inventory', '_Inventory.CharID', '=', '_Char.CharID')
                 ->join('_Items', '_Items.ID64', '=', '_Inventory.ItemID')
                 ->join('_RefObjCommon', '_RefObjCommon.ID', '=', '_Items.RefItemID')
