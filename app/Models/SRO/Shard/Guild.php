@@ -149,4 +149,13 @@ class Guild extends Model
             ->get();
         });
     }
+
+    public static function getGuildCount()
+    {
+        $minutes = config('global.cache.guild_info', 1440);
+
+        return Cache::remember('guild_info_count', now()->addMinutes($minutes), function () {
+            return self::count();
+        });
+    }
 }
