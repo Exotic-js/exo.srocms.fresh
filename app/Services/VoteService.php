@@ -16,7 +16,7 @@ class VoteService
     public function postbackXtremetop100(Request $request)
     {
         $config = config("vote.xtremetop100");
-        $remoteIp = $request->server('HTTP_CF_CONNECTING_IP') ?? $request->ip();
+        $remoteIp = self::getRealIP($request);
 
         $allowedIps = array_map('trim', explode(',', $config['ip']));
         if (!in_array($remoteIp, $allowedIps)) {
@@ -74,7 +74,7 @@ class VoteService
     public function postbackGtop100(Request $request)
     {
         $config = config("vote.gtop100");
-        $remoteIp = $request->server('HTTP_CF_CONNECTING_IP') ?? $request->ip();
+        $remoteIp = self::getRealIP($request);
 
         $allowedIps = array_map('trim', explode(',', $config['ip']));
         if (!in_array($remoteIp, $allowedIps)) {
@@ -136,7 +136,7 @@ class VoteService
     public function postbackTopg(Request $request)
     {
         $config = config("vote.topg");
-        $remoteIp = $request->server('HTTP_CF_CONNECTING_IP') ?? $request->ip();
+        $remoteIp = self::getRealIP($request);
 
         $allowedIps = array_map('trim', explode(',', $config['ip']));
         if (!in_array($remoteIp, $allowedIps)) {
@@ -194,7 +194,7 @@ class VoteService
     public function postbackTop100arena(Request $request)
     {
         $config = config("vote.top100arena");
-        $remoteIp = $request->server('HTTP_CF_CONNECTING_IP') ?? $request->ip();
+        $remoteIp = self::getRealIP($request);
 
         $allowedIps = array_map('trim', explode(',', $config['ip']));
         if (!in_array($remoteIp, $allowedIps)) {
@@ -252,7 +252,7 @@ class VoteService
     public function postbackArenatop100(Request $request)
     {
         $config = config("vote.arenatop100");
-        $remoteIp = $request->server('HTTP_CF_CONNECTING_IP') ?? $request->ip();
+        $remoteIp = self::getRealIP($request);
 
         $allowedIps = array_map('trim', explode(',', $config['ip']));
         if (!in_array($remoteIp, $allowedIps)) {
@@ -314,7 +314,7 @@ class VoteService
     public function postbackSilkroadservers(Request $request)
     {
         $config = config("vote.silkroadservers");
-        $remoteIp = $request->server('HTTP_CF_CONNECTING_IP') ?? $request->ip();
+        $remoteIp = self::getRealIP($request);
 
         $allowedIps = array_map('trim', explode(',', $config['ip']));
         if (!in_array($remoteIp, $allowedIps)) {
@@ -376,7 +376,7 @@ class VoteService
     public function postbackPrivateserver(Request $request)
     {
         $config = config("vote.privateserver");
-        $remoteIp = $request->server('HTTP_CF_CONNECTING_IP') ?? $request->ip();
+        $remoteIp = self::getRealIP($request);
 
         $allowedIps = array_map('trim', explode(',', $config['ip']));
         if (!in_array($remoteIp, $allowedIps)) {
@@ -433,5 +433,28 @@ class VoteService
         );
 
         return response("Vote registered and user rewarded!", 200);
+    }
+
+    private function getRealIP($request)
+    {
+        if ($request->hasHeader('CF-Connecting-IP')) {
+            return $request->header('CF-Connecting-IP');
+        }
+
+        if ($request->hasHeader('X-Forwarded-For')) {
+            $ips = explode(',', $request->header('X-Forwarded-For'));
+            return trim($ips[0]);
+        }
+
+        if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+            return $_SERVER['HTTP_CF_CONNECTING_IP'];
+        }
+
+        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            return trim($ips[0]);
+        }
+
+        return $request->ip();
     }
 }
