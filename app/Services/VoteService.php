@@ -20,7 +20,7 @@ class VoteService
 
         $allowedIps = array_map('trim', explode(',', $config['ip']));
         if (!in_array($remoteIp, $allowedIps)) {
-            return response('Unauthorized IP', 401);
+            return response('Unauthorized IP: '.$remoteIp, 401);
         }
 
         $data = $request->isMethod('POST') ? $request->post() : $request->query();
@@ -78,7 +78,7 @@ class VoteService
 
         $allowedIps = array_map('trim', explode(',', $config['ip']));
         if (!in_array($remoteIp, $allowedIps)) {
-            return response('Unauthorized IP', 401);
+            return response('Unauthorized IP: '.$remoteIp, 401);
         }
 
         $data = $request->isMethod('POST') ? $request->post() : $request->query();
@@ -140,7 +140,7 @@ class VoteService
 
         $allowedIps = array_map('trim', explode(',', $config['ip']));
         if (!in_array($remoteIp, $allowedIps)) {
-            return response('Unauthorized IP', 401);
+            return response('Unauthorized IP: '.$remoteIp, 401);
         }
 
         $data = $request->isMethod('POST') ? $request->post() : $request->query();
@@ -198,7 +198,7 @@ class VoteService
 
         $allowedIps = array_map('trim', explode(',', $config['ip']));
         if (!in_array($remoteIp, $allowedIps)) {
-            return response('Unauthorized IP', 401);
+            return response('Unauthorized IP: '.$remoteIp, 401);
         }
 
         $data = $request->isMethod('POST') ? $request->post() : $request->query();
@@ -256,7 +256,7 @@ class VoteService
 
         $allowedIps = array_map('trim', explode(',', $config['ip']));
         if (!in_array($remoteIp, $allowedIps)) {
-            return response('Unauthorized IP', 401);
+            return response('Unauthorized IP: '.$remoteIp, 401);
         }
 
         $data = $request->isMethod('POST') ? $request->post() : $request->query();
@@ -318,7 +318,7 @@ class VoteService
 
         $allowedIps = array_map('trim', explode(',', $config['ip']));
         if (!in_array($remoteIp, $allowedIps)) {
-            return response('Unauthorized IP', 401);
+            return response('Unauthorized IP: '.$remoteIp, 401);
         }
 
         $data = $request->isMethod('POST') ? $request->post() : $request->query();
@@ -380,7 +380,7 @@ class VoteService
 
         $allowedIps = array_map('trim', explode(',', $config['ip']));
         if (!in_array($remoteIp, $allowedIps)) {
-            return response('Unauthorized IP', 401);
+            return response('Unauthorized IP: '.$remoteIp, 401);
         }
 
         $data = $request->isMethod('POST') ? $request->post() : $request->query();
