@@ -134,13 +134,18 @@ class InventoryService
      * @param string $assocFile
      * @return string
      */
-    private function getItemIcon(string $assocFile): string
+    private function getItemIcon(?string $assocFile): string
     {
-        $iconPath = str_replace('\\', '/', $assocFile);
-        if (str_ends_with($iconPath, '.ddj')) {
-            $iconPath = substr($iconPath, 0, -4) . '.png';
+        $iconPath = str_replace('\\', '/', trim($assocFile));
+        $iconPath = preg_replace('/\.ddj$/i', '', $iconPath);
+        $iconPath = 'images/sro/' . $iconPath . '.png';
+        $iconPath = strtolower($iconPath);
+
+        if (!file_exists(public_path($iconPath))) {
+            return 'images/sro/icon_default.png';
         }
-        return sprintf('/images/sro/%s', $iconPath);
+
+        return $iconPath;
     }
 
     /**
