@@ -23,6 +23,7 @@
                         <div class="table-responsive" style="min-height: auto !important;">
                             <table class="table table-striped">
                                 <tbody>
+                                @if(Auth::user()->tbUser)
                                 <tr>
                                     <th scope="row">Username</th>
                                     <td>
@@ -35,6 +36,7 @@
                                         </a>
                                     </td>
                                 </tr>
+                                @endif
                                 <tr>
                                     <th scope="row">CharID</th>
                                     <td>{{ $data->CharID }}</td>

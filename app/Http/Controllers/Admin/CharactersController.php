@@ -32,7 +32,7 @@ class CharactersController extends Controller
     public function view(Char $char, InventoryService $inventoryService)
     {
         $inventoryAll = $inventoryService->getInventorySet($char->CharID, 108, 13, 0);
-        $storageItems = $inventoryService->getStorageItems($char->user->UserJID, 180, 0);
+        $storageItems = $inventoryService->getStorageItems($char->user?->UserJID ?? 0, 180, 0);
         $petNames = InvCOS::getPetNames($char->CharID);
 
         $PetID = request('pet') ?? optional($petNames->first())->ID;

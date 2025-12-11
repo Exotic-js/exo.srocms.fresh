@@ -9,7 +9,7 @@
     <div class="container">
         <h3 class="">{{ __('Characters') }}</h3>
         <div class="row">
-            @if(Auth::user()->tbUser->shardUser->isEmpty())
+            @if(!Auth::user()->tbUser || Auth::user()->tbUser->shardUser->isEmpty())
                 <div class="alert alert-danger text-center" role="alert">
                     {{ __('No Characters Found!') }}
                 </div>
@@ -42,82 +42,78 @@
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-striped mb-0">
-                        @if(config('global.server.version') === 'vSRO')
-                            <tbody>
+                        @if(!Auth::user()->tbUser)
                             <tr>
-                                <th scope="row">Username</th>
-                                <td>{{ Auth::user()->tbUser->StrUserID }}</td>
+                                <td class="text-center">{{ __('Cannot load your account information!') }}</td>
                             </tr>
-                            <tr>
-                                <th scope="row">Email</th>
-                                <td>{{ Auth::user()->tbUser->Email }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">{{ __('Silk') }}</th>
-                                <td>{{ Auth::user()->tbUser->getSkSilk->silk_own ?? 0 }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">{{ __('Gift Silk') }}</th>
-                                <td>{{ Auth::user()->tbUser->getSkSilk->silk_gift ?? 0 }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">{{ __('Point Silk') }}</th>
-                                <td>{{ Auth::user()->tbUser->getSkSilk->silk_point ?? 0 }}</td>
-                            </tr>
-                            </tbody>
                         @else
-                            <tbody>
-                            <tr>
-                                <th scope="row">Username</th>
-                                <td>{{ Auth::user()->tbUser->StrUserID }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Email</th>
-                                <td>{{ Auth::user()->muUser->muEmail->EmailAddr }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">{{ __('Silk') }}</th>
-                                @php $cash = Auth::user()->muUser->getJCash() @endphp
-                                <td>{{ $cash->Silk ?? 0 }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">{{ __('Premium Silk') }}</th>
-                                <td>{{ $cash->PremiumSilk ?? 0 }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">{{ __('Month Usage') }}</th>
-                                <td>{{ $cash->MonthUsage ?? 0 }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">{{ __('3Month Usage') }}</th>
-                                <td>{{ $cash->ThreeMonthUsage ?? 0 }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">{{ __('VIP') }}</th>
-                                <td>
-                                    @isset(Auth::user()->muUser->muVIPInfo->VIPUserType)
-                                        <img src="{{ asset($vipLevel['level'][Auth::user()->muUser->muVIPInfo->VIPLv]['image']) }}" width="24" height="24" alt="">
-                                        <span>{{ $vipLevel['level'][Auth::user()->muUser->muVIPInfo->VIPLv]['name'] }}</span>
-                                    @else
-                                        <span>{{ __('None') }}</span>
-                                    @endisset
-                                </td>
-                            </tr>
-                            </tbody>
+                            @if(config('global.server.version') === 'vSRO')
+                                <tbody>
+                                <tr>
+                                    <th scope="row">Username</th>
+                                    <td>{{ Auth::user()->tbUser->StrUserID }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Email</th>
+                                    <td>{{ Auth::user()->tbUser->Email }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ __('Silk') }}</th>
+                                    <td>{{ Auth::user()->tbUser->getSkSilk->silk_own ?? 0 }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ __('Gift Silk') }}</th>
+                                    <td>{{ Auth::user()->tbUser->getSkSilk->silk_gift ?? 0 }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ __('Point Silk') }}</th>
+                                    <td>{{ Auth::user()->tbUser->getSkSilk->silk_point ?? 0 }}</td>
+                                </tr>
+                                </tbody>
+                            @else
+                                <tbody>
+                                <tr>
+                                    <th scope="row">Username</th>
+                                    <td>{{ Auth::user()->tbUser->StrUserID }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Email</th>
+                                    <td>{{ Auth::user()->muUser->muEmail->EmailAddr }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ __('Silk') }}</th>
+                                    @php $cash = Auth::user()->muUser->getJCash() @endphp
+                                    <td>{{ $cash->Silk ?? 0 }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ __('Premium Silk') }}</th>
+                                    <td>{{ $cash->PremiumSilk ?? 0 }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ __('Month Usage') }}</th>
+                                    <td>{{ $cash->MonthUsage ?? 0 }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ __('3Month Usage') }}</th>
+                                    <td>{{ $cash->ThreeMonthUsage ?? 0 }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ __('VIP') }}</th>
+                                    <td>
+                                        @isset(Auth::user()->muUser->muVIPInfo->VIPUserType)
+                                            <img src="{{ asset($vipLevel['level'][Auth::user()->muUser->muVIPInfo->VIPLv]['image']) }}" width="24" height="24" alt="">
+                                            <span>{{ $vipLevel['level'][Auth::user()->muUser->muVIPInfo->VIPLv]['name'] }}</span>
+                                        @else
+                                            <span>{{ __('None') }}</span>
+                                        @endisset
+                                    </td>
+                                </tr>
+                                </tbody>
+                            @endif
                         @endif
                     </table>
                 </div>
             </div>
         </div>
-
-        {{--
-        <h3 class="mt-4">{{ __('Itemmall') }}</h3>
-        <div class="card p-3 ">
-            <div class="card-body text-center">
-                <p>Purchase items from game itemmall</p>
-                <a href="{{ route('pages.gateway') }}" class="btn btn-primary">{{ __('Open ItemMall') }}</a>
-            </div>
-        </div>
-        --}}
     </div>
 @endsection

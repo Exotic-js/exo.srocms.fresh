@@ -1,3 +1,4 @@
+@if(Auth::user()->tbUser)
 <div class="card">
     <div class="card-header">{{ __('General Settings') }}</div>
 
@@ -43,3 +44,4 @@
         </form>
     </div>
 </div>
+@endif
