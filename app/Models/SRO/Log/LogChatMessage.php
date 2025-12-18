@@ -61,7 +61,7 @@ class LogChatMessage extends Model
             preg_match_all('/\d{19}/', $value->Comment, $matches);
             $serials = $matches[0] ?? [];
 
-            if (!empty($serials)) {
+            if (!empty($serials) && config('global.server.version') !== 'vSRO') {
                 $items = Items::getItemNameBySerial($serials);
 
                 foreach ($serials as $serial) {
