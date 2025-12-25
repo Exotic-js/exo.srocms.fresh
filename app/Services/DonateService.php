@@ -21,8 +21,6 @@ class DonateService
         ]);
 
         $config = config('donate.paypal');
-        $user = Auth::user();
-
         $accessToken = cache()->remember('paypal_access_token', 540, function () use ($config) {
             $response = Http::withBasicAuth($config['client_id'], $config['client_secret'])
                 ->asForm()
@@ -46,11 +44,6 @@ class DonateService
             "payment_source" => [
                 "paypal" => [
                     "experience_context" => [
-                        "brand_name" => config('settings.site_title'),
-                        "locale" => "en-US",
-                        "landing_page" => "LOGIN",
-                        "shipping_preference" => "NO_SHIPPING",
-                        "user_action" => "PAY_NOW",
                         "return_url" => route('callback', ['method' => 'paypal']),
                         "cancel_url" => route('profile.donate'),
                     ],
@@ -58,31 +51,11 @@ class DonateService
             ],
             "purchase_units" => [
                 [
-                    "reference_id" => (string) Str::uuid(),
-                    "description" => $config['name']." - ".config('settings.site_title')." - Game Username: {$user->username} User agreed to the rules stated on:".config('settings.site_url'),
-                    "custom_id" => $user->username,
                     "invoice_id" => (string) Str::uuid(),
                     "amount" => [
                         "currency_code" => strtoupper($config['currency']),
-                        "value" => number_format($request->input('price'), 2, '.', ''),
-                        "breakdown" => [
-                            "item_total" => [
-                                "currency_code" => strtoupper($config['currency']),
-                                "value" => number_format($request->input('price'), 2, '.', '')
-                            ]
-                        ],
-                    ],
-                    "items" => [
-                        [
-                            "name" => $config['name']." - ".config('settings.site_title')." - Game Username: {$user->username}",
-                            "description" => "User agreed to the rules stated on: ".config('settings.site_url'),
-                            "quantity" => "1",
-                            "unit_amount" => [
-                                "currency_code" => strtoupper($config['currency']),
-                                "value" => number_format($request->input('price'), 2, '.', '')
-                            ]
-                        ]
-                    ],
+                        "value" => number_format($request->input('price'), 2, '.', '')
+                    ]
                 ]
             ]
         ]);
