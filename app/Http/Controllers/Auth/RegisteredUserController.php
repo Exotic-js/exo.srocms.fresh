@@ -71,17 +71,17 @@ class RegisteredUserController extends Controller
         }
 
         $request->validate($rules);
+        $ip = filter_var($ip = $request->ip(), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ? $ip : '0.0.0.0';
 
         DB::beginTransaction();
         try {
             if (config('global.server.version') === 'vSRO') {
-                $tbUser = TbUser::setGameAccount($jid = null, $request->username, $request->password, $request->email, $request->ip());
+                $tbUser = TbUser::setGameAccount($jid = null, $request->username, $request->password, $request->email, $ip);
                 $jid = $tbUser->JID;
 
                 SkSilk::setSkSilk($jid, 0, 0);
             } else {
-                //Fixing local registration
-                $userBinIP = ($request->ip() == "::1") ? ip2long('127.0.0.1') : ip2long($request->ip());
+                $userBinIP = ip2long($ip);
 
                 $portalUser = MuUser::setPortalAccount($request->username, $request->password);
                 $jid = $portalUser->JID;
