@@ -57,4 +57,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+    Route::get('/login/verify', [AuthenticatedSessionController::class, 'showOTP'])->name('otp.show');
+    Route::post('/login/verify', [AuthenticatedSessionController::class, 'verifyOTP'])->name('otp.verify');
+    Route::post('/login/verify/resend', [AuthenticatedSessionController::class, 'resendOTP'])->name('otp.resend');
 });
