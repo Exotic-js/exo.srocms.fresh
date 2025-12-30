@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use App\Models\SRO\Log\LogChatMessage;
 use App\Models\SRO\Log\LogEventChar;
 use App\Models\SRO\Log\LogInstanceWorldInfo;
@@ -32,7 +34,7 @@ class RankingController extends Controller
         }else {
             $data = Char::getPlayerRanking();
         }
-        $config = config('ranking.menu');
+        $config = array_merge(config('ranking.menu', []), config('ranking.custom', []));
         $topImage = config('ranking.top_image');
         $characterRace = config('ranking.character_race');
 
@@ -258,13 +260,20 @@ class RankingController extends Controller
         ]);
     }
 
-    public function custom($type = 'levelRanking')
+    public function custom(string $type)
     {
-        if (function_exists($type)) {
-            $data = $type();
-        } else {
-            abort(404, "Ranking type [$type] not found.");
+        $ranking = config("ranking.custom.$type");
+
+        if (!$ranking || empty($ranking['enabled'])) {
+            abort(404, "Ranking type [$type] not found or disabled.");
         }
+
+        $query = $ranking['query'];
+        $data = Cache::remember("{$type}", 600, function () use ($query) {
+            return collect(
+                DB::connection('shard')->select($query)
+            );
+        });
 
         $config = config('ranking.menu');
         $topImage = config('ranking.top_image');

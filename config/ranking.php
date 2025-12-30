@@ -89,6 +89,34 @@ return [
             'route' => 'ranking.job-trader',
         ],
     ],
+    'custom' => [
+        'level' => [
+            'enabled' => false,
+            'name' => 'Level Ranking',
+            'image' => 'fa fa-users',
+            'route' => [
+                'name' => 'ranking.custom',
+                'params' => ['type' => 'level']
+            ],
+            'query' => 'SELECT TOP(25) Charname16 AS CharName, CharID, RefObjID, CurLevel AS Level, ExpOffset AS Exp
+                         FROM SILKROAD_R_SHARD.._Char
+                         WHERE CharID > 0
+                         ORDER BY CurLevel DESC, ExpOffset DESC',
+        ],
+        'gold' => [
+            'enabled' => false,
+            'name' => 'Gold Ranking',
+            'image' => 'fa fa-users',
+            'route' => [
+                'name' => 'ranking.custom',
+                'params' => ['type' => 'gold']
+            ],
+            'query' => 'SELECT TOP(25) Charname16 AS CharName, CharID, RefObjID, CurLevel AS Level, RemainGold AS Gold
+                         FROM SILKROAD_R_SHARD.._Char
+                         WHERE CharID > 0
+                         ORDER BY CurLevel DESC, RemainGold DESC',
+        ],
+    ],
     'hidden' => [
         'characters' => [
             '[GM]Eva',
