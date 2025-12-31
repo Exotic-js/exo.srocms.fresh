@@ -144,11 +144,14 @@
     <br />
 @endif
 
+{{--
+<!-- Disabled because bugged!! -->
 @if(in_array((int) $item['TypeID3'], [14], true) && $item['DevilMaxHP'] > 5)
     <span style="color:#efdaa4;">{{ __('Additional magic Option') }}</span><br />
     <span style="color:#53EE92;">{{ __('Blocking rate :rate Increase', ['rate' => floor(($item['DevilMaxHP'] / 100) * 10)]) }}</span><br />
     <br />
 @endif
+--}}
 
 @if(!config("settings.item_stats_jid_{$data->user->UserJID}") || auth()->user()?->role?->is_admin)
     @if(!in_array((int) $item['TypeID2'], [4], true) && !in_array((int) $item['TypeID3'], [13, 14], true))

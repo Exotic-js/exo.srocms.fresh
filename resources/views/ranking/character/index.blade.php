@@ -16,13 +16,18 @@
                                 <h2>{{ $data->CharName16 }}</h2>
                                 <p class="m-0">{{ __('Item Points:') }} <span class="">{{ $data->ItemPoints }}</span></p>
 
-                                <ul class="list-unstyled d-flex">
-                                    @foreach($build as $value)
+                                <p class="mb-0">
+                                    @foreach($build as $key => $value)
                                         @if(isset($skillMastery[$value->MasteryID]))
-                                            <li class="me-1">
-                                                <img src="{{ asset($skillMastery[$value->MasteryID]['image']) }}" title="{{ $skillMastery[$value->MasteryID]['name'] }}" alt="">
-                                            </li>
+                                            <span>{{ $skillMastery[$value->MasteryID]['name'] }}</span> @if($key < count($build) - 1) / @endif
                                         @endif
+                                    @endforeach
+                                </p>
+                                <ul class="list-unstyled d-flex">
+                                    @foreach($buff as $value)
+                                        <li class="me-1">
+                                            <img src="{{ asset($value->UI_IconFile_PNG) }}" title="{{ $value->UI_SkillName }}" alt="" width="24" height="24">
+                                        </li>
                                     @endforeach
                                 </ul>
                             </div>
@@ -92,23 +97,21 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-body d-flex justify-content-center" id="display-inventory">
-                                <div class="" id="display-inventory-set">
+                        <div class="card h-100">
+                            <div class="card-body d-flex flex-column" id="display-inventory">
+                                <div class="d-block" id="display-inventory-set">
                                     @include('ranking.character.partials.inventory.inventory-view', ['inventorySetList' => $inventorySet])
                                 </div>
                                 @if(config('global.server.version') !== 'vSRO')
-                                    <div class="d-none" id="display-inventory-avatar">
+                                    <div class="d-none" id="display-inventory-job">
                                         @include('ranking.character.partials.inventory.inventory-job-view', ['inventoryJobList' => $inventoryJob])
                                     </div>
                                 @endif
-                                <div class="" id="display-inventory-avatar-accessory">
-                                    @if(config('global.server.version') !== 'vSRO')
-                                        <button id="display-inventory-switch" data-type="set" class="btn btn-secondary position-absolute" style="top: -50px;">{{ __('Job Equip') }}</button>
-                                    @endif
-                                    <p class="mb-0" id="display-inventory-avatar-accessory-label">{{ __('Accessories') }}</p>
+                                <div class="d-none" id="display-inventory-avatar">
                                     @include('ranking.character.partials.inventory.inventory-avatar-view', ['inventoryAvatarList' => $inventoryAvatar])
                                 </div>
+
+                                <button id="display-inventory-switch" data-type="set" class="btn btn-secondary mt-auto">{{ __('Switch') }}</button>
                             </div>
                         </div>
                     </div>
@@ -139,85 +142,5 @@
             height: 32px;
         }
     </style>
-    <style>
-        /********INVENTORY********/
-        .table.table-inventory {
-            margin: 0 0 !important;
-        }
-        .table.table-inventory tr:first-child td {
-            padding: 12px 12px 35px;
-        }
-        .table.table-inventory td, .table.table-inventory th {
-            padding: 6px;
-            background: none !important;
-            border: none !important;
-        }
-        .table.table-inventory td:last-child {
-            float: right;
-        }
-        .sro-item-detail .item {
-            margin: 0;
-            background: none;
-        }
-        .sro-item-detail.sro-item-special {
-            background: none;
-        }
-        .sro-item-detail {
-            background: none;
-            width: auto;
-            margin: 0;
-        }
-        /********AVATAR********/
-        .table.table-inventory-avatar {
-            margin: 0 5px !important;
-            width: 162px;
-        }
-        .table.table-inventory-avatar tbody {
-            display: flex;
-        }
-        .table.table-inventory-avatar tr:first-child td {
-            padding: 6px;
-        }
-        .table.table-inventory-avatar td, .table.table-inventory-avatar th {
-            padding: 6px;
-        }
-    </style>
-    <style>
-        #display-inventory {
-            width: 100%;
-            height: 355px;
-            background: url({{ asset('images/inventoryDiv_bg.png') }}) 50% 50% no-repeat;
-            background-size: cover;
-            border-right: 1px solid #252525;
-            border-bottom: 1px solid #252525;
-            float: left;
-            position: relative;
-        }
-        #display-inventory-set,
-        #display-inventory-avatar {
-            width: 178px;
-            height: 315px;
-            background: url({{ asset('images/inventory_bg.png') }}) 0 0 no-repeat;
-            position: absolute;
-            top: 21px;
-            left: 59px;
-        }
-        #display-inventory-avatar {
-            background: url({{ asset('images/inventory_job_bg.png') }}) 0 0 no-repeat;
-        }
-        #display-inventory-avatar-accessory {
-            width: 172px;
-            height: 129px;
-            background: url({{ asset('images/accessory_bg.png') }}) 0 0 no-repeat;
-            position: absolute;
-            top: 206px;
-            left: 260px;
-        }
-        #display-inventory-avatar-accessory-label {
-            color: #ffc345;
-            font-size: 14px;
-            margin-top: 10px;
-            margin-left: 10px;
-        }
-    </style>
 @endpush
+

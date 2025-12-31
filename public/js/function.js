@@ -199,6 +199,9 @@ jQuery(document).ready(function(){
         var current = jQuery(this).data('type');
         var change = 'set';
         if (current === 'set') {
+            change = 'job';
+        }
+        if (current === 'job') {
             change = 'avatar';
         }
         jQuery('#display-inventory-' + current).addClass('d-none');

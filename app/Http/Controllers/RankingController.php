@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SRO\Shard\TimedJob;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use App\Models\SRO\Log\LogChatMessage;
@@ -308,6 +309,7 @@ class RankingController extends Controller
 
             $data = Char::getPlayerRanking(1, $charID)->first();
             $build = CharSkillMastery::getCharBuildInfo($charID);
+            $buff = TimedJob::getCharBuffInfo($charID);
 
             $inventorySet = $inventoryService->getInventorySet($charID, 12, 0, 8);
             $inventoryAvatar = $inventoryService->getInventoryAvatar($charID);
@@ -337,6 +339,7 @@ class RankingController extends Controller
                 return view('ranking.character.index', [
                     'data' => $data,
                     'build' => $build,
+                    'buff' => $buff,
                     'inventorySet' => $inventorySet,
                     'inventoryAvatar' => $inventoryAvatar,
                     'inventoryJob' => $inventoryJob ?? null,

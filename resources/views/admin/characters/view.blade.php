@@ -101,9 +101,28 @@
                     <div class="card-header">
                         <h4 class="text-center">Character Items</h4>
                     </div>
+
+                    <ul class="nav nav-tabs justify-content-center mt-3" id="characterItemsTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="inventory-tab" data-bs-toggle="tab" data-bs-target="#inventory" type="button" role="tab">
+                                Inventory
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="storage-tab" data-bs-toggle="tab" data-bs-target="#storage" type="button" role="tab">
+                                Storage
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="pet-tab" data-bs-toggle="tab" data-bs-target="#pet" type="button" role="tab">
+                                Pet
+                            </button>
+                        </li>
+                    </ul>
+
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-6">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="inventory" role="tabpanel">
                                 <div class="card">
                                     <div id="display-inventory" class="card-body p-3 d-flex flex-column justify-content-center align-items-center">
                                         <h2 class="text-center">Inventory</h2>
@@ -112,14 +131,16 @@
                                 </div>
                             </div>
 
-                            <div class="col-6">
+                            <div class="tab-pane fade" id="storage" role="tabpanel">
                                 <div class="card">
                                     <div id="display-storage" class="card-body p-3 d-flex flex-column justify-content-center align-items-center">
                                         <h2 class="text-center">Storage</h2>
                                         @include('ranking.character.partials.inventory.inventory-view', ['inventorySetList' => $storageItems, 'min' => 0, 'max' => 179])
                                     </div>
                                 </div>
+                            </div>
 
+                            <div class="tab-pane fade" id="pet" role="tabpanel">
                                 <div class="card mt-3">
                                     <div id="display-pet" class="card-body p-3 d-flex flex-column justify-content-center align-items-center">
                                         <h2 class="text-center">Pet</h2>
