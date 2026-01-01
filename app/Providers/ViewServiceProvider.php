@@ -14,6 +14,8 @@ use App\Models\SRO\Shard\SiegeFortress;
 use App\Services\ScheduleService;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 
 class ViewServiceProvider extends ServiceProvider
@@ -166,6 +168,41 @@ class ViewServiceProvider extends ServiceProvider
                     $view->with([
                         'jobKills' => LogEventChar::getKillLogs('job', $jobKillsConfig['limit']),
                         'jobKillsConfig' => $jobKillsConfig
+                    ]);
+                });
+            }
+
+            $widgetsConfig = config('widgets.custom', []);
+            foreach ($widgetsConfig as $key => $widget) {
+                if (!($widget['enabled'] ?? false)) {
+                    continue;
+                }
+
+                View::composer($widget['template'], function ($view) use ($widget, $key) {
+                    $params = $view->getData();
+                    preg_match_all('/:([a-zA-Z_]+)/', $widget['query'], $matches);
+                    $queryParams = array_unique($matches[1]);
+
+                    $sqlParams = [];
+                    foreach ($queryParams as $param) {
+                        $sqlParams[$param] = $params[$param] ?? null;
+                    }
+
+                    $cacheKey = 'widget_' . $key . '_' . md5(json_encode($sqlParams));
+                    $data = Cache::remember($cacheKey, 600, function () use ($widget, $sqlParams) {
+                        return collect(
+                            DB::connection('shard')->select(
+                                $widget['query'],
+                                $sqlParams
+                            )
+                        );
+                    });
+
+                    $view->with([
+                        'key'    => $key,
+                        'config' => $widget,
+                        'data'   => $data,
+                        'params'   => $params,
                     ]);
                 });
             }

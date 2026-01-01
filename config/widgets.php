@@ -125,4 +125,23 @@ return [
             ],
         ],
     ],
+    'custom' => [
+        'owned_titles' => [
+            'enabled' => false,
+            'template' => 'partials.character-owned-titles',
+            'query' => 'SELECT TOP(:Limit)
+                            _CharTitle.TitleID,
+                            _CharTitle.Enable,
+                            _RefTitle.TitleString,
+                            _Rigid_ItemNameDesc.ENG AS TitleName
+                        FROM
+                            SILKROAD_R_SHARD.._CharTitle
+                            JOIN SILKROAD_R_SHARD.._RefTitle ON _RefTitle.TitleID = _CharTitle.TitleID
+                            LEFT JOIN SILKROAD_R_ACCOUNT.._Rigid_ItemNameDesc ON _Rigid_ItemNameDesc.StrID = _RefTitle.TitleString
+                        WHERE
+                            _CharTitle.CharID = :CharID
+                        ORDER BY
+                            _RefTitle.Category DESC;',
+        ],
+    ],
 ];

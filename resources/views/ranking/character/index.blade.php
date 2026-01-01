@@ -83,6 +83,13 @@
                                 <button class="nav-link" id="uniques-tab" data-bs-toggle="tab" data-bs-target="#uniques-tab-pane" type="button" role="tab" aria-controls="uniques-tab-pane" aria-selected="false">{{ __('Unique Kills') }}</button>
                             </li>
                             @endif
+                            @if(config('global.server.version') !== 'vSRO')
+                                @if(config('widgets.custom.owned_titles.enabled'))
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="titles-tab" data-bs-toggle="tab" data-bs-target="#titles-tab-pane" type="button" role="tab" aria-controls="titles-tab-pane" aria-selected="false">{{ __('Owned Titles') }}</button>
+                                </li>
+                               @endif
+                            @endif
                         </ul>
                         <div class="tab-content" id="myTabContent">
                             <div class="tab-pane fade show active" id="info-tab-pane" role="tabpanel" aria-labelledby="info-tab" tabindex="0">
@@ -93,6 +100,9 @@
                             </div>
                             <div class="tab-pane fade" id="uniques-tab-pane" role="tabpanel" aria-labelledby="uniques-tab" tabindex="0">
                                 @include('ranking.character.partials.character-unique-history')
+                            </div>
+                            <div class="tab-pane fade" id="titles-tab-pane" role="tabpanel" aria-labelledby="titles-tab" tabindex="0">
+                                @include('partials.character-owned-titles', ['Limit' => 5, 'CharID' => $data->CharID])
                             </div>
                         </div>
                     </div>
