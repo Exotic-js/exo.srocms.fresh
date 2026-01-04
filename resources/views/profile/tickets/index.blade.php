@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('Referral'))
+@section('title', __('Tickets'))
 
 @section('sidebar')
     @include('profile.sidebar')

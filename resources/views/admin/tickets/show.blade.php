@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', __('News'))
+@section('title', __('Show Ticket'))
 
 @section('content')
     <div class="container">

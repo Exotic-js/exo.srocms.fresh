@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', __('News'))
+@section('title', __('Tickets'))
 
 @section('content')
     <div class="container">
@@ -44,7 +44,7 @@
                         <td>
                             <a href="{{ route('admin.ticket.show', $ticket->ticket_id) }}" class="btn btn-sm btn-info">View</a>
                             @if($ticket->status)
-                                <form action="{{ route('admin.ticket.close', $ticket->ticket_id) }}" method="POST" class="d-inline">
+                                <form action="{{ route('admin.ticket.close', $ticket->ticket_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to close this ticket?');">
                                     @csrf
                                     <button class="btn btn-sm btn-danger">Close</button>
                                 </form>
