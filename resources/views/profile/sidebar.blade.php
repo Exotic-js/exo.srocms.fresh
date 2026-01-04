@@ -41,6 +41,7 @@
                 <a href="{{ route('profile.voucher') }}" class="btn btn-outline-secondary {{ request()->routeIs('profile.voucher') ? 'active' : '' }}">{{ __('Voucher') }}</a>
                 <a href="{{ route('profile.referral') }}" class="btn btn-outline-secondary {{ request()->routeIs('profile.referral') ? 'active' : '' }}">{{ __('Referral') }}</a>
                 <a href="{{ route('profile.vote') }}" class="btn btn-outline-secondary {{ request()->routeIs('profile.vote') ? 'active' : '' }}">{{ __('Vote4Silk') }}</a>
+                <a href="{{ route('profile.tickets') }}" class="btn btn-outline-secondary {{ request()->routeIs('profile.tickets') ? 'active' : '' }}">{{ __('Tickets') }}</a>
                 <a href="{{ route('logout') }}" class="btn btn-outline-secondary" onclick="event.preventDefault(); fetch('{{ route('logout') }}', {method:'POST', headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}'}}).then(()=>window.location.href='{{ url('/') }}')">{{ __('Logout') }}</a>
             </div>
         </div>

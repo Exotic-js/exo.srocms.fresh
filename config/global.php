@@ -64,6 +64,14 @@ return [
         'reward_points' => 5, //5 Default, 0 = No eward
         'minimum_redeem' => 25,
     ],
+    'tickets' => [
+        'enabled' => true,
+        'categories' => [
+            'sales' => 'Sales',
+            'bugs' => 'Bugs',
+            'other' => 'Other',
+        ]
+    ],
     'sliders' => [
         0 => [
             'title' => 'Example headline',

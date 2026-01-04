@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CharactersController;
+use App\Http\Controllers\Admin\TicketController;
 use App\Http\Controllers\Admin\VoteController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\DownloadController;
@@ -71,5 +72,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::post('vouchers', [VoucherController::class, 'store'])->name('vouchers.store');
         Route::get('/vouchers/{voucher}/disable', [VoucherController::class, 'disable'])->name('vouchers.disable');
         Route::get('/vouchers/{voucher}/enable', [VoucherController::class, 'enable'])->name('vouchers.enable');
+
+        Route::get('/tickets', [TicketController::class,'index'])->name('tickets.index');
+        Route::get('/tickets/{ticket}', [TicketController::class,'show'])->name('ticket.show');
+        Route::post('/tickets/{ticket}/reply', [TicketController::class,'reply'])->name('ticket.reply');
+        Route::post('/tickets/{ticket}/close', [TicketController::class,'close'])->name('ticket.close');
     });
 });

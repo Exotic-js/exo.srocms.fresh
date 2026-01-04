@@ -12,6 +12,7 @@ use App\Models\SRO\Account\TbUser;
 use App\Models\SRO\Portal\AphChangedSilk;
 use App\Models\SRO\Portal\MuEmail;
 use App\Models\SRO\Portal\MuhAlteredInfo;
+use App\Models\Ticket;
 use App\Models\Voucher;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -352,5 +353,61 @@ class ProfileController extends Controller
         }
 
         return back()->with('success', "{$invites->sum('points')} Silk has been added to your account!");
+    }
+
+    public function tickets()
+    {
+        $tickets = Ticket::where('user_id', Auth::id())
+            ->whereIn('id', function ($q) {
+                $q->selectRaw('MAX(id)')
+                    ->from('tickets')
+                    ->groupBy('ticket_id');
+            })
+            ->latest()
+            ->get();
+
+        return view('profile.tickets.index', compact('tickets'));
+    }
+
+    public function createTicket()
+    {
+        $categories = config('global.tickets.categories');
+        return view('profile.tickets.create', compact('categories'));
+    }
+
+    public function showTicket($ticket_id)
+    {
+        $messages = Ticket::where('ticket_id', $ticket_id)->get();
+        return view('profile.tickets.show', compact('messages','ticket_id'));
+    }
+
+    public function sendTicket(Request $request)
+    {
+        $categories = array_keys(config('global.tickets.categories'));
+
+        $request->validate([
+            'message' => 'required|string',
+            'category' => 'required|in:'.implode(',', $categories),
+            'ticket_id' => 'nullable|integer',
+        ]);
+
+        if($request->filled('ticket_id')){
+            $ticketId = $request->ticket_id;
+        } else {
+            $lastTicketId = Ticket::max('ticket_id') ?? 0;
+            $ticketId = $lastTicketId + 1;
+        }
+
+        Ticket::create([
+            'ticket_id' => $ticketId,
+            'user_id' => Auth::id(),
+            'admin_id' => Auth::id(),
+            'category' => $request->category,
+            'type' => 'player',
+            'message' => $request->message,
+            'status' => true,
+        ]);
+
+        return redirect()->route('profile.tickets')->with('success','Ticket created!');
     }
 }
