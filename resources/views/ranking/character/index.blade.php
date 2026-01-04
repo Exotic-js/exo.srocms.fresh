@@ -9,7 +9,7 @@
                     <div class="col-md-6">
                         <div class="d-flex">
                             <div class="d-flex me-3 overflow-hidden align-items-center">
-                                <img class="object-fit-cover rounded border" src="{{ asset($characterImage[$data->RefObjID]) }}" width="100" height="100" alt=""/>
+                                <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.$characterImage[$data->RefObjID]) }}" width="100" height="100" alt=""/>
                             </div>
 
                             <div class="mt-3">
@@ -107,21 +107,22 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="card h-100">
-                            <div class="card-body d-flex flex-column" id="display-inventory">
-                                <div class="d-block" id="display-inventory-set">
+                        <div class="card" style="height: 345px">
+                            <div class="card-body d-flex flex-column position-relative h-100" id="display-inventory">
+                                <div class="position-absolute top-0 start-0 w-100 h-100 p-4 d-block" id="display-inventory-set">
                                     @include('ranking.character.partials.inventory.inventory-view', ['inventorySetList' => $inventorySet])
                                 </div>
                                 @if(config('global.server.version') !== 'vSRO')
-                                    <div class="d-none" id="display-inventory-job">
+                                    <div class="position-absolute top-0 start-0 w-100 h-100 p-4 d-none" id="display-inventory-job">
                                         @include('ranking.character.partials.inventory.inventory-job-view', ['inventoryJobList' => $inventoryJob])
                                     </div>
                                 @endif
-                                <div class="d-none" id="display-inventory-avatar">
+                                <div class="position-absolute top-0 start-0 w-100 h-100 p-4 d-none" id="display-inventory-avatar">
                                     @include('ranking.character.partials.inventory.inventory-avatar-view', ['inventoryAvatarList' => $inventoryAvatar])
                                 </div>
 
-                                <button id="display-inventory-switch" data-type="set" class="btn btn-secondary mt-auto">{{ __('Switch') }}</button>
+                                <img class="position-absolute top-50 start-50 translate-middle h-100 w-auto object-fit-cover z-0 pt-4" src="{{ asset('images/character_full/'.$characterImage[$data->RefObjID]) }}" alt=""/>
+                                <button id="display-inventory-switch-isro" data-type="set" class="btn btn-secondary mt-auto w-auto align-self-center position-relative z-1">{{ __('Switch') }}</button>
                             </div>
                         </div>
                     </div>
@@ -152,5 +153,28 @@
             height: 32px;
         }
     </style>
+@endpush
+
+@push('scripts')
+<script>
+    jQuery('#display-inventory-switch-isro').click(function() {
+        var current = jQuery(this).data('type');
+        var stages = ['set'];
+
+        @if(config('global.server.version') !== 'vSRO')
+        stages.push('job');
+        @endif
+        stages.push('avatar');
+
+        var currentIndex = stages.indexOf(current);
+        var nextIndex = (currentIndex + 1) % stages.length;
+        var change = stages[nextIndex];
+
+        jQuery('#display-inventory-' + current).addClass('d-none');
+        jQuery('#display-inventory-' + change).removeClass('d-none');
+
+        jQuery(this).data('type', change);
+    });
+</script>
 @endpush
 

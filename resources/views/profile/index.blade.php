@@ -19,7 +19,7 @@
                         <div class="card">
                             <div class="card-body text-center">
                                 <div class="d-flex overflow-hidden align-items-center justify-content-center mb-2">
-                                    <img class="object-fit-cover rounded border" src="{{ asset($characterImage[$value->RefObjID]) }}" width="100" height="100" alt=""/>
+                                    <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.$characterImage[$value->RefObjID]) }}" width="100" height="100" alt=""/>
                                 </div>
 
                                 @if($value->RefObjID > 2000)

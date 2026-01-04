@@ -22,9 +22,9 @@
                                 <div class="card-body text-center">
                                     <div class="d-flex overflow-hidden align-items-center justify-content-center mb-2">
                                         @if(config('global.server.version') === 'vSRO')
-                                        <img class="object-fit-cover rounded border" src="{{ asset(config('ranking.character_image_vsro')[$char->RefObjID]) }}" width="100" height="100" alt=""/>
+                                        <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.config('ranking.character_image_vsro')[$char->RefObjID]) }}" width="100" height="100" alt=""/>
                                         @else
-                                        <img class="object-fit-cover rounded border" src="{{ asset(config('ranking.character_image')[$char->RefObjID]) }}" width="100" height="100" alt=""/>
+                                        <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.config('ranking.character_image')[$char->RefObjID]) }}" width="100" height="100" alt=""/>
                                         @endif
                                     </div>
 
