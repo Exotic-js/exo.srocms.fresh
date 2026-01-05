@@ -26,7 +26,7 @@
                                 <ul class="list-unstyled d-flex">
                                     @foreach($buff as $value)
                                         <li class="me-1">
-                                            <img src="{{ asset($value->UI_IconFile_PNG) }}" title="{{ $value->UI_SkillName }}" alt="" width="24" height="24">
+                                            <img src="{{ asset('images/sro/' . $value->UI_IconFile_PNG) }}" title="{{ $value->UI_SkillName }}" alt="" width="24" height="24">
                                         </li>
                                     @endforeach
                                 </ul>

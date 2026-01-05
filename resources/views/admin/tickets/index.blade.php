@@ -15,7 +15,7 @@
             <table class="table table-striped table-sm">
                 <thead>
                 <tr>
-                    <th scope="col">Ticket ID</th>
+                    <th scope="col">ID</th>
                     <th scope="col">User</th>
                     <th scope="col">Category</th>
                     <th scope="col">Status</th>
@@ -24,14 +24,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                @forelse($tickets as $ticket)
+                @forelse($data as $row)
                     <tr>
-                        <td>{{ $ticket->ticket_id }}</td>
-                        <td>{{ $ticket->user->username }}</td>
-                        <td>{{ config('ticket.categories')[$ticket->category] ?? $ticket->category }}</td>
+                        <td>#{{ $row->id }}</td>
+                        <td>{{ $row->user->username }}</td>
+                        <td>{{ config('global.tickets.categories')[$row->category] ?? $row->category }}</td>
                         <td>
-                            @if($ticket->status)
-                                @if($ticket->lastReplyType() === 'player')
+                            @if($row->status)
+                                @if(optional($row->lastReply)->type === 'player')
                                     <span class="badge bg-warning text-dark">User replied</span>
                                 @else
                                     <span class="badge bg-info">Waiting user</span>
@@ -40,11 +40,11 @@
                                 <span class="badge bg-danger">Closed</span>
                             @endif
                         </td>
-                        <td>{{ $ticket->created_at->format('Y-m-d H:i') }}</td>
+                        <td>{{ $row->created_at->format('Y-m-d H:i') }}</td>
                         <td>
-                            <a href="{{ route('admin.ticket.show', $ticket->ticket_id) }}" class="btn btn-sm btn-info">View</a>
-                            @if($ticket->status)
-                                <form action="{{ route('admin.ticket.close', $ticket->ticket_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to close this ticket?');">
+                            <a href="{{ route('admin.ticket.show', $row) }}" class="btn btn-sm btn-info">View</a>
+                            @if($row->status)
+                                <form action="{{ route('admin.ticket.close', $row) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to close this ticket?');">
                                     @csrf
                                     <button class="btn btn-sm btn-danger">Close</button>
                                 </form>
@@ -56,6 +56,8 @@
                 @endforelse
                 </tbody>
             </table>
+
+            {{ $data->links('pagination::bootstrap-5') }}
         </div>
     </div>
 @endsection

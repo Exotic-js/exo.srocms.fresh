@@ -11,30 +11,38 @@
             <div class="card-body">
                 <a href="{{ route('profile.tickets') }}" class="btn btn-secondary mb-3">Back to Tickets</a>
 
-                <h4>Ticket #{{ $ticket_id }}</h4>
+                <h4>{{ $ticket->subject }}</h4>
 
-                @foreach($messages as $msg)
-                    <div class="card mb-2 @if($msg->type=='player') text-start @else text-end @endif">
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <strong>You</strong>
+                        <p>{!! $ticket->message !!}</p>
+                        <small class="text-muted">{{ $ticket->created_at }}</small>
+                    </div>
+                </div>
+
+                @foreach($ticket->replies as $reply)
+                    <div class="card mb-2 {{ $reply->type === 'admin' ? 'text-end' : '' }}">
                         <div class="card-body">
-                            <strong>{{ $msg->type=='player' ? 'You' : 'Admin' }}:</strong>
-                            <p>{!! $msg->message !!}</p>
-                            <small class="text-muted">{{ $msg->created_at->format('Y-m-d H:i') }}</small>
+                            <strong>{{ $reply->type === 'admin' ? 'Admin' : 'You' }}</strong>
+                            <p>{!! $reply->message !!}</p>
+                            <small class="text-muted">{{ $reply->created_at }}</small>
                         </div>
                     </div>
                 @endforeach
 
-                @if($messages->first()->status)
-                    <form action="{{ route('profile.ticket.send') }}" method="POST" class="mt-3">
+                @if($ticket->status)
+                    <form action="{{ route('profile.ticket.send', $ticket) }}" method="POST" class="mt-3">
                         @csrf
-                        <input type="hidden" name="ticket_id" value="{{ $ticket_id }}">
-                        <input type="hidden" name="category" value="{{ $messages->first()->category }}">
+                        <input type="hidden" name="parent_id" value="{{ $ticket->id }}">
+
                         <div class="mb-3">
-                            <textarea name="message" id="summernote" class="form-control" placeholder="Write your reply..." rows="3" required></textarea>
+                            <textarea name="message" id="summernote" class="form-control" rows="3" required placeholder="Write your reply..."></textarea>
                         </div>
                         <button class="btn btn-primary">Send Reply</button>
                     </form>
                 @else
-                    <div class="alert alert-warning mt-3">This ticket is closed.</div>
+                    <div class="alert alert-warning mt-3">Ticket is closed</div>
                 @endif
             </div>
         </div>

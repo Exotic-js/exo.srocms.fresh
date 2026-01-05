@@ -115,9 +115,7 @@ class Inventory extends Model
 
     public static function getInventory($CharID, $max = 12, $min = 0, $not = 8)
     {
-        $minutes = config('global.cache.character_info', 1440);
-
-        return Cache::remember("character_info_inventory_{$CharID}_{$max}_{$min}", now()->addMinutes($minutes), static function () use ($CharID, $max, $min, $not) {
+        return Cache::remember("character_info_inventory_{$CharID}_{$max}_{$min}", now()->addMinutes(config('global.cache.character_info', 1440)), static function () use ($CharID, $max, $min, $not) {
             return self::join('_Items', '_Items.ID64', '_Inventory.ItemID')
             ->join('_RefObjCommon', '_Items.RefItemId', '_RefObjCommon.ID')
             ->join('_RefObjItem', '_RefObjCommon.Link', '_RefObjItem.ID')
@@ -130,8 +128,7 @@ class Inventory extends Model
             ->where('Slot', '>=', $min)
             ->where('Slot', '!=', $not)
             ->where('ItemID', '!=', 0)
-            ->get()
-            ->toArray();
+            ->get();
         });
     }
 

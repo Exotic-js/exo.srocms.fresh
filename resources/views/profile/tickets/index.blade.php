@@ -18,21 +18,23 @@
                 <table class="table table-striped mb-0">
                     <thead class="table-dark">
                     <tr>
-                        <th scope="col">Ticket ID</th>
-                        <th scope="col">Category</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Created At</th>
-                        <th scope="col">Action</th>
+                        <th>ID</th>
+                        <th>Subject</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                        <th>Action</th>
                     </tr>
                     </thead>
                     <tbody>
-                    @forelse($tickets as $ticket)
+                    @forelse($data as $row)
                         <tr>
-                            <td>{{ $ticket->ticket_id }}</td>
-                            <td>{{ config('ticket.categories')[$ticket->category] ?? $ticket->category }}</td>
+                            <td>#{{ $row->id }}</td>
+                            <td>{{ $row->subject }}</td>
+                            <td>{{ config('global.tickets.categories')[$row->category] ?? $row->category }}</td>
                             <td>
-                                @if($ticket->status)
-                                    @if($ticket->lastReplyType() === 'admin')
+                                @if($row->status)
+                                    @if(optional($row->lastReply)->type === 'admin')
                                         <span class="badge bg-success">Admin replied</span>
                                     @else
                                         <span class="badge bg-secondary">Waiting support</span>
@@ -41,16 +43,20 @@
                                     <span class="badge bg-danger">Closed</span>
                                 @endif
                             </td>
-                            <td>{{ $ticket->created_at->format('Y-m-d H:i') }}</td>
+                            <td>{{ $row->created_at->format('Y-m-d H:i') }}</td>
                             <td>
-                                <a href="{{ route('profile.ticket.show', $ticket->ticket_id) }}" class="btn btn-sm btn-info">View</a>
+                                <a href="{{ route('profile.ticket.show', $row) }}" class="btn btn-sm btn-info">View</a>
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="text-center">No tickets yet.</td></tr>
+                        <tr>
+                            <td colspan="6" class="text-center">No tickets yet.</td>
+                        </tr>
                     @endforelse
                     </tbody>
                 </table>
+
+                {{ $data->links('pagination::bootstrap-5') }}
             </div>
         </div>
     </div>

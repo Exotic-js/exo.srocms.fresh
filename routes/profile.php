@@ -32,9 +32,9 @@ Route::middleware(array_filter(['auth', config('settings.register_confirm') ? 'v
         Route::get('/donate/{method}', [DonateController::class, 'show'])->name('donate.show');
         Route::post('/donate/{method}/process', [DonateController::class, 'process'])->middleware('throttle:5,1')->name('donate.process');
 
-        Route::get('/tickets', [ProfileController::class,'tickets'])->name('tickets');
-        Route::get('/tickets/create', [ProfileController::class,'createTicket'])->name('ticket.create');
-        Route::get('/tickets/{ticket_id}', [ProfileController::class,'showTicket'])->name('ticket.show');
-        Route::post('/tickets/send', [ProfileController::class,'sendTicket'])->name('ticket.send');
+        Route::get('/tickets', [ProfileController::class, 'tickets'])->name('tickets');
+        Route::get('/tickets/create', [ProfileController::class, 'createTicket'])->name('ticket.create');
+        Route::get('/tickets/{ticket}', [ProfileController::class, 'showTicket'])->name('ticket.show');
+        Route::post('/tickets', [ProfileController::class, 'sendTicket'])->name('ticket.send');
     });
 });

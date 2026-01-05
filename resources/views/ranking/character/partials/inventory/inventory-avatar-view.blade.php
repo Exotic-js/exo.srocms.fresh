@@ -1,16 +1,16 @@
 @php
-
-$inventoryList = [
-    0 => null,
-    1 => null,
-    2 => null,
-    3 => null,
-    4 => null,
-];
-/** @var $inventoryAvatarList */
-foreach ($inventoryAvatarList as $key => $inventorySlot) {
-    $inventoryList[$inventorySlot['Slot']] = $inventorySlot;
-}
+    /** @var $inventoryList */
+    $inventoryList = [
+        0 => null,
+        1 => null,
+        2 => null,
+        3 => null,
+        4 => null,
+    ];
+    /** @var $inventoryAvatarList */
+    foreach ($inventoryAvatarList as $key => $inventorySlot) {
+        $inventoryList[$inventorySlot->Slot] = $inventorySlot;
+    }
 @endphp
 
 <h2 style="display: none">InventoryAvatar</h2>

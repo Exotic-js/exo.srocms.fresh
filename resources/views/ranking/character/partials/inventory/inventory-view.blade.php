@@ -1,31 +1,31 @@
 @php
+    /** @var $inventoryList */
+    $inventoryList = [
+        6 => null,
+        7 => null,
+        0 => null,
+        2 => null,
+        1 => null,
+        3 => null,
+        4 => null,
+        5 => null,
+        9 => null,
+        10 => null,
+        11 => null,
+        12 => null,
+    ];
+    if(isset($min) && isset($max)) {
+        $inventoryList = [];
 
-$inventoryList = [
-    6 => null,
-    7 => null,
-    0 => null,
-    2 => null,
-    1 => null,
-    3 => null,
-    4 => null,
-    5 => null,
-    9 => null,
-    10 => null,
-    11 => null,
-    12 => null,
-];
-if(isset($min) && isset($max)) {
-    $inventoryList = [];
-
-    for ($slot = $min; $slot <= $max; $slot++) {
-        $inventoryList[$slot] = null;
+        for ($slot = $min; $slot <= $max; $slot++) {
+            $inventoryList[$slot] = null;
+        }
     }
-}
 
-/** @var $inventorySetList */
-foreach ($inventorySetList as $key => $inventorySlot) {
-    $inventoryList[$inventorySlot['Slot']] = $inventorySlot;
-}
+    /** @var $inventorySetList */
+    foreach ($inventorySetList as $key => $inventorySlot) {
+        $inventoryList[$inventorySlot->Slot] = $inventorySlot;
+    }
 @endphp
 
 <h2 style="display: none">Inventory</h2>

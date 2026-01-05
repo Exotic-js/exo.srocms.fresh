@@ -4,16 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pages;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\News;
 use Illuminate\Support\Str;
 
 class PagesController extends Controller
 {
     public function index()
     {
-        $data = Pages::get();
+        $data = Pages::latest()->paginate(20);
+
         return view('admin.pages.index', compact('data'));
     }
 
@@ -25,11 +24,11 @@ class PagesController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string',
-            'content' => 'required',
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
         ]);
 
-        $validated['slug'] = Str::slug($validated['title']);
+        $validated['slug'] = Str::slug($validated['title']) . '-' . time();
 
         Pages::create($validated);
 
@@ -44,11 +43,13 @@ class PagesController extends Controller
     public function update(Request $request, Pages $pages)
     {
         $validated = $request->validate([
-            'title' => 'required|string',
-            'content' => 'required',
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
         ]);
 
-        $validated['slug'] = Str::slug($validated['title']);
+        if ($validated['title'] !== $pages->title) {
+            $validated['slug'] = Str::slug($validated['title']) . '-' . time();
+        }
 
         $pages->update($validated);
 

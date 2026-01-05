@@ -47,7 +47,7 @@
                 <div class="card">
                     <div class="card-body">
                         <p>PHP Memory used</p>
-                        <h4>{{ number_format($memoryUsage / 1024 / 1024, 2) }}M / {{ $memoryLimit }}</h4>
+                        <h4>{{ number_format($systemInfo->memoryUsage / 1024 / 1024, 2) }}M / {{ $systemInfo->memoryLimit }}</h4>
                     </div>
                 </div>
             </div>
@@ -55,7 +55,7 @@
                 <div class="card">
                     <div class="card-body">
                         <p>Disk Space</p>
-                        <h4>{{ number_format($diskFree / 1024 / 1024 / 1024, 2) }}GB / {{ number_format($diskTotal / 1024 / 1024 / 1024, 2) }}GB</h4>
+                        <h4>{{ number_format($systemInfo->diskFree / 1024 / 1024 / 1024, 2) }}GB / {{ number_format($systemInfo->diskTotal / 1024 / 1024 / 1024, 2) }}GB</h4>
                     </div>
                 </div>
             </div>
@@ -63,7 +63,7 @@
                 <div class="card">
                     <div class="card-body">
                         <p>Laravel</p>
-                        <h4>Debug: {{ $appDebug }}</h4>
+                        <h4>Debug: {{ $systemInfo->appDebug ? 'true' : 'false' }}</h4>
                     </div>
                 </div>
             </div>
@@ -71,7 +71,7 @@
                 <div class="card">
                     <div class="card-body">
                         <p>Admins</p>
-                        <h4>Admin users: {{ $adminCount }}</h4>
+                        <h4>{{ $systemInfo->adminCount }}</h4>
                     </div>
                 </div>
             </div>

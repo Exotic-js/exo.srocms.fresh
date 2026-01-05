@@ -4,16 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Download;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\News;
-use Illuminate\Support\Str;
 
 class DownloadController extends Controller
 {
     public function index()
     {
-        $data = Download::get();
+        $data = Download::latest()->paginate(20);
+
         return view('admin.download.index', compact('data'));
     }
 
@@ -25,10 +23,10 @@ class DownloadController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string',
-            'desc' => 'string',
-            'url' => 'required|url',
-            'image' => 'string',
+            'name' => 'required|string|max:255',
+            'desc' => 'nullable|string',
+            'url' => 'required|url|max:2048',
+            'image' => 'nullable|string|max:2048',
         ]);
 
         Download::create($validated);
@@ -44,10 +42,10 @@ class DownloadController extends Controller
     public function update(Request $request, Download $download)
     {
         $validated = $request->validate([
-            'name' => 'required|string',
-            'desc' => 'string',
-            'url' => 'required|url',
-            'image' => 'string',
+            'name' => 'required|string|max:255',
+            'desc' => 'nullable|string',
+            'url' => 'required|url|max:2048',
+            'image' => 'nullable|string|max:2048',
         ]);
 
         $download->update($validated);

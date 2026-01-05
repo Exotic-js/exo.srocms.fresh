@@ -45,13 +45,13 @@ class TimedJob extends Model
                 )
                 ->join('_RefSkill', '_RefSkill.ID', '=', '_TimedJob.JobID')
                 ->where('_TimedJob.CharID', $CharID)
+                ->where('_RefSkill.UI_SkillName', '!=', 'xxx')
                 ->orderByDesc('_TimedJob.Category')
                 ->get()
                 ->map(function ($row) {
                     $iconPath = str_replace('\\', '/', trim($row->UI_IconFile));
                     $iconPath = preg_replace('/\.ddj$/i', '', $iconPath);
-                    $iconPath = 'images/sro/' . $iconPath . '.png';
-                    $iconPath = strtolower($iconPath);
+                    $iconPath = strtolower($iconPath . '.png');
 
                     $row->UI_IconFile_PNG = $iconPath;
 

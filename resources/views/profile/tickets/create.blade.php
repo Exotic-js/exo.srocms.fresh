@@ -13,17 +13,23 @@
 
                 <form action="{{ route('profile.ticket.send') }}" method="POST">
                     @csrf
+
                     <div class="mb-3">
-                        <label for="category" class="form-label">Category</label>
-                        <select name="category" id="category" class="form-control" required>
-                            @foreach($categories as $key => $label)
-                                <option value="{{ $key }}">{{ $label }}</option>
+                        <label class="form-label">Subject</label>
+                        <input type="text" name="subject" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-control" required>
+                            @foreach($config as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
                             @endforeach
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label for="message" class="form-label">Message</label>
+                        <label class="form-label">Message</label>
                         <textarea name="message" id="summernote" class="form-control" rows="4" required></textarea>
                     </div>
 
@@ -45,10 +51,10 @@
 
     <script>
         $('#summernote').summernote({
-            placeholder: 'Hello iSRO-CMS v2',
+            placeholder: 'Write your message here...',
             tabsize: 2,
             height: 200,
-            codeviewFilter: false, // allows raw HTML
+            codeviewFilter: false,
             codeviewIframeFilter: true
         });
     </script>

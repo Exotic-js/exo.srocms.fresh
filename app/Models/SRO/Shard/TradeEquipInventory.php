@@ -61,8 +61,7 @@ class TradeEquipInventory extends Model
             ->where('Slot', '<=', 12)
             ->where('Slot', '>=', 0)
             ->where('ItemID', '!=', 0)
-            ->get()
-            ->toArray();
+            ->get();
         });
     }
 

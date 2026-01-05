@@ -117,8 +117,7 @@ class InvCOS extends Model
                 ->where('_InvCOS.Slot', '>=', $min)
                 ->where('_InvCOS.ItemID', '!=', 0)
                 ->orderBy('_InvCOS.Slot', 'asc')
-                ->get()
-                ->toArray();
+                ->get();
         });
     }
 }

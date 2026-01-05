@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
-            $table->integer('ticket_id');
+            $table->foreignId('parent_id')->nullable()->index();
             $table->foreignId('user_id');
             $table->foreignId('admin_id')->nullable();
+            $table->string('subject');
             $table->string('category');
             $table->string('type')->default('player');
             $table->text('message');

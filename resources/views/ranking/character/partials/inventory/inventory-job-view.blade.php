@@ -1,24 +1,24 @@
 @php
+    /** @var $inventoryList */
+    $inventoryList = [
+        6 => null,
+        11 => null,
+        0 => null,
+        2 => null,
+        1 => null,
+        3 => null,
+        4 => null,
+        5 => null,
+        7 => null,
+        8 => null,
+        9 => null,
+        10 => null,
+    ];
 
-$inventoryList = [
-    6 => null,
-    11 => null,
-    0 => null,
-    2 => null,
-    1 => null,
-    3 => null,
-    4 => null,
-    5 => null,
-    7 => null,
-    8 => null,
-    9 => null,
-    10 => null,
-];
-
-/** @var $inventoryJobList */
-foreach ($inventoryJobList as $key => $inventorySlot) {
-    $inventoryList[$inventorySlot['Slot']] = $inventorySlot;
-}
+    /** @var $inventoryJobList */
+    foreach ($inventoryJobList as $key => $inventorySlot) {
+        $inventoryList[$inventorySlot->Slot] = $inventorySlot;
+    }
 @endphp
 
 <h2 style="display: none">InventoryJob</h2>

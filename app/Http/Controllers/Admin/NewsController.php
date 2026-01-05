@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\News;
 use Illuminate\Support\Str;
@@ -12,7 +11,8 @@ class NewsController extends Controller
 {
     public function index()
     {
-        $data = News::get();
+        $data = News::latest()->paginate(20);
+
         return view('admin.news.index', compact('data'));
     }
 
@@ -24,15 +24,16 @@ class NewsController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string',
+            'title' => 'required|string|max:255',
             'category' => 'required|in:news,event,update',
-            'image' => 'string|nullable',
+            'image' => 'nullable|string|max:2048',
             'published_at' => 'required|date',
-            'content' => 'required',
+            'content' => 'required|string',
         ]);
 
-        $validated['author_id'] = auth()->user()->id;
-        $validated['slug'] = Str::slug($validated['title']).'-'.time();
+        $validated['author_id'] = auth()->id();
+        $validated['slug'] = Str::slug($validated['title']) . '-' . time();
+
         News::create($validated);
 
         return redirect()->route('admin.news.index')->with('success', 'News created successfully!');
@@ -46,14 +47,17 @@ class NewsController extends Controller
     public function update(Request $request, News $news)
     {
         $validated = $request->validate([
-            'title' => 'required|string',
+            'title' => 'required|string|max:255',
             'category' => 'required|in:news,event,update',
-            'image' => 'string|nullable',
+            'image' => 'nullable|string|max:2048',
             'published_at' => 'required|date',
-            'content' => 'required',
+            'content' => 'required|string',
         ]);
 
-        $validated['slug'] = Str::slug($validated['title']).'-'.time();
+        if ($validated['title'] !== $news->title) {
+            $validated['slug'] = Str::slug($validated['title']) . '-' . time();
+        }
+
         $news->update($validated);
 
         return redirect()->route('admin.news.index')->with('success', 'News updated successfully.');

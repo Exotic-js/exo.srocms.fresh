@@ -13,20 +13,20 @@
             </div>
         </div>
 
-        <h4>Ticket #{{ $ticket_id }}</h4>
+        <h4>Ticket #{{ $ticket->id }} - {{ $ticket->subject }}</h4>
 
-        @foreach($messages as $msg)
-            <div class="card mb-2 @if($msg->type=='player') text-start @else text-end @endif">
+        @foreach($data as $row)
+            <div class="card mb-2 {{ $row->type == 'player' ? 'text-start' : 'text-end' }}">
                 <div class="card-body">
-                    <strong>{{ $msg->type=='player' ? $msg->user->username : 'Admin' }}:</strong>
-                    <p>{!! $msg->message !!}</p>
-                    <small class="text-muted">{{ $msg->created_at->format('Y-m-d H:i') }}</small>
+                    <strong>{{ $row->type == 'player' ? $row->user->username : 'Admin' }}:</strong>
+                    <p>{!! $row->message !!}</p>
+                    <small class="text-muted">{{ $row->created_at->format('Y-m-d H:i') }}</small>
                 </div>
             </div>
         @endforeach
 
-        @if($messages->first()->status)
-            <form action="{{ route('admin.ticket.reply', $ticket_id) }}" method="POST" class="mt-3">
+        @if($ticket->status)
+            <form action="{{ route('admin.ticket.reply', $ticket) }}" method="POST" class="mt-3">
                 @csrf
                 <div class="mb-3">
                     <textarea name="message" id="summernote" class="form-control" placeholder="Write your reply..." rows="3" required></textarea>

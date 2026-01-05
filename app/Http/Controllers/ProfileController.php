@@ -357,57 +357,61 @@ class ProfileController extends Controller
 
     public function tickets()
     {
-        $tickets = Ticket::where('user_id', Auth::id())
-            ->whereIn('id', function ($q) {
-                $q->selectRaw('MAX(id)')
-                    ->from('tickets')
-                    ->groupBy('ticket_id');
-            })
-            ->latest()
-            ->get();
+        $data = Ticket::where('user_id', auth()->id())->whereNull('parent_id')->latest()->paginate(20);
 
-        return view('profile.tickets.index', compact('tickets'));
+        return view('profile.tickets.index', compact('data'));
     }
 
     public function createTicket()
     {
-        $categories = config('global.tickets.categories');
-        return view('profile.tickets.create', compact('categories'));
+        $config = config('global.tickets.categories');
+
+        return view('profile.tickets.create', compact('config'));
     }
 
-    public function showTicket($ticket_id)
+    public function showTicket(Ticket $ticket)
     {
-        $messages = Ticket::where('ticket_id', $ticket_id)->get();
-        return view('profile.tickets.show', compact('messages','ticket_id'));
+        $ticket->load('replies');
+
+        return view('profile.tickets.show', compact('ticket'));
     }
 
     public function sendTicket(Request $request)
     {
-        $categories = array_keys(config('global.tickets.categories'));
+        $config = array_keys(config('global.tickets.categories'));
 
-        $request->validate([
-            'message' => 'required|string',
-            'category' => 'required|in:'.implode(',', $categories),
-            'ticket_id' => 'nullable|integer',
+        $validated = $request->validate([
+            'subject'   => 'required_without:parent_id|string|max:255',
+            'message'   => 'required|string',
+            'category'  => 'required_without:parent_id|in:' . implode(',', $config),
+            'parent_id' => 'nullable|integer',
         ]);
 
-        if($request->filled('ticket_id')){
-            $ticketId = $request->ticket_id;
-        } else {
-            $lastTicketId = Ticket::max('ticket_id') ?? 0;
-            $ticketId = $lastTicketId + 1;
+        if ($request->filled('parent_id')) {
+            $parentTicket = Ticket::findOrFail($request->parent_id);
+
+            Ticket::create([
+                'parent_id' => $parentTicket->id,
+                'user_id'   => auth()->id(),
+                'subject'   => $parentTicket->subject,
+                'category'  => $parentTicket->category,
+                'message'   => $validated['message'],
+                'type'      => 'player',
+                'status'    => true,
+            ]);
+
+            return back()->with('success', 'Reply sent!');
         }
 
         Ticket::create([
-            'ticket_id' => $ticketId,
-            'user_id' => Auth::id(),
-            'admin_id' => Auth::id(),
-            'category' => $request->category,
-            'type' => 'player',
-            'message' => $request->message,
-            'status' => true,
+            'user_id'  => auth()->id(),
+            'subject'  => $validated['subject'],
+            'category' => $validated['category'],
+            'message'  => $validated['message'],
+            'type'     => 'player',
+            'status'   => true,
         ]);
 
-        return redirect()->route('profile.tickets')->with('success','Ticket created!');
+        return redirect()->route('profile.tickets')->with('success', 'Ticket created!');
     }
 }

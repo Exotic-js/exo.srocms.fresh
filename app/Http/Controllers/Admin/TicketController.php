@@ -11,47 +11,42 @@ class TicketController extends Controller
 {
     public function index()
     {
-        $tickets = Ticket::whereIn('id', function ($q) {
-                $q->selectRaw('MAX(id)')
-                    ->from('tickets')
-                    ->groupBy('ticket_id');
-            })
-            ->latest()
-            ->get();
+        $data = Ticket::whereNull('parent_id')->with('user')->orderByDesc('id')->paginate(20);
 
-        return view('admin.tickets.index', compact('tickets'));
+        return view('admin.tickets.index', compact('data'));
     }
 
-    public function show($ticket_id)
+    public function show(Ticket $ticket)
     {
-        $messages = Ticket::where('ticket_id', $ticket_id)->get();
-        return view('admin.tickets.show', compact('messages','ticket_id'));
+        $data = Ticket::where('id', $ticket->id)->orWhere('parent_id', $ticket->id)->orderBy('created_at')->get();
+
+        return view('admin.tickets.show', compact('ticket', 'data'));
     }
 
-    public function reply(Request $request, $ticket_id)
+    public function reply(Request $request, Ticket $ticket)
     {
         $request->validate([
             'message' => 'required|string',
         ]);
 
-        $ticket = Ticket::where('ticket_id',$ticket_id)->first();
-
         Ticket::create([
-            'ticket_id' => $ticket_id,
-            'user_id' => $ticket->user_id,
-            'admin_id' => Auth::id(),
-            'category' => $ticket->category,
-            'type' => 'admin',
-            'message' => $request->message,
-            'status' => true,
+            'parent_id' => $ticket->id,
+            'user_id'   => $ticket->user_id,
+            'admin_id'  => Auth::id(),
+            'subject'   => $ticket->subject,
+            'category'  => $ticket->category,
+            'type'      => 'admin',
+            'message'   => $request->message,
+            'status'    => true,
         ]);
 
-        return back()->with('success','Reply sent!');
+        return back()->with('success', 'Reply sent!');
     }
 
-    public function close($ticket_id)
+    public function close(Ticket $ticket)
     {
-        Ticket::where('ticket_id',$ticket_id)->update(['status'=>false]);
-        return back()->with('success','Ticket closed!');
+        Ticket::where('id', $ticket->id)->orWhere('parent_id', $ticket->id)->update(['status' => false]);
+
+        return back()->with('success', 'Ticket closed!');
     }
 }
