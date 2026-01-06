@@ -63,7 +63,7 @@ class NewsController extends Controller
         return redirect()->route('admin.news.index')->with('success', 'News updated successfully.');
     }
 
-    public function delete(News $news)
+    public function confirmDelete(News $news)
     {
         return view('admin.news.delete', compact('news'));
     }

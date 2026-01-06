@@ -12,6 +12,11 @@
                 {{ session('success') }}
             </div>
         @endif
+        @if (session('error'))
+            <div class="alert alert-danger" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
 
         <div class="row">
             <div class="col-md-8">
@@ -180,16 +185,14 @@
                                 </thead>
                                 <tbody>
                                 @forelse($status as $value)
-                                    @if($value->EventID == 4 || $value->EventID == 6)
-                                        <tr>
-                                            @if($value->EventID == 4)
-                                                <td><span class="text-success">Login</span></td>
-                                            @elseif($value->EventID == 6)
-                                                <td><span class="text-danger">Logout</span></td>
-                                            @endif
-                                            <td>{{ \Carbon\Carbon::parse($value->EventTime)->format('Y-m-d H:i') }}</td>
-                                        </tr>
-                                    @endif
+                                    <tr>
+                                        @if($value->EventID == 4)
+                                            <td><span class="text-success">Login</span></td>
+                                        @else
+                                            <td><span class="text-danger">Logout</span></td>
+                                        @endif
+                                        <td>{{ \Carbon\Carbon::parse($value->EventTime)->format('Y-m-d H:i') }}</td>
+                                    </tr>
                                 @empty
                                     <tr>
                                         <td colspan="2" class="text-center">No Records Found!</td>
@@ -225,7 +228,7 @@
                         </ul>
                         <hr>
 
-                        <form method="POST" action="{{ route('admin.characters.update', $data) }}">
+                        <form method="POST" action="{{ route('admin.characters.unstuck', $data) }}" onsubmit="return confirm('Are you sure you want to Unstuck this character?');">
                             @csrf
                             @method('PUT')
 

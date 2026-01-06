@@ -3,9 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class DonateLog extends Model
 {
+    protected $connection = 'sqlsrv';
+
+    protected $table = 'donate_logs';
+
     protected $primaryKey = 'id';
 
     protected $fillable = [
@@ -19,17 +24,17 @@ class DonateLog extends Model
         'ip',
     ];
 
-    public static function setDonateLog($method, $transaction_id, $status, $amount, $value, $desc, $jid, $ip)
+    public static function setDonateLog(array $data)
     {
         return self::create([
-            'method' => $method,
-            'transaction_id' => $transaction_id,
-            'status' => $status,
-            'amount' => $amount,
-            'value' => $value,
-            'desc' => $desc,
-            'jid' => $jid,
-            'ip' => $ip,
+            'method' => $data['method'] ?? 'unknown',
+            'transaction_id' => $data['transaction_id'] ?? Str::uuid(),
+            'status' => $data['status'] ?? 'true',
+            'amount' => $data['amount'] ?? 0,
+            'value' => $data['value'] ?? 0,
+            'desc' => $data['desc'] ?? '',
+            'jid' => $data['jid'] ?? 0,
+            'ip' => $data['ip'] ?? request()->ip(),
         ]);
     }
 

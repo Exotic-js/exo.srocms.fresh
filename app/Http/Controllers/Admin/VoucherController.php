@@ -10,8 +10,13 @@ class VoucherController extends Controller
 {
     public function index()
     {
-        $data = Voucher::paginate(10);
-        return view('admin.vouchers', compact('data'));
+        $data = Voucher::paginate(20);
+        return view('admin.vouchers.index', compact('data'));
+    }
+
+    public function create()
+    {
+        return view('admin.vouchers.create');
     }
 
     public function store(Request $request)
@@ -19,9 +24,10 @@ class VoucherController extends Controller
         $request->validate([
             'amount' => 'required|integer|min:1',
             'type' => 'required|integer',
+            'valid_date' => 'nullable|date',
         ]);
 
-        $code = $this->generateUniqueCode();
+        $code = strtoupper(implode('-', str_split(bin2hex(random_bytes(10)), 5)));
 
         Voucher::create([
             'code' => $code,
@@ -31,29 +37,15 @@ class VoucherController extends Controller
             'status' => 'Unused',
         ]);
 
-        return redirect()->back()->with('success', 'Voucher created successfully!');
+        return redirect()->route('admin.vouchers.index')->with('success', 'Voucher created successfully!');
     }
 
-    public function disable(Voucher $voucher)
+    public function toggle(Voucher $voucher)
     {
-        $voucher->update(['status' => 'Disabled']);
-        return redirect()->back()->with('success', 'Voucher disabled successfully!');
-    }
+        $voucher->update(['status' => $voucher->status === 'Unused' ? 'Disabled' : 'Unused']);
 
-    public function enable(Voucher $voucher)
-    {
-        $voucher->update(['status' => 'Unused']);
-        return redirect()->back()->with('success', 'Voucher enabled successfully!');
-    }
+        $action = $voucher->status === 'Unused' ? 'enabled' : 'disabled';
 
-    private function generateUniqueCode()
-    {
-        do {
-            $code = strtoupper(implode('-', array_map(function () {
-                return substr(bin2hex(random_bytes(4)), 0, 5);
-            }, range(1, 5))));
-        } while (Voucher::where('code', $code)->exists());
-
-        return $code;
+        return redirect()->back()->with('success', "Voucher {$action} successfully!");
     }
 }

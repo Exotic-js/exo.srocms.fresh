@@ -59,4 +59,9 @@ class BlockedUser extends Model
             'timeEnd' => $end,
         ]);
     }
+
+    public function punishment()
+    {
+        return $this->belongsTo(Punishment::class, 'SerialNo', 'SerialNo');
+    }
 }

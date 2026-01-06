@@ -34,4 +34,11 @@ class Setting extends Model
 
         return $setting;
     }
+
+    public static function cached()
+    {
+        return cache()->rememberForever('settings_all', function () {
+            return self::pluck('value', 'key');
+        });
+    }
 }

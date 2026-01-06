@@ -182,10 +182,8 @@
                         <h4 class="text-center">Add Silk</h4>
                     </div>
                     <div class="card-body">
-                        <form method="POST" action="{{ route('admin.users.update', $user->JID) }}">
+                        <form method="POST" action="{{ route('admin.users.silk', $user->JID) }}">
                             @csrf
-                            @method('PUT')
-
                             <div class="row mb-3">
                                 <label for="amount" class="col-md-12 col-form-label text-md-start">{{ __('Silk Amount') }}</label>
 
@@ -248,6 +246,10 @@
                                 {{ \Carbon\Carbon::parse($activePunishment->BlockEndTime)->format('d.m.Y H:i') }}
                                 ({{ \Carbon\Carbon::parse($activePunishment->BlockStartTime)->diffForHumans(\Carbon\Carbon::parse($activePunishment->BlockEndTime), true) }})
                             </div>
+
+                            <form id="unblock" method="POST" action="{{ route('admin.users.unblock', $user->JID) }}">
+                                @csrf
+                            </form>
                         @endif
 
                         <form method="POST" action="{{ route('admin.users.block', $user->JID) }}">
@@ -308,14 +310,11 @@
 
                             @if($user->blockedUser && \Carbon\Carbon::parse($user->blockedUser->timeEnd)->isFuture())
                                 <hr class="my-2">
-                                <form method="POST" action="{{ route('admin.users.unblock', $user->JID) }}">
-                                    @csrf
-                                    <div class="row mb-0">
-                                        <div class="col-md-12">
-                                            <button type="submit" class="btn btn-success w-100" onclick="return confirm('Really unblock?');">{{ __('UnBlock') }}</button>
-                                        </div>
+                                <div class="row mb-0">
+                                    <div class="col-md-12">
+                                        <button type="submit" form="unblock" class="btn btn-success w-100" onclick="return confirm('Really unblock?');">{{ __('UnBlock') }}</button>
                                     </div>
-                                </form>
+                                </div>
                             @endif
                         </form>
                     </div>

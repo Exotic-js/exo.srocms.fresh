@@ -22,7 +22,7 @@ class Ticket extends Model
 
     public function replies()
     {
-        return $this->hasMany(self::class, 'parent_id')->orderBy('created_at');
+        return $this->hasMany(Ticket::class, 'parent_id');
     }
 
     public function parent()

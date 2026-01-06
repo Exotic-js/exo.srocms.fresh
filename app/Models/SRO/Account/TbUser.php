@@ -2,6 +2,8 @@
 
 namespace App\Models\SRO\Account;
 
+use App\Models\DonateLog;
+use App\Models\SRO\Portal\AphChangedSilk;
 use App\Models\SRO\Portal\MuUser;
 use App\Models\SRO\Shard\Char;
 use App\Models\User;
@@ -170,5 +172,63 @@ class TbUser extends Model
     public function blockedUser()
     {
         return $this->hasOne(BlockedUser::class, 'UserJID', 'JID');
+    }
+
+    public function donationLogs()
+    {
+        return $this->hasMany(DonateLog::class, 'jid', 'JID');
+    }
+
+    public function blockAccount(string $reason, int $durationHours, ?string $customReason = null)
+    {
+        $finalReason = $reason === 'Custom' ? $customReason : $reason;
+        $now = now();
+        $end = $now->copy()->addHours($durationHours);
+
+        $punishment = Punishment::setPunishment($this->JID, $finalReason, $now, $end);
+
+        $blocked = BlockedUser::where('UserJID', $this->JID)->where('Type', 1)->first();
+
+        if ($blocked) {
+            $blocked->update([
+                'SerialNo' => $punishment->SerialNo,
+                'timeBegin' => $now,
+                'timeEnd' => $end,
+            ]);
+        } else {
+            BlockedUser::setBlockedUser($this->JID, $this->StrUserID, $punishment->SerialNo, $now, $end);
+        }
+
+        return $punishment;
+    }
+
+    public function unblockAccount()
+    {
+        $blocked = BlockedUser::where('UserJID', $this->JID)->where('Type', 1)->first();
+
+        if ($blocked) {
+            $blocked->update(['timeEnd' => now()]);
+            return true;
+        }
+
+        return false;
+    }
+
+    public function activeBlock()
+    {
+        return $this->hasOne(BlockedUser::class, 'UserJID', 'JID')
+            ->where('Type', 1)
+            ->where('timeEnd', '>', now())
+            ->with('punishment')
+            ->latest('timeEnd');
+    }
+
+    public function giveSilk(string $type, float $amount)
+    {
+        if (config('global.server.version') === 'vSRO') {
+            SkSilk::setSkSilk($this->JID, $type, $amount);
+        } else {
+            AphChangedSilk::setChangedSilk($this->PortalJID, $type, $amount);
+        }
     }
 }

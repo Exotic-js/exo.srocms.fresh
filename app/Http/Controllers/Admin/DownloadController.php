@@ -53,7 +53,7 @@ class DownloadController extends Controller
         return redirect()->route('admin.download.index')->with('success', 'Download updated successfully.');
     }
 
-    public function delete(Download $download)
+    public function confirmDelete(Download $download)
     {
         return view('admin.download.delete', compact('download'));
     }

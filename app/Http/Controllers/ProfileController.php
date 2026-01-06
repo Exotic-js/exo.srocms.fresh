@@ -247,22 +247,14 @@ class ProfileController extends Controller
         }
 
         $user = Auth::user();
-        if (config('global.server.version') === 'vSRO') {
-            SkSilk::setSkSilk($user->jid, $voucher->type, $voucher->amount);
-        } else {
-            AphChangedSilk::setChangedSilk($user->jid, $voucher->type, $voucher->amount);
-        }
 
-        DonateLog::setDonateLog(
-            'Voucher',
-            (string) Str::uuid(),
-            'true',
-            0,
-            $voucher->amount,
-            "User:{$user->username} Has Redeemed:{$voucher->code}",
-            $user->jid,
-            $request->ip()
-        );
+        $user->tbUser->giveSilk($voucher->type, $voucher->amount);
+
+        DonateLog::setDonateLog([
+            'method' => 'Voucher',
+            'amount' => $voucher->amount,
+            'jid' => $user->jid,
+        ]);
 
         $voucher->update(['jid' => $user->jid, 'status' => 'Used']);
 
@@ -373,6 +365,10 @@ class ProfileController extends Controller
     {
         $ticket->load('replies');
 
+        if ($ticket->user_id != auth()->id()) {
+            abort(403, 'Ticket not yours');
+        }
+
         return view('profile.tickets.show', compact('ticket'));
     }
 
@@ -389,6 +385,10 @@ class ProfileController extends Controller
 
         if ($request->filled('parent_id')) {
             $parentTicket = Ticket::findOrFail($request->parent_id);
+
+            if ($parentTicket->user_id != auth()->id()) {
+                abort(403, 'Ticket not yours');
+            }
 
             Ticket::create([
                 'parent_id' => $parentTicket->id,

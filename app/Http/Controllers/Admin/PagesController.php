@@ -56,7 +56,7 @@ class PagesController extends Controller
         return redirect()->route('admin.pages.index')->with('success', 'Pages updated successfully.');
     }
 
-    public function delete(Pages $pages)
+    public function confirmDelete(Pages $pages)
     {
         return view('admin.pages.delete', compact('pages'));
     }

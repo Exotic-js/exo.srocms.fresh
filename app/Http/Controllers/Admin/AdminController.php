@@ -11,6 +11,7 @@ use App\Models\SRO\Account\TbUser;
 use App\Models\SRO\Portal\AphChangedSilk;
 use App\Models\SRO\Shard\Char;
 use App\Models\User;
+use App\Models\VoteLog;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -32,8 +33,8 @@ class AdminController extends Controller
             'memoryLimit' => ini_get('memory_limit'),
             'memoryUsage' => memory_get_usage(true),
             'memoryPeak' => memory_get_peak_usage(true),
-            'diskTotal' => @disk_total_space('/') ?: 0,
-            'diskFree' => @disk_free_space('/') ?: 0,
+            'diskTotal' => is_readable(base_path()) ? disk_total_space(base_path()) : 0,
+            'diskFree'  => is_readable(base_path()) ? disk_free_space(base_path()) : 0,
             'appDebug' => config('app.debug'),
             'adminCount' => User::whereHas('role', fn($q) => $q->where('is_admin', 1))->count(),
         ];
@@ -47,6 +48,31 @@ class AdminController extends Controller
         ]);
     }
 
+    public function donateLogs(Request $request)
+    {
+        $query = DonateLog::query();
+
+        $query->when($request->filled('transaction_id'), fn($q) =>
+            $q->where('transaction_id', 'like', "%{$request->transaction_id}%")
+        );
+        $query->when($request->filled('method_type'), fn($q) =>
+            $q->where('method', $request->method_type)
+        );
+        $query->when($request->filled('status'), fn($q) =>
+            $q->where('status', $request->status)
+        );
+        $query->when($request->filled('jid'), fn($q) =>
+            $q->where('jid', $request->jid)
+        );
+        $query->when($request->filled('ip'), fn($q) =>
+            $q->where('ip', 'like', "%{$request->ip}%")
+        );
+
+        $data = $query->latest()->paginate(20);
+
+        return view('admin.donate-logs', compact('data'));
+    }
+
     public function referralLogs()
     {
         $data = Referral::getReferralLogs(20);
@@ -54,29 +80,11 @@ class AdminController extends Controller
         return view('admin.referral-logs', compact('data'));
     }
 
-    public function donateLogs(Request $request)
+    public function voteLogs()
     {
-        $query = DonateLog::query();
+        $data = VoteLog::latest()->paginate(20);
 
-        $query->when($request->transaction_id, fn($q) =>
-            $q->where('transaction_id', 'like', "%{$request->transaction_id}%")
-        );
-        $query->when($request->method_type, fn($q) =>
-            $q->where('method', $request->method_type)
-        );
-        $query->when($request->status, fn($q) =>
-            $q->where('status', $request->status)
-        );
-        $query->when($request->jid, fn($q) =>
-            $q->where('jid', $request->jid)
-        );
-        $query->when($request->ip, fn($q) =>
-            $q->where('ip', 'like', "%{$request->ip}%")
-        );
-
-        $data = $query->latest()->paginate(20);
-
-        return view('admin.donate-logs', compact('data'));
+        return view('admin.vote-logs', compact('data'));
     }
 
     public function smcLogs(Request $request)

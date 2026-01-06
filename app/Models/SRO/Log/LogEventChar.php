@@ -153,6 +153,7 @@ class LogEventChar extends Model
         return Cache::remember('char_status_' . $charID, 600, function () use ($charID) {
             return self::select('EventID', 'EventTime')
                 ->where('CharID', $charID)
+                ->whereIn('EventID', [4, 6])
                 ->orderBy('EventTime', 'desc')
                 ->get();
         });

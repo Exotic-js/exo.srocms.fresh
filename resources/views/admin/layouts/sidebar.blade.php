@@ -77,6 +77,12 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link d-flex align-items-center gap-2 {{ request()->routeIs('admin.vote.logs') ? 'active' : '' }}" href="{{ route('admin.vote.logs') }}">
+                    <svg class="bi" aria-hidden="true"><use xlink:href="#file-earmark-text"></use></svg>
+                    {{ __('Vote Logs') }}
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link d-flex align-items-center gap-2 {{ request()->routeIs('admin.smc.logs') ? 'active' : '' }}" href="{{ route('admin.smc.logs') }}">
                     <svg class="bi" aria-hidden="true"><use xlink:href="#file-earmark-text"></use></svg>
                     {{ __('SMC Logs') }}

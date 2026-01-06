@@ -132,6 +132,14 @@ class Inventory extends Model
         });
     }
 
+    public static function getInventorySlot($CharID, $slot)
+    {
+        return self::where('CharID', '=', $CharID)
+            ->where('Slot', '=', $slot)
+            ->where('ItemID', '>', '0')
+            ->first();
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
