@@ -111,4 +111,41 @@ class LogInstanceWorldInfo extends Model
 				->get();
 		});
 	}
+
+    public static function getUniquesTop(int $limit = 5)
+    {
+        $config = config('ranking.uniques');
+        $minutes = config('global.cache.unique_history', 10);
+
+        return Cache::remember("uniques_advanced_top{$limit}", now()->addMinutes($minutes), function () use ($config, $limit) {
+            $result = collect();
+
+            foreach ($config as $value => $cfg) {
+                $kills = self::select([
+                    '_LogInstanceWorldInfo.CharID',
+                    '_Char.CharName16',
+                ])
+                    ->join(DB::connection('shard')->getDatabaseName().'.dbo._Char', '_Char.CharID', '=', '_LogInstanceWorldInfo.CharID')
+                    ->where('_LogInstanceWorldInfo.Value', $value)
+                    ->where('_LogInstanceWorldInfo.ValueCodeName128', 'KILL_UNIQUE_MONSTER')
+                    ->orderByDesc('_LogInstanceWorldInfo.EventTime')
+                    ->limit(9999)
+                    ->get();
+
+                $topPlayers = $kills
+                    ->groupBy(fn($kill) => strtolower($kill->CharName16))
+                    ->map(fn($playerKills) => (object)[
+                        'CharName16' => $playerKills->first()->CharName16 ?: 'Unknown',
+                        'Points' => ($cfg['points'] ?? 0) * $playerKills->count(),
+                    ])
+                    ->sortByDesc('Points')
+                    ->take($limit)
+                    ->values();
+
+                $result[$value] = $topPlayers;
+            }
+
+            return $result;
+        });
+    }
 }

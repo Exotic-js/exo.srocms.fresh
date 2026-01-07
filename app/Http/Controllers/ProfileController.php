@@ -4,46 +4,38 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\DonateLog;
+use App\Models\PasswordResetToken;
 use App\Models\Referral;
 use App\Models\Setting;
-use App\Models\SRO\Account\SkSilk;
+use App\Models\SRO\Account\SecondaryPassword;
 use App\Models\SRO\Account\SkSilkBuyList;
 use App\Models\SRO\Account\TbUser;
 use App\Models\SRO\Portal\AphChangedSilk;
 use App\Models\SRO\Portal\MuEmail;
 use App\Models\SRO\Portal\MuhAlteredInfo;
-use App\Models\Ticket;
 use App\Models\Voucher;
+use App\Notifications\SendVerifyCode;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Mail;
 
 class ProfileController extends Controller
 {
     public function index(Request $request): View
     {
-        $characterRace = config('ranking.character_race');
-        $vipLevel = config('ranking.vip_level');
-
-        if (config('global.server.version') === 'vSRO') {
-            $characterImage = config('ranking.character_image_vsro');
-        }else {
-            $characterImage = config('ranking.character_image');
-        }
+        $config = [
+            'characterImage' => config('ranking.character_image'),
+            'characterImageVSRO' => config('ranking.character_image_vsro'),
+            'characterRace' => config('ranking.character_race'),
+            'vipLevel' => config('ranking.vip_level'),
+        ];
 
         return view('profile.index', [
             'user' => $request->user(),
-            'characterImage' => $characterImage,
-            'characterRace' => $characterRace,
-            'vipLevel' => $vipLevel,
+            'config' => $config,
         ]);
     }
 
@@ -62,53 +54,77 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        if (config('settings.update_type') == 'verify_code') {
-            $email = $request->input('new_email');
-            $codeRecord = DB::table('password_reset_tokens')->where('email', $request->user()->email)->first();
-
-            if (!$codeRecord || !($request->input('verify_code_email') === $codeRecord->token) || Carbon::parse($codeRecord->created_at)->addMinutes(30)->isPast()) {
-                return back()->withErrors(['verify_code_email' => 'The provided verification code is invalid or expired.']);
-            }
-
-            $request->user()->email = $email;
-            $request->user()->email_verified_at = null;
-            $request->user()->save();
-        }else {
-            $email = $request->input('email');
-            $request->user()->fill($request->validated());
-
-            if ($request->user()->isDirty('email')) {
-                $request->user()->email_verified_at = null;
-            }
-
-            $request->user()->save();
+        if (config('settings.update_type') === 'verify_code') {
+            return $this->updateEmailByCode($request);
         }
 
-        DB::beginTransaction();
-        try {
+        return $this->updateEmailByPassword($request);
+    }
 
+    protected function updateEmailByPassword(ProfileUpdateRequest $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        $user->fill($request->validated());
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
+
+        DB::transaction(function () use ($user) {
             if (config('global.server.version') === 'vSRO') {
-                TbUser::where('JID', $request->user()->jid)->update(['Email' => $email]);
-            }else {
-                MuEmail::where('JID', $request->user()->jid)->update(['EmailAddr' => $email]);
+                TbUser::where('JID', $user->jid)->update(['Email' => $user->email,]);
+            } else {
+                MuEmail::where('JID', $user->jid)->update(['EmailAddr' => $user->email,]);
 
-                if (config('settings.register_confirm')) {
-                    MuhAlteredInfo::where('JID', $request->user()->jid)->update(['EmailAddr' => $email, 'EmailReceptionStatus' => 'N', 'EmailCertificationStatus' => 'N']);
-                } else {
-                    MuhAlteredInfo::where('JID', $request->user()->jid)->update(['EmailAddr' => $email, 'EmailReceptionStatus' => 'Y', 'EmailCertificationStatus' => 'Y']);
-                }
+                MuhAlteredInfo::where('JID', $user->jid)->update([
+                    'EmailAddr' => $user->email,
+                    'EmailReceptionStatus' => config('settings.register_confirm') ? 'N' : 'Y',
+                    'EmailCertificationStatus' => config('settings.register_confirm') ? 'N' : 'Y',
+                ]);
             }
+        });
 
-            if (config('settings.update_type') == 'verify_code') {
-                DB::table('password_reset_tokens')->where('email', $request->user()->email)->delete();
-            }
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
 
-            DB::commit();
+    protected function updateEmailByCode(ProfileUpdateRequest $request): RedirectResponse
+    {
+        $request->validate([
+            'verify_code_email' => 'required|string',
+            'new_email' => 'required|email',
+        ]);
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withErrors(['email' => ["Something went wrong, Please try again later."]]);
+        $user  = $request->user();
+        $token = PasswordResetToken::getToken($user->email);
+
+        if (!$token || $request->verify_code_email !== $token->token || $token->isExpired()) {
+            return back()->withErrors([
+                'verify_code_email' => 'The provided verification code is invalid or expired.',
+            ]);
         }
+
+        $user->email = $request->new_email;
+        $user->email_verified_at = null;
+        $user->save();
+
+        DB::transaction(function () use ($user) {
+            if (config('global.server.version') === 'vSRO') {
+                TbUser::where('JID', $user->jid)->update(['Email' => $user->email,]);
+            } else {
+                MuEmail::where('JID', $user->jid)->update(['EmailAddr' => $user->email,]);
+
+                MuhAlteredInfo::where('JID', $user->jid)->update([
+                    'EmailAddr' => $user->email,
+                    'EmailReceptionStatus' => config('settings.register_confirm') ? 'N' : 'Y',
+                    'EmailCertificationStatus' => config('settings.register_confirm') ? 'N' : 'Y',
+                ]);
+            }
+        });
+
+        $token->deleteToken();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
@@ -122,42 +138,90 @@ class ProfileController extends Controller
             'password' => ['required', 'current_password'],
         ]);
 
-        $user = $request->user();
+        //$user = $request->user();
 
-        Auth::logout();
+        //Auth::logout();
 
-        $user->delete();
+        //$user->delete();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        //$request->session()->invalidate();
+        //$request->session()->regenerateToken();
 
         return Redirect::to('/');
     }
 
-    public function updateSettings(Request $request)
+    public function secondaryPasswordReset(Request $request): RedirectResponse
     {
-        foreach ($request->all() as $key => $value) {
-            Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+        if (config('settings.update_type') === 'verify_code') {
+            return $this->resetSecondaryPasswordByCode($request);
         }
 
-        return back()->with('success', 'Settings updated!');
+        return $this->secondaryPasswordResetByPassword($request);
     }
 
-    public function resendVerifyCode(Request $request)
+    public function secondaryPasswordResetByPassword(Request $request): RedirectResponse
     {
+        $request->validate([
+            'password' => 'required|string',
+        ]);
+
+        $tbUser = TbUser::where('password', md5($request->password))->first();
+        if (!$tbUser) {
+            return back()->with('passcode_error', 'Invalid password provided. Please try again.');
+        }
+
+        if (SecondaryPassword::where('UserJID', $tbUser->JID)->delete()) {
+            return back()->with('passcode_success', 'Your secondary password has been reset successfully!');
+        }
+
+        return back()->with('passcode_error', 'No secondary password was found for your account.');
+    }
+
+    private function resetSecondaryPasswordByCode(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'verify_code_secondary' => 'required|string',
+        ]);
+
+        $user = $request->user();
+        $token = PasswordResetToken::getToken($user->email);
+
+        if (!$token || $request->verify_code_secondary !== $token->token || $token->isExpired()) {
+            return back()->withErrors(['verify_code_secondary' => 'The provided verification code is invalid or expired.']);
+        }
+
+        $token->deleteToken();
+
+        if (SecondaryPassword::where('UserJID', $user->tbUser->JID)->delete()) {
+            return back()->with('passcode_success', 'Your secondary password has been reset successfully!');
+        }
+
+        return back()->with('passcode_error', 'No secondary password was found for your account.');
+    }
+
+    public function sendVerifyCode(Request $request)
+    {
+        $request->validate([
+            'context' => 'required|string',
+        ]);
+
         $user = $request->user();
         $code = random_int(100000, 999999);
 
-        DB::table('password_reset_tokens')->updateOrInsert(
-            ['email' => $user->email],
-            ['token' => $code, 'created_at' => now()]
-        );
+        PasswordResetToken::setToken($user->email, $code);
 
-        Mail::raw("Your verification code is: $code", function ($message) use ($user) {
-            $message->to($user->email)->subject('Email Change Verification Code');
-        });
+        $user->notify(new SendVerifyCode($code));
 
-        return back()->with('status', $request->input('send-verify-code-name'));
+        return back()->with('verify_code_sent', $request->input('context'));
+    }
+
+    public function updateSettings(Request $request)
+    {
+        foreach ($request->except(['_token']) as $key => $value) {
+            Setting::updateOrCreate(['key' => $key], ['value' => is_array($value) ? json_encode($value) : $value]);
+        }
+
+        return back()->with('success', 'Settings updated!');
     }
 
     public function silkHistory(Request $request): View
@@ -175,51 +239,9 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function secondaryPasswordReset(Request $request): RedirectResponse
+    public function vouchers(Request $request)
     {
-        if (config('settings.update_type') == 'verify_code') {
-            $request->validate([
-                'verify_code_secondary' => 'required|string',
-            ]);
-
-            $codeRecord = DB::table('password_reset_tokens')->where('email', $request->user()->email)->first();
-
-            if (!$codeRecord || !($request->input('verify_code_secondary') === $codeRecord->token) || Carbon::parse($codeRecord->created_at)->addMinutes(30)->isPast()) {
-                return back()->withErrors(['verify_code_secondary' => 'The provided verification code is invalid or expired.']);
-            }
-
-            $tbUser = $request->user()->tbUser;
-            $deleted = DB::connection('account')->table('_SecondaryPassword')->where('UserJID', $tbUser->JID)->delete();
-
-            DB::table('password_reset_tokens')->where('email', $request->user()->email)->delete();
-
-            if ($deleted) {
-                return back()->with('passcode_success', 'Your secondary password has been reset successfully!');
-            } else {
-                return back()->with('passcode_error', 'No secondary password was found for your account.');
-            }
-        } else {
-            $request->validate([
-                'password' => 'required|string',
-            ]);
-
-            $tbUser = TbUser::where('password', md5($request->password))->first();
-            if ($tbUser) {
-                $deleted = DB::connection('account')->table('_SecondaryPassword')->where('UserJID', $tbUser->JID)->delete();
-                if ($deleted) {
-                    return back()->with('passcode_success', 'Your secondary password has been reset successfully!');
-                } else {
-                    return back()->with('passcode_error', 'No secondary password was found for your account.');
-                }
-            }
-        }
-
-        return redirect()->back()->with('passcode_error', 'Invalid password provided. Please try again.');
-    }
-
-    public function voucher()
-    {
-        $data = Voucher::where('jid', Auth::user()->jid)->get();
+        $data = Voucher::where('jid', $request->user()->jid)->get();
 
         return view('profile.voucher', [
             'data' => $data,
@@ -246,7 +268,7 @@ class ProfileController extends Controller
             return redirect()->back()->with('error', 'This voucher has expired.');
         }
 
-        $user = Auth::user();
+        $user = $request->user();
 
         $user->tbUser->giveSilk($voucher->type, $voucher->amount);
 
@@ -261,11 +283,19 @@ class ProfileController extends Controller
         return redirect()->back()->with('success', 'Voucher redeemed successfully!');
     }
 
-    public function referral()
+    public function referral(Request $request): View
     {
-        $invite = auth()->user()->invitesCreated()->first();
-        $usedInvites = auth()->user()->invitesCreated()->whereNotNull('invited_jid')->with('invitedUser')->get();
-        $totalPoints = $usedInvites->sum('points');
+        $user = $request->user();
+
+        $fingerprint = $request->query('fingerprint') ?? session('fingerprint');
+        if ($fingerprint && session('fingerprint') !== $fingerprint) {
+            session(['fingerprint' => $fingerprint]);
+        }
+
+        $invite = Referral::createReferral($user, session('fingerprint'));
+
+        $totalPoints = $user->invitesCreated()->whereNotNull('invited_jid')->sum('points');
+        $usedInvites = $user->invitesCreated()->whereNotNull('invited_jid')->with('invitedUser')->get();
         $minimumRedeem = config('global.referral.minimum_redeem', 25);
 
         return view('profile.referral', [
@@ -276,43 +306,9 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function fingerprintReferral(Request $request)
+    public function redeemReferral(Request $request)
     {
-        $request->validate([
-            'fingerprint' => 'required|string|max:255',
-        ]);
-        $fingerprint = $request->input('fingerprint');
-        $ip = $request->ip();
-
-        session(['fingerprint' => $fingerprint]);
-
-        $invite = Auth::user()->invitesCreated()->first();
-        if (!$invite) {
-            try {
-                do {
-                    $code = strtoupper(Str::random(8));
-                } while (Referral::where('code', $code)->exists());
-
-                Referral::create([
-                    'code' => $code,
-                    'name' => Auth::user()->username,
-                    'jid' => Auth::user()->jid,
-                    'ip' => $ip,
-                    'fingerprint' => $fingerprint,
-                ]);
-
-                return response()->json(['status' => 'ok']);
-            } catch (\Exception $e) {
-
-            }
-        }
-
-        return response()->json(['status' => 'error']);
-    }
-
-    public function redeemReferral()
-    {
-        $user = Auth::user();
+        $user = $request->user();
         $minimumRedeem = config('global.referral.minimum_redeem', 25);
         $invites = $user->invitesCreated()->whereNotNull('invited_jid')->get();
 
@@ -323,95 +319,16 @@ class ProfileController extends Controller
             return back()->with('error', "You need at least {$minimumRedeem} points to redeem.");
         }
 
-        if (config('global.server.version') === 'vSRO') {
-            SkSilk::setSkSilk($user->jid, 3, $invites->sum('points'));
-        } else {
-            AphChangedSilk::setChangedSilk($user->jid, 3, $invites->sum('points'));
-        }
+        $user->tbUser->giveSilk(3, $invites->sum('points'));
 
-        DonateLog::setDonateLog(
-            'Referral',
-            Str::uuid(),
-            'true',
-            0,
-            $invites->sum('points'),
-            "AdminJID:{$user->jid} has sent:{$invites->sum('points')} silk",
-            $user->jid,
-            '127.0.0.1',
-        );
+        DonateLog::setDonateLog([
+            'method' => 'Voucher',
+            'amount' => $invites->sum('points'),
+            'jid' => $user->jid,
+        ]);
 
-        foreach ($invites as $invite) {
-            $invite->update(['points' => 0]);
-        }
+        $user->invitesCreated()->whereNotNull('invited_jid')->update(['points' => 0]);
 
         return back()->with('success', "{$invites->sum('points')} Silk has been added to your account!");
-    }
-
-    public function tickets()
-    {
-        $data = Ticket::where('user_id', auth()->id())->whereNull('parent_id')->latest()->paginate(20);
-
-        return view('profile.tickets.index', compact('data'));
-    }
-
-    public function createTicket()
-    {
-        $config = config('global.tickets.categories');
-
-        return view('profile.tickets.create', compact('config'));
-    }
-
-    public function showTicket(Ticket $ticket)
-    {
-        $ticket->load('replies');
-
-        if ($ticket->user_id != auth()->id()) {
-            abort(403, 'Ticket not yours');
-        }
-
-        return view('profile.tickets.show', compact('ticket'));
-    }
-
-    public function sendTicket(Request $request)
-    {
-        $config = array_keys(config('global.tickets.categories'));
-
-        $validated = $request->validate([
-            'subject'   => 'required_without:parent_id|string|max:255',
-            'message'   => 'required|string',
-            'category'  => 'required_without:parent_id|in:' . implode(',', $config),
-            'parent_id' => 'nullable|integer',
-        ]);
-
-        if ($request->filled('parent_id')) {
-            $parentTicket = Ticket::findOrFail($request->parent_id);
-
-            if ($parentTicket->user_id != auth()->id()) {
-                abort(403, 'Ticket not yours');
-            }
-
-            Ticket::create([
-                'parent_id' => $parentTicket->id,
-                'user_id'   => auth()->id(),
-                'subject'   => $parentTicket->subject,
-                'category'  => $parentTicket->category,
-                'message'   => $validated['message'],
-                'type'      => 'player',
-                'status'    => true,
-            ]);
-
-            return back()->with('success', 'Reply sent!');
-        }
-
-        Ticket::create([
-            'user_id'  => auth()->id(),
-            'subject'  => $validated['subject'],
-            'category' => $validated['category'],
-            'message'  => $validated['message'],
-            'type'     => 'player',
-            'status'   => true,
-        ]);
-
-        return redirect()->route('profile.tickets')->with('success', 'Ticket created!');
     }
 }

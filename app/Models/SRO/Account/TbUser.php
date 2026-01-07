@@ -231,4 +231,9 @@ class TbUser extends Model
             AphChangedSilk::setChangedSilk($this->PortalJID, $type, $amount);
         }
     }
+
+    public function secondaryPassword()
+    {
+        return $this->hasOne(SecondaryPassword::class, 'UserJID', 'JID');
+    }
 }

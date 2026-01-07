@@ -70,21 +70,21 @@ class AdminController extends Controller
 
         $data = $query->latest()->paginate(20);
 
-        return view('admin.donate-logs', compact('data'));
+        return view('admin.logs.donate', compact('data'));
     }
 
     public function referralLogs()
     {
         $data = Referral::getReferralLogs(20);
 
-        return view('admin.referral-logs', compact('data'));
+        return view('admin.logs.referral', compact('data'));
     }
 
     public function voteLogs()
     {
         $data = VoteLog::latest()->paginate(20);
 
-        return view('admin.vote-logs', compact('data'));
+        return view('admin.logs.vote', compact('data'));
     }
 
     public function smcLogs(Request $request)
@@ -101,6 +101,6 @@ class AdminController extends Controller
 
         $data = $query->latest('dLogDate')->paginate(20);
 
-        return view('admin.smc-logs', compact('data'));
+        return view('admin.logs.smc', compact('data'));
     }
 }

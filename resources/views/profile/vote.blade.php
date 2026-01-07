@@ -28,11 +28,7 @@
                                 <p class="text-muted mb-0">{{ __('Reward:') }} {{ $value['reward'] }} Silk</p>
                                 <p class="text-muted mb-2">{{ __('Timeout:') }} {{ $value['timeout'] }} Hours</p>
 
-                                <form method="POST" action="{{ route('profile.vote.voting', $key) }}">
-                                    @csrf
-                                    <input type="hidden" name="fingerprint" class="fingerprint">
-                                    <button type="submit" class="btn btn-primary">Vote Now</button>
-                                </form>
+                                <a href="{{ route('profile.vote.voting', $key) }}" target="_blank" class="btn btn-primary vote-btn" data-site="{{ $key }}">Vote Now</a>
                             </div>
                         </div>
                     </div>
@@ -44,12 +40,18 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
     <script>
-        FingerprintJS.load().then(fp => {
-            fp.get().then(result => {
-                Array.from(document.getElementsByClassName('fingerprint')).forEach(el => {
-                    el.value = result.visitorId;
-                });
-            });
-        });
+        (async () => {
+            const fp = await FingerprintJS.load();
+            const result = await fp.get();
+            const fingerprint = result.visitorId;
+
+            const params = new URLSearchParams(window.location.search);
+
+            if (params.get('fingerprint') !== fingerprint) {
+                params.set('fingerprint', fingerprint);
+                history.replaceState({}, '', `${location.pathname}?${params}`);
+                location.reload();
+            }
+        })();
     </script>
 @endpush

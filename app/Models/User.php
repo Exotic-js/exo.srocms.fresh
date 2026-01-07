@@ -74,6 +74,18 @@ class User extends Authenticatable implements MustVerifyEmail
         }
     }
 
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'user_id', 'id')
+            ->whereNull('parent_id')
+            ->latest();
+    }
+
+    public function getVerifyToken()
+    {
+        return PasswordResetToken::forEmail($this->email);
+    }
+
     public function news()
     {
         return $this->hasMany(News::class);

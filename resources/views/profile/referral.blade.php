@@ -105,32 +105,18 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
     <script>
-        FingerprintJS.load().then(fp => {
-            fp.get().then(result => {
+        (async () => {
+            const fp = await FingerprintJS.load();
+            const result = await fp.get();
+            const fingerprint = result.visitorId;
 
-                let url = "{{ route('profile.referral.fingerprint', [], false) }}";
-                url = window.location.protocol + "//" + window.location.host + url;
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('fingerprint') !== fingerprint) {
+                urlParams.set('fingerprint', fingerprint);
+                window.history.replaceState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
 
-                fetch(url, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    },
-                    body: JSON.stringify({
-                        fingerprint: result.visitorId
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'ok') {
-                        location.reload();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error saving fingerprint:', error);
-                });
-            });
-        });
+                window.location.reload();
+            }
+        })();
     </script>
 @endpush

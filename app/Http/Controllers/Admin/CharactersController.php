@@ -3,10 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\SRO\Log\LogEventChar;
 use App\Models\SRO\Shard\Char;
-use App\Models\SRO\Shard\InvCOS;
-use App\Models\SRO\Shard\Inventory;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
 
@@ -30,11 +27,11 @@ class CharactersController extends Controller
         $inventorySet = $inventoryService->getInventorySet($char->CharID, 108, 13, 0);
         $storageItems = $inventoryService->getStorageItems($char->user?->UserJID ?? 0, 180, 0);
 
-        $petNames = InvCOS::getPetNames($char->CharID);
+        $petNames = $char->getPetNames();
         $PetID = $request->input('pet') ?? optional($petNames->first())->ID;
         $petItems = $PetID ? $inventoryService->getPetItems($char->CharID, $PetID, 196, 0) : collect();
 
-        $status = config("ranking.extra.character_status") ? LogEventChar::getCharStatus($char->CharID)->take(5) : collect();
+        $status = config("ranking.extra.character_status") ? $char->getCharStatus()->take(5)->get() : collect();
 
         return view('admin.characters.view', [
             'data' => $char,
@@ -54,26 +51,20 @@ class CharactersController extends Controller
 
     public function unstuck(Char $char)
     {
-        $status = LogEventChar::getCharStatus($char->CharID)->first();
-
-        if (!$status) {
-            return back()->with('error', "This char has no OnlineOffline Status.");
+        if ($char->isOnline()) {
+            return back()->with('error', 'This char is still logged in.');
         }
 
-        switch ($status->EventID) {
-            case 4:
-                return back()->with('error', "This char is still logged in.");
-            case 6:
-                $jobItem = Inventory::getInventorySlot($char->CharID, 8);
-                if ($jobItem) {
-                    return back()->with('error', "This char is wearing a Job Suite, so no unstuck!");
-                }
-
-                $char->setCharUnstuckPosition();
-
-                return back()->with('success', "Your action was successfully.");
-            default:
-                return back()->with('error', "Cannot unstuck this char at the moment.");
+        if (!$char->isOffline()) {
+            return back()->with('error', 'Cannot unstuck this char at the moment.');
         }
+
+        if ($char->hasJobSuit()) {
+            return back()->with('error', 'This char is wearing a Job Suit.');
+        }
+
+        $char->setCharUnstuckPosition();
+
+        return back()->with('success', 'Your action was successful.');
     }
 }

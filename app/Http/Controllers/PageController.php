@@ -13,8 +13,6 @@ use App\Models\SRO\Log\LogEventSiegeFortress;
 use App\Models\SRO\Log\LogInstanceWorldInfo;
 use App\Services\ScheduleService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Session;
 
 class PageController extends Controller
 {
@@ -32,8 +30,8 @@ class PageController extends Controller
 
     public function locale($locale)
     {
-        if (array_key_exists($locale, config('global.languages'))) {
-            Session::put('locale', $locale);
+        if (isset(config('global.languages')[$locale])) {
+            session(['locale' => $locale]);
         }
         return back();
     }
@@ -41,9 +39,8 @@ class PageController extends Controller
     public function post($slug)
     {
         $data = News::getPost($slug);
-        if (!$data) {
-            return redirect()->back();
-        }
+
+        abort_if(!$data, 404);
 
         return view('pages.view', compact('data'));
     }
@@ -51,9 +48,8 @@ class PageController extends Controller
     public function page($slug)
     {
         $data = Pages::getPage($slug);
-        if (!$data) {
-            return redirect()->back();
-        }
+
+        abort_if(!$data, 404);
 
         return view('pages.page', compact('data'));
     }
@@ -85,24 +81,16 @@ class PageController extends Controller
 
     public function uniquesAdvanced()
     {
-        if (config('ranking.extra.advanced_unique_ranking')) {
-            $kills = LogInstanceWorldInfo::getUniquesKill(9999, 0, false);
-            $ranking = LogInstanceWorldInfo::getUniqueRanking(9999, 0);
-        } else {
-            $kills = [];
-            $ranking = [];
-        }
-
         $config = config('ranking.uniques');
 
-        $data = [];
-        foreach ($kills as $value) {
-            $data[$value->Value][] = $value;
+        if (!config('ranking.extra.advanced_unique_ranking')) {
+            $data = collect();
+        } else {
+            $data = LogInstanceWorldInfo::getUniquesTop(5);
         }
 
         return view('pages.uniques-advanced', [
             'data' => $data,
-            'ranking' => $ranking,
             'config' => $config,
         ]);
     }
@@ -130,7 +118,7 @@ class PageController extends Controller
         if ($config['enabled']) {
             $data = LogEventItem::getLogEventItem('plus', $config['plus'], $config['degree'], $config['type'], null, 25);
         } else {
-            $data = [];
+            $data = collect();
         }
         return view('pages.sox-plus', compact('data'));
     }
@@ -141,7 +129,7 @@ class PageController extends Controller
         if ($config['enabled']) {
             $data = LogEventItem::getLogEventItem('drop', null, $config['degree'], $config['type'], null, 25);
         } else {
-            $data = [];
+            $data = collect();
         }
         return view('pages.sox-drop', compact('data'));
     }
@@ -151,7 +139,7 @@ class PageController extends Controller
         if (config('ranking.extra.kill_logs.pvp')) {
             $data = LogEventChar::getKillLogs('pvp', 25);
         } else {
-            $data = [];
+            $data = collect();
         }
         return view('pages.pvp-kills', compact('data'));
     }
@@ -161,7 +149,7 @@ class PageController extends Controller
         if (config('ranking.extra.kill_logs.job')) {
             $data = LogEventChar::getKillLogs('job', 25);
         } else {
-            $data = [];
+            $data = collect();
         }
         return view('pages.job-kills', compact('data'));
     }

@@ -3,6 +3,7 @@
 namespace App\Models\SRO\Shard;
 
 use App\Models\SRO\Account\TbUser;
+use App\Models\SRO\Log\LogEventChar;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
@@ -201,6 +202,33 @@ class Char extends Model
             'TelWorldID' => 1,
             'DiedWorldID' => 1,
         ]);
+    }
+
+    public function getCharStatus()
+    {
+        return $this->hasMany(LogEventChar::class, 'CharID', 'CharID')
+            ->whereIn('EventID', [4, 6])
+            ->orderByDesc('EventTime');
+    }
+
+    public function isOnline(): bool
+    {
+        return optional($this->getCharStatus()->first())->EventID == 4;
+    }
+
+    public function isOffline(): bool
+    {
+        return optional($this->getCharStatus()->first())->EventID == 6;
+    }
+
+    public function hasJobSuit(): bool
+    {
+        return (bool) Inventory::getInventorySlot($this->CharID, 8);
+    }
+
+    public function getPetNames()
+    {
+        return InvCOS::getPetNames($this->CharID);
     }
 
     public static function getCharIDByName($CharName)

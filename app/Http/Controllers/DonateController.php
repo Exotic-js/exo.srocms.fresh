@@ -18,7 +18,8 @@ class DonateController extends Controller
         $config = config("donate.{$method}");
 
         if (!$config || !$config['enabled']) {
-            return redirect()->back()->withErrors('Payment method not found or disabled.');
+            redirect()->back()->withErrors('Payment method not found or disabled.')->send();
+            exit;
         }
 
         $viewPath = "profile.donate.{$method}";
@@ -31,46 +32,31 @@ class DonateController extends Controller
 
     public function process($method, Request $request, DonateService $donateService)
     {
-        $config = config("donate.{$method}");
-
-        if (!$config || !$config['enabled']) {
-            return redirect()->back()->withErrors('Payment method not found or disabled.');
+        $methodName = "process" . ucfirst($method);
+        if (!method_exists($donateService, $methodName)) {
+            return redirect()->back()->withErrors('Invalid payment method.');
         }
 
-        if (method_exists($donateService, "process" . ucfirst($method))) {
-            return $donateService->{"process" . ucfirst($method)}($request);
-        }
-
-        return redirect()->back()->withErrors('Invalid payment method.');
+        return $donateService->$methodName($request);
     }
 
     public function callback($method, Request $request, DonateService $donateService)
     {
-        $config = config("donate.{$method}");
-
-        if (!$config || !$config['enabled']) {
-            return redirect()->back()->withErrors('Payment method not found or disabled.');
+        $methodName = "callback" . ucfirst($method);
+        if (!method_exists($donateService, $methodName)) {
+            return redirect()->back()->withErrors('Invalid payment method.');
         }
 
-        if (method_exists($donateService, "callback" . ucfirst($method))) {
-            return $donateService->{"callback" . ucfirst($method)}($request);
-        }
-
-        return redirect()->back()->withErrors('Invalid payment method.');
+        return $donateService->$methodName($request);
     }
 
     public function webhook($method, Request $request, DonateService $donateService)
     {
-        $config = config("donate.{$method}");
-
-        if (!$config || !$config['enabled']) {
-            return redirect()->back()->withErrors('Payment method not found or disabled.');
+        $methodName = "webhook" . ucfirst($method);
+        if (!method_exists($donateService, $methodName)) {
+            return redirect()->back()->withErrors('Invalid payment method.');
         }
 
-        if (method_exists($donateService, "webhook" . ucfirst($method))) {
-            return $donateService->{"webhook" . ucfirst($method)}($request);
-        }
-
-        return redirect()->back()->withErrors('Invalid payment method.');
+        return $donateService->$methodName($request);
     }
 }

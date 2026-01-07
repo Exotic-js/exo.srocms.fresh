@@ -46,6 +46,26 @@ class Referral extends Model
         return $logs;
     }
 
+    public static function createReferral($user, ?string $fingerprint = null): self
+    {
+        $invite = $user->invitesCreated()->first();
+        if ($invite) {
+            return $invite;
+        }
+
+        do {
+            $code = strtoupper(Str::random(8));
+        } while (self::where('code', $code)->exists());
+
+        return $user->invitesCreated()->create([
+            'code' => $code,
+            'name' => $user->username,
+            'jid' => $user->jid,
+            'ip' => request()->ip(),
+            'fingerprint' => $fingerprint,
+        ]);
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'jid', 'jid');

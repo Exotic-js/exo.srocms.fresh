@@ -12,7 +12,7 @@ return [
         'limit' => 5,
     ],
     'unique_history' => [
-        'enabled' => false,
+        'enabled' => true,
         'limit' => 5,
     ],
     'top_player' => [

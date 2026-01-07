@@ -20,9 +20,22 @@ class Ticket extends Model
         'status'
     ];
 
+    public static function createTicket(array $data)
+    {
+        return self::create([
+            'user_id' => $data['user_id'] ?? auth()->id(),
+            'subject' => $data['subject'] ?? '',
+            'category' => $data['category'] ?? '',
+            'message' => $data['message'] ?? '',
+            'type' => $data['type'] ?? 'player',
+            'status' => $data['status'] ?? true,
+            'parent_id' => $data['parent_id'] ?? null,
+        ]);
+    }
+
     public function replies()
     {
-        return $this->hasMany(Ticket::class, 'parent_id');
+        return $this->hasMany(self::class, 'parent_id');
     }
 
     public function parent()

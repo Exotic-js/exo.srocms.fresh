@@ -3,7 +3,6 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CharactersController;
 use App\Http\Controllers\Admin\TicketController;
-use App\Http\Controllers\Admin\VoteController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\DownloadController;
 use App\Http\Controllers\Admin\NewsController;

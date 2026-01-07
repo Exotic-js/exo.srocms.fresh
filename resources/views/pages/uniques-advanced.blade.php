@@ -19,34 +19,22 @@
                                 <div class="card-body" style="min-height: 253px;">
                                     <table class="table table-bordered">
                                         <thead class="table-dark">
-                                            <tr>
-                                                <th>{{ __('#') }}</th>
-                                                <th>{{ __('Character') }}</th>
-                                                <th>{{ __('Points') }}</th>
-                                            </tr>
+                                        <tr>
+                                            <th>{{ __('#') }}</th>
+                                            <th>{{ __('Character') }}</th>
+                                            <th>{{ __('Points') }}</th>
+                                        </tr>
                                         </thead>
                                         <tbody>
-                                            <p class="text-center">{{ $config[$key]['points'] }} {{ __('Points') }}</p>
-                                            @php $i = 1 @endphp
-                                            @foreach($value as $values)
-                                                @if($i > 5) @break @endif
-                                                <tr>
-                                                    <td>{{ $i }}</td>
-                                                    <td>
-                                                        @if(!empty($values->CharName16))
-                                                        <a href="{{ route('ranking.character.view', ['name' => $values->CharName16]) }}" class="text-decoration-none">{{ $values->CharName16 }}</a>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        @foreach($ranking as $rank)
-                                                            @if($rank->CharName16 == $values->CharName16)
-                                                                {{ $rank->Points ?? 0 }}
-                                                            @endif
-                                                        @endforeach
-                                                    </td>
-                                                </tr>
-                                                @php $i++ @endphp
-                                            @endforeach
+                                        @foreach($value as $index => $kill)
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>
+                                                    <a href="{{ route('ranking.character.view', ['name' => $kill->CharName16]) }}" class="text-decoration-none">{{ $kill->CharName16 }}</a>
+                                                </td>
+                                                <td>{{ $kill->Points }}</td>
+                                            </tr>
+                                        @endforeach
                                         </tbody>
                                     </table>
                                 </div>

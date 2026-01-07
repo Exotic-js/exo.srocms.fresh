@@ -16,35 +16,34 @@ class VoteController extends Controller
         return view('profile.vote', compact('data'));
     }
 
-    public function voting($site, Request $request)
+    public function voting(string $site, Request $request)
     {
-        $request->validate([
-            'fingerprint' => 'required|string|max:255',
-        ]);
-        $config = config("vote.{$site}");
-        $user = Auth::user();
-        $now = Carbon::now();
-        $ip = $request->ip();
-        $fingerprint = $request->input('fingerprint');
+        $config = config("vote.$site");
+        abort_if(!$config || !$config['enabled'], 404);
 
-        $voteLog = VoteLog::where('site', $config['route'])
-            ->where(function($q) use ($ip, $fingerprint) {
-                $q->where('ip', $ip)->orWhere('fingerprint', $fingerprint);
-            })
-            ->whereNotNull('expire')
-            ->where('expire', '>', $now)
-            ->first();
+        $user = $request->user();
 
+        $fingerprint = $request->query('fingerprint') ?? session('fingerprint');
+        if ($fingerprint && session('fingerprint') !== $fingerprint) {
+            session(['fingerprint' => $fingerprint]);
+        }
+
+        if (!$fingerprint) {
+            return back()->with('error', 'Fingerprint not detected.');
+        }
+
+        $voteLog = VoteLog::activeVote($config['route'], $request->ip(), $fingerprint);
         if ($voteLog) {
-            return redirect()->back()->with('error', "You (or someone using your device) have already voted and must wait until {$voteLog->expire} to vote again for {$config['name']}.");
+            return back()->with('error', "You have already voted. Please wait until {$voteLog->expire} to vote again for {$config['name']}.");
         }
 
         VoteLog::updateOrCreate(
-            ['jid' => $user->jid, 'site' => $config['route']],
-            ['ip' => $ip, 'fingerprint' => $fingerprint]
+            ['jid' => $user->jid, 'site' => $config['route'],],
+            ['ip' => $request->ip(), 'fingerprint' => $fingerprint,]
         );
 
         $url = str_replace('{JID}', $user->jid, $config['url']);
+
         return redirect()->away($url);
     }
 
@@ -56,10 +55,10 @@ class VoteController extends Controller
             return redirect()->back()->withErrors('Vote Site not found or disabled.');
         }
 
-        if (method_exists($voteService, "postback" . ucfirst($site))) {
-            return $voteService->{"postback" . ucfirst($site)}($request);
+        if (!method_exists($voteService, "postback" . ucfirst($site))) {
+            return redirect()->back()->withErrors('Invalid postback method.');
         }
 
-        return redirect()->back()->withErrors('Invalid postback method.');
+        return $voteService->{"postback" . ucfirst($site)}($request);
     }
 }

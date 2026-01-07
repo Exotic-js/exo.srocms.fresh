@@ -45,7 +45,7 @@ class TimedJob extends Model
                 )
                 ->join('_RefSkill', '_RefSkill.ID', '=', '_TimedJob.JobID')
                 ->where('_TimedJob.CharID', $CharID)
-                ->where('_RefSkill.UI_SkillName', '!=', 'xxx')
+                ->where('_RefSkill.UI_IconFile', '!=', 'xxx')
                 ->orderByDesc('_TimedJob.Category')
                 ->get()
                 ->map(function ($row) {
