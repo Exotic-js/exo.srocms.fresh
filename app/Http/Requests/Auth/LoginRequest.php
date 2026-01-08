@@ -60,7 +60,7 @@ class LoginRequest extends FormRequest
                 $email = $tbUser->Email ?? "{$jid}@mail.com";
             } else {
                 $jid = $tbUser->PortalJID;
-                $email = $tbUser->muUser->muEmail->EmailAddr ?? "{$jid}@mail.com";
+                $email = optional($tbUser->muUser->muEmail)->EmailAddr ?? "{$jid}@mail.com";
             }
 
             $user = User::firstOrCreate(

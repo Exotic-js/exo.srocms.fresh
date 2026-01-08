@@ -94,7 +94,8 @@ class ProfileController extends Controller
     {
         $request->validate([
             'verify_code_email' => 'required|string',
-            'new_email' => 'required|email',
+            'new_email' => 'nullable|email',
+            'verify_login' => 'nullable|in:0,1',
         ]);
 
         $user  = $request->user();
@@ -106,23 +107,30 @@ class ProfileController extends Controller
             ]);
         }
 
-        $user->email = $request->new_email;
-        $user->email_verified_at = null;
-        $user->save();
+        if ($request->filled('new_email')) {
+            $user->email = $request->new_email;
+            $user->email_verified_at = null;
+            $user->save();
 
-        DB::transaction(function () use ($user) {
-            if (config('global.server.version') === 'vSRO') {
-                TbUser::where('JID', $user->jid)->update(['Email' => $user->email,]);
-            } else {
-                MuEmail::where('JID', $user->jid)->update(['EmailAddr' => $user->email,]);
+            DB::transaction(function () use ($user) {
+                if (config('global.server.version') === 'vSRO') {
+                    TbUser::where('JID', $user->jid)->update(['Email' => $user->email,]);
+                } else {
+                    MuEmail::where('JID', $user->jid)->update(['EmailAddr' => $user->email,]);
 
-                MuhAlteredInfo::where('JID', $user->jid)->update([
-                    'EmailAddr' => $user->email,
-                    'EmailReceptionStatus' => config('settings.register_confirm') ? 'N' : 'Y',
-                    'EmailCertificationStatus' => config('settings.register_confirm') ? 'N' : 'Y',
-                ]);
-            }
-        });
+                    MuhAlteredInfo::where('JID', $user->jid)->update([
+                        'EmailAddr' => $user->email,
+                        'EmailReceptionStatus' => config('settings.register_confirm') ? 'N' : 'Y',
+                        'EmailCertificationStatus' => config('settings.register_confirm') ? 'N' : 'Y',
+                    ]);
+                }
+            });
+        }
+
+        if ($request->has('verify_login')) {
+            $verifyLogin = $request->input('verify_login');
+            Setting::set("verify_jid_{$user->tbUser->JID}", $verifyLogin);
+        }
 
         $token->deleteToken();
 

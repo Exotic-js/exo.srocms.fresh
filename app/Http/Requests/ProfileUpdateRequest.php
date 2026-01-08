@@ -25,7 +25,7 @@ class ProfileUpdateRequest extends FormRequest
                 'string'
             ]),
             'new_email' => array_filter([
-                config('settings.update_type') == 'verify_code' ? 'required' : null,
+                'nullable',
                 'email',
                 !config('settings.duplicate_email', 1) ? Rule::unique('users', 'email')->ignore($this->user()->id) : null
             ]),
@@ -40,11 +40,7 @@ class ProfileUpdateRequest extends FormRequest
 
                 function ($attribute, $value, $fail) {
                     if (config('global.server.version') === 'vSRO' && !config('settings.duplicate_email', 1)) {
-                        $exists = DB::connection('account')->table('dbo.TB_User')
-                            ->where('Email', $value)
-                            ->where('JID', '!=', $this->user()->jid)
-                            ->exists();
-
+                        $exists = $this->user()->tbUser()->where('Email', $value)->where('JID', '!=', $this->user()->jid)->exists();
                         if ($exists) {
                             $fail('The email has already been taken in another account.');
                         }

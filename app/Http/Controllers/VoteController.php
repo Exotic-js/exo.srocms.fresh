@@ -5,15 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\VoteLog;
 use App\Services\VoteService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class VoteController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $data = config('vote');
-        return view('profile.vote', compact('data'));
+        $data = VoteLog::getVoteStatus($request, session('fingerprint'));
+        return view('profile.vote', ['data' => $data]);
     }
 
     public function voting(string $site, Request $request)

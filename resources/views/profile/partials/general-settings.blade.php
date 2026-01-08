@@ -13,17 +13,6 @@
             @csrf
 
             <div class="row mb-3">
-                <label for="otp_verify" class="col-md-4 col-form-label text-md-end">{{ __('Login OTP') }}</label>
-
-                <div class="col-md-6">
-                    <div class="form-check">
-                        <input type="hidden" name="otp_verify_jid_{{ $user->tbUser->JID }}" value="0">
-                        <input class="form-check-input" type="checkbox" name="otp_verify_jid_{{ $user->tbUser->JID }}" value="1" id="otp_verify_jid_{{ $user->tbUser->JID }}" {{ config("settings.otp_verify_jid_{$user->tbUser->JID}") ? 'checked' : '' }}>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row mb-3">
                 <label for="item_stats" class="col-md-4 col-form-label text-md-end">{{ __('Hide Item Stats') }}</label>
 
                 <div class="col-md-6">

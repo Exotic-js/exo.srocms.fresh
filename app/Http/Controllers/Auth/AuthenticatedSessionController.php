@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\PasswordResetToken;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
+use App\Notifications\SendVerifyCode;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
@@ -32,35 +31,22 @@ class AuthenticatedSessionController extends Controller
         $request->validate([
             'username' => ['required'],
             'password' => ['required'],
-            'g-recaptcha-response' => [
-                Rule::requiredIf(function () {
-                    return env('NOCAPTCHA_ENABLE', false);
-                }),
-                'captcha'
-            ],
+            'g-recaptcha-response' => [Rule::requiredIf(function () {return env('NOCAPTCHA_ENABLE', false);}), 'captcha'],
         ]);
 
         $request->authenticate();
 
-        $user = User::where('username', $request->username)->first();
+        $user = Auth::user();
 
-        if (config("settings.otp_verify_jid_{$user->tbUser->JID}") == 1) {
+        if (config("settings.verify_jid_{$user->tbUser->JID}")) {
             $code = random_int(100000, 999999);
-            DB::table('password_reset_tokens')->updateOrInsert(
-                ['email' => $user->email],
-                [
-                    'token' => Hash::make($code),
-                    'created_at' => now()
-                ]
-            );
+            PasswordResetToken::setToken($user->email, $code);
 
-            Mail::raw("Your OTP code is: $code", function ($message) use ($user) {
-                $message->to($user->email)->subject('Login Verification Code');
-            });
+            $user->notify(new SendVerifyCode($code));
 
-            session(['otp_email' => $user->email]);
+            session(['login_verify_user' => $user->id, 'login_verify_time' => now(),]);
 
-            return redirect()->route('otp.show');
+            return redirect()->route('login.verify');
         }
 
         $request->session()->regenerate();
@@ -82,53 +68,61 @@ class AuthenticatedSessionController extends Controller
         return redirect('/');
     }
 
-    public function showOTP()
+    public function show()
     {
-        abort_unless(session('otp_email'), 403);
-        return view('auth.verify-otp');
-    }
-
-    public function verifyOTP(Request $request)
-    {
-        $request->validate(['otp' => 'required']);
-
-        $email = session('otp_email');
-
-        $record = DB::table('password_reset_tokens')->where('email', $email)->first();
-
-        if (!$record || !Hash::check($request->otp, $record->token) || now()->diffInMinutes($record->created_at) > 5) {
-            return back()->withErrors(['otp' => 'Invalid or expired code']);
+        if (!session('login_verify_user')) {
+            return redirect()->route('login');
         }
 
-        DB::table('password_reset_tokens')->where('email', $email)->delete();
-        session()->forget('otp_email');
+        return view('auth.login-verify');
+    }
 
-        $user = User::where('email', $email)->first();
+    public function verify(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string',
+        ]);
+
+        $userId = session('login_verify_user');
+        $user = User::findOrFail($userId);
+
+        $token = PasswordResetToken::getToken($user->email);
+
+        if (!$token || $token->isExpired() || $token->token !== $request->code) {
+            return back()->withErrors(['code' => 'Invalid or expired verification code']);
+        }
+
+        $token->deleteToken();
+
         Auth::login($user);
+
+        session()->forget(['login_verify_user', 'login_verify_time']);
 
         return redirect()->intended(route('profile', absolute: false));
     }
 
-    public function resendOTP(Request $request)
+    public function resend(Request $request)
     {
-        $email = session('otp_email');
-        abort_unless($email, 403);
 
-        $user = User::where('email', $email)->first();
+        $userId = session('login_verify_user');
+        if (!$userId) {
+            return redirect()->route('login');
+        }
+
+        $user = User::findOrFail($userId);
+
+        $token = PasswordResetToken::getToken($user->email);
+
+        if ($token && !$token->isExpired(1)) {
+            return back()->withErrors(['code' => 'Please wait before requesting a new code.']);
+        }
+
         $code = random_int(100000, 999999);
 
-        DB::table('password_reset_tokens')->updateOrInsert(
-            ['email' => $email],
-            [
-                'token' => Hash::make($code),
-                'created_at' => now()
-            ]
-        );
+        PasswordResetToken::setToken($user->email, $code);
 
-        Mail::raw("Your OTP code is: $code", function ($message) use ($user) {
-            $message->to($user->email)->subject('Login Verification Code');
-        });
+        $user->notify(new SendVerifyCode($code));
 
-        return back()->with('status', 'Code sent again');
+        return back()->with('status', 'Verification code sent again');
     }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class Referral extends Model
 {
@@ -46,7 +47,7 @@ class Referral extends Model
         return $logs;
     }
 
-    public static function createReferral($user, ?string $fingerprint = null): self
+    public static function createReferral(User $user, ?string $fingerprint = null, ?string $ip = null): self
     {
         $invite = $user->invitesCreated()->first();
         if ($invite) {
@@ -61,7 +62,27 @@ class Referral extends Model
             'code' => $code,
             'name' => $user->username,
             'jid' => $user->jid,
-            'ip' => request()->ip(),
+            'ip' => $ip ?? '0.0.0.0',
+            'fingerprint' => $fingerprint,
+        ]);
+    }
+
+    public static function inviteReferral(User $user, string $inviteCode, string $fingerprint, string $ip): ?self
+    {
+        $inviter = self::where('code', $inviteCode)->first();
+        if (!$inviter) {
+            return null;
+        }
+
+        $points = ($inviter->ip !== $ip && $inviter->fingerprint !== $fingerprint) ? config('global.referral.reward_points', 0) : 0;
+
+        return self::create([
+            'code' => $inviter->code,
+            'name' => $inviter->name,
+            'jid' => $inviter->jid,
+            'invited_jid' => $user->jid,
+            'points' => $points,
+            'ip' => $points === 0 ? 'CHEATING' : $ip,
             'fingerprint' => $fingerprint,
         ]);
     }

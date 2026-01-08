@@ -21,9 +21,9 @@
             @csrf
 
             @if(config('settings.update_type') !== 'verify_code')
-                @include('profile.partials._password')
+                @include('profile.partials.input._password')
             @else
-                @include('profile.partials._verify_code', ['name' => 'verify_code_secondary'])
+                @include('profile.partials.input._verify_code', ['name' => 'verify_code_secondary'])
             @endif
 
             <div class="row mb-0">

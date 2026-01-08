@@ -50,7 +50,7 @@ class VoteService
             AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
         }
 
-        DonateLog::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
+        //DonateLog::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
         VoteLog::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
 
         return response("OK", 200);

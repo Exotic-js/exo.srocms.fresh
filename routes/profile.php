@@ -23,7 +23,6 @@ Route::middleware(array_filter(['auth', config('settings.register_confirm') ? 'v
 
         Route::get('/referral', [ProfileController::class, 'referral'])->name('referral');
         Route::post('/referral-redeem', [ProfileController::class, 'redeemReferral'])->name('referral.redeem');
-        Route::get('/silk-history', [ProfileController::class, 'silkHistory'])->name('silk-history');
 
         Route::get('/vote', [VoteController::class, 'index'])->name('vote');
         Route::get('/vote/{id}', [VoteController::class, 'voting'])->name('vote.voting');
@@ -36,5 +35,7 @@ Route::middleware(array_filter(['auth', config('settings.register_confirm') ? 'v
         Route::get('/tickets/create', [TicketController::class, 'create'])->name('ticket.create');
         Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('ticket.show');
         Route::post('/tickets/send', [TicketController::class, 'send'])->name('ticket.send');
+
+        Route::get('/silk-history', [ProfileController::class, 'silkHistory'])->name('silk-history');
     });
 });

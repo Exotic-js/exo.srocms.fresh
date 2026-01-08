@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Referral;
 use App\Models\SRO\Account\SkSilk;
 use App\Models\SRO\Account\TbUser;
-use App\Models\SRO\Portal\AphChangedSilk;
 use App\Models\SRO\Portal\AuhAgreedService;
 use App\Models\SRO\Portal\MuEmail;
 use App\Models\SRO\Portal\MuhAlteredInfo;
@@ -14,18 +13,13 @@ use App\Models\SRO\Portal\MuJoiningInfo;
 use App\Models\SRO\Portal\MuUser;
 use App\Models\SRO\Portal\MuVIPInfo;
 use App\Models\User;
-use Exception;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rules;
 use Illuminate\View\View;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Str;
 
 class RegisteredUserController extends Controller
 {
@@ -48,95 +42,32 @@ class RegisteredUserController extends Controller
             return back()->withErrors(['username' => ["Register page is disabled!"]]);
         }
 
-        $rules = [
-            'username' => ['required', 'regex:/^[A-Za-z0-9]*$/', 'min:6', 'max:16', 'unique:' . User::class],
-            'email' => ['required', 'string', 'email', 'max:70'],
-            'password' => ['required', 'min:6', 'max:32', 'confirmed'],
-            'g-recaptcha-response' => env('NOCAPTCHA_ENABLE', false) ? ['required', 'captcha'] : ['nullable'],
-            'terms' => config('settings.agree_terms', false) ? ['required', 'accepted'] : ['nullable'],
-            'invite' => ['nullable', 'string'],
-            'fingerprint' => ['nullable', 'string'],
-        ];
+        $rules = $this->getValidationRules($request);
+        $request->validate($rules);
+        $ip = filter_var($request->ip(), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ?: '0.0.0.0';
+        $jid = null;
 
-        if (config('global.server.version') === 'vSRO') {
-            $rules['username'][] = 'unique:' . TbUser::class . ',StrUserID';
-        }elseif (config('global.server.version') === 'vSRO' && !config('settings.duplicate_email', 1)) {
-            $rules['email'][] = 'unique:' . User::class . ',email';
-            $rules['email'][] = 'unique:' . TbUser::class . ',Email';
-        } else {
-            $rules['email'][] = 'unique:' . User::class . ',email';
-            $rules['username'][] = 'unique:' . MuUser::class . ',UserID';
-            $rules['username'][] = 'unique:' . TbUser::class . ',StrUserID';
-            $rules['email'][] = 'unique:' . MuEmail::class . ',EmailAddr';
+        DB::transaction(function () use ($ip, $request, &$jid) {
+            if (config('global.server.version') === 'vSRO') {
+                $jid = $this->createAccountVSRO($request, $ip);
+            } else {
+                $jid = $this->createAccountISRO($request, $ip);
+            }
+        });
+
+        $user = User::create([
+            'jid' => $jid,
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        if (config('global.referral.enabled', true) && $request->filled('fingerprint')) {
+            Referral::createReferral($user, $request->input('fingerprint'), $request->ip());
         }
 
-        $request->validate($rules);
-        $ip = filter_var($ip = $request->ip(), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ? $ip : '0.0.0.0';
-
-        DB::beginTransaction();
-        try {
-            if (config('global.server.version') === 'vSRO') {
-                $tbUser = TbUser::setGameAccount($jid = null, $request->username, $request->password, $request->email, $ip);
-                $jid = $tbUser->JID;
-
-                SkSilk::setSkSilk($jid, 0, 0);
-            } else {
-                $userBinIP = ip2long($ip);
-
-                $portalUser = MuUser::setPortalAccount($request->username, $request->password);
-                $jid = $portalUser->JID;
-
-                MuEmail::setEmail($jid, $request->email);
-                MuhAlteredInfo::setAlteredInfo($jid, $request->username, $request->email, $userBinIP);
-                AuhAgreedService::setAgreedService($jid, $userBinIP);
-                MuJoiningInfo::setJoiningInfo($jid, $userBinIP);
-                MuVIPInfo::setVIPInfo($jid);
-
-                //type 1 = silk, type 3 = premium silk
-                //AphChangedSilk::setChangedSilk($jid, 1, 0);
-                //AphChangedSilk::setChangedSilk($jid, 3, 0);
-                TbUser::setGameAccount($jid, $request->username, $request->password, $request->email, $request->ip());
-            }
-
-            if (config('global.referral.enabled', true)) {
-                if ($request->filled('invite')) {
-                    $invite = Referral::where('code', $request->invite)->first();
-
-                    if ($invite) {
-                        if ($invite->ip !== $request->ip() && $invite->fingerprint !== $request->fingerprint) {
-                            Referral::create([
-                                'code' => $invite->code,
-                                'name' => $invite->name,
-                                'jid' => $invite->jid,
-                                'invited_jid' => $jid,
-                                'points' => config('global.referral.reward_points', 0),
-                            ]);
-                        }else {
-                            Referral::create([
-                                'code' => $invite->code,
-                                'name' => $invite->name,
-                                'ip' => 'CHEATING',
-                                'jid' => $invite->jid,
-                                'invited_jid' => $jid,
-                                'points' => 0,
-                            ]);
-                        }
-                    }
-                }
-            }
-
-            $user = User::create([
-                'jid' => $jid,
-                'username' => $request->username,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-            ]);
-
-            DB::commit();
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withErrors(['username' => [$e->getMessage()]]);
+        if (config('global.referral.enabled', true) && $request->filled('invite') && $request->filled('fingerprint')) {
+            Referral::inviteReferral($user, $request->input('invite'), $request->input('fingerprint'), $request->ip());
         }
 
         if (config('settings.register_confirm')) {
@@ -146,5 +77,54 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         return redirect(route('profile', absolute: false));
+    }
+
+    private function getValidationRules(Request $request): array
+    {
+        $rules = [
+            'username' => ['required', 'regex:/^[A-Za-z0-9]*$/', 'min:6', 'max:16', 'unique:' . User::class],
+            'email' => ['required', 'string', 'email', 'max:70', 'unique:' . User::class],
+            'password' => ['required', 'min:6', 'max:32', 'confirmed'],
+            'g-recaptcha-response' => env('NOCAPTCHA_ENABLE', false) ? ['required', 'captcha'] : ['nullable'],
+            'terms' => config('settings.agree_terms', false) ? ['required', 'accepted'] : ['nullable'],
+            'invite' => ['nullable', 'string'],
+            'fingerprint' => ['nullable', 'string'],
+        ];
+
+        if (config('global.server.version') === 'vSRO') {
+            $rules['username'][] = 'unique:' . TbUser::class . ',StrUserID';
+        } else {
+            $rules['username'][] = 'unique:' . MuUser::class . ',UserID';
+            $rules['username'][] = 'unique:' . TbUser::class . ',StrUserID';
+            $rules['email'][] = 'unique:' . MuEmail::class . ',EmailAddr';
+        }
+
+        return $rules;
+    }
+
+    private function createAccountVSRO(Request $request, string $ip): int
+    {
+        $tbUser = TbUser::setGameAccount(null, $request->username, $request->password, $request->email, $ip);
+        SkSilk::setSkSilk($tbUser->JID, 0, 0);
+
+        return $tbUser->JID;
+    }
+
+    private function createAccountISRO(Request $request, string $ip): int
+    {
+        $userBinIP = ip2long($ip);
+        $portalUser = MuUser::setPortalAccount($request->username, $request->password);
+
+        MuEmail::setEmail($portalUser->JID, $request->email);
+        MuhAlteredInfo::setAlteredInfo($portalUser->JID, $request->username, $request->email, $userBinIP);
+        AuhAgreedService::setAgreedService($portalUser->JID, $userBinIP);
+        MuJoiningInfo::setJoiningInfo($portalUser->JID, $userBinIP);
+        MuVIPInfo::setVIPInfo($portalUser->JID);
+        //AphChangedSilk::setChangedSilk($portalUser->JID, 1, 0);
+        //AphChangedSilk::setChangedSilk($portalUser->JID, 3, 0);
+
+        TbUser::setGameAccount($portalUser->JID, $request->username, $request->password, $request->email, $ip);
+
+        return $portalUser->JID;
     }
 }

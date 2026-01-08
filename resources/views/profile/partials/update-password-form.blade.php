@@ -18,9 +18,9 @@
             @method('put')
 
             @if(config('settings.update_type') !== 'verify_code')
-                @include('profile.partials._password', ['name' => 'current_password'])
+                @include('profile.partials.input._password', ['name' => 'current_password'])
             @else
-                @include('profile.partials._verify_code', ['name' => 'verify_code_password'])
+                @include('profile.partials.input._verify_code', ['name' => 'verify_code_password'])
             @endif
 
             <div class="row mb-3">

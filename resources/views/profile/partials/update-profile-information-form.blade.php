@@ -68,8 +68,9 @@
             </div>
 
             @if(config('settings.update_type') == 'verify_code')
-                @include('profile.partials._verify_code', ['name' => 'verify_code_email'])
-                @include('profile.partials._new_email')
+                @include('profile.partials.input._verify_code', ['name' => 'verify_code_email'])
+                @include('profile.partials.input._new_email')
+                @include('profile.partials.input._verify_login')
             @endif
 
             <div class="row mb-0">

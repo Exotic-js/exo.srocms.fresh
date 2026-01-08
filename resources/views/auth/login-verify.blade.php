@@ -1,11 +1,11 @@
 @extends('layouts.guest')
-@section('title', __('Verify OTP'))
+@section('title', __('Verification Code'))
 
 @section('content')
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <h2 class="mt-5">{{ __('Verify OTP') }}</h2>
+                <h2 class="mt-5">{{ __('Verification Code') }}</h2>
 
                 @if(session('status'))
                     <div class="alert alert-success" role="alert">
@@ -13,24 +13,19 @@
                     </div>
                 @endif
 
-                @if ($errors->has('otp'))
-                    <div class="alert alert-danger" role="alert">
-                        {{ $errors->first('otp') }}
-                    </div>
-                @endif
-
                 <p class="text-muted mb-4">
-                    {{ __('We sent a 6-digit verification code to') }} <b>{{ session('otp_email') }}</b>
+                    {{ __('We sent a 6-digit verification code to your email.') }}
                 </p>
 
-                <form method="POST" action="{{ route('otp.verify') }}">
+                <form method="POST" action="{{ route('login.verify') }}">
                     @csrf
 
                     <div class="form-group row mb-3">
-                        <label for="otp" class="col-md-12 col-form-label text-md-left">{{ __('OTP Code') }}</label>
+                        <label for="code" class="col-md-12 col-form-label text-md-left">{{ __('Verification Code') }}</label>
                         <div class="col-md-12">
-                            <input id="otp" type="text" class="form-control @error('otp') is-invalid @enderror" name="otp" value="{{ old('otp') }}" required autofocus placeholder="Enter 6-digit code">
-                            @error('otp')
+                            <input id="code" type="text" class="form-control @error('code') is-invalid @enderror" name="code" value="{{ old('code') }}" required autofocus placeholder="Enter 6-digit code">
+
+                            @error('code')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
@@ -44,16 +39,15 @@
                                 {{ __('Verify') }}
                             </button>
 
-                            <form method="POST" action="{{ route('otp.resend') }}">
-                                @csrf
-                                <button type="submit" class="btn btn-link">
-                                    {{ __('Resend code') }}
-                                </button>
-                            </form>
+                            <button type="submit" form="verify_resend" class="btn btn-link">
+                                {{ __('Resend code') }}
+                            </button>
                         </div>
                     </div>
                 </form>
-
+                <form method="POST" id="verify_resend" action="{{ route('login.resend') }}">
+                    @csrf
+                </form>
             </div>
         </div>
     </div>
