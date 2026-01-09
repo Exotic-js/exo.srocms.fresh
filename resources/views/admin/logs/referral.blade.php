@@ -20,14 +20,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                @foreach ($data as $i => $value)
+                @foreach ($data as $key => $row)
                     <tr>
-                        <td>{{ $i + 1 }}</td>
-                        <td>{{ $value->code }}</td>
-                        <td>{{ $value->ip }}</td>
-                        <td>{{ $value->name }}</td>
-                        <td>{{ $value->jid }}</td>
-                        <td>{{ $value->total_points }}</td>
+                        <td>{{ $key + 1 }}</td>
+                        <td>{{ $row->code }}</td>
+                        <td>{{ $row->ip }}</td>
+                        <td>{{ $row->name }}</td>
+                        <td>{{ $row->jid }}</td>
+                        <td>{{ $row->total_points }}</td>
                     </tr>
                 @endforeach
                 </tbody>

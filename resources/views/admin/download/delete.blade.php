@@ -17,7 +17,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('admin.download.destroy', $download->id) }}">
+        <form method="POST" action="{{ route('admin.download.destroy', $data->id) }}">
             @csrf
             @method('DELETE')
 

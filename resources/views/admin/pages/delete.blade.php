@@ -17,7 +17,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('admin.pages.destroy', $pages->id) }}">
+        <form method="POST" action="{{ route('admin.pages.destroy', $data->id) }}">
             @csrf
             @method('DELETE')
 

@@ -11,8 +11,8 @@
                             <div class="card mb-4">
                                 <div class="card-header">
                                     <h3>
-                                        <img src="{{ asset($config[$key]['image']) }}" alt=""/>
-                                        {{ $config[$key]['name'] }}
+                                        <img src="{{ asset($config->uniqueList[$key]['image']) }}" alt=""/>
+                                        {{ $config->uniqueList[$key]['name'] }}
                                     </h3>
                                     <small>{{ __('Last 5 Killers') }}</small>
                                 </div>

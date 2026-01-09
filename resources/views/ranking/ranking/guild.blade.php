@@ -29,7 +29,7 @@
                     </td>
                     <td>
                         @if(isset($value->CrestIcon))
-                            <img src="{{ route('ranking.guild-crest', ['hex' => $value->CrestIcon]) }}" alt="" width="16" height="16">
+                            <img src="{{ route('ranking.guild.crest', ['bin' => $value->CrestIcon]) }}" alt="" width="16" height="16">
                         @endif
                         <a href="{{ route('ranking.guild.view', ['name' => $value->Name]) }}" class="text-decoration-none">{{ $value->Name }}</a>
                     </td>

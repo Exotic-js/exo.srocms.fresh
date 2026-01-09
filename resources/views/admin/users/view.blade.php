@@ -16,7 +16,7 @@
         <div class="row">
             <div class="col-md-8">
                 <div class="row">
-                    @forelse($characters as $char)
+                    @forelse($data->shardUser as $char)
                         <div class="col-md-3">
                             <div class="card">
                                 <div class="card-body text-center">
@@ -57,70 +57,69 @@
                                     <tbody>
                                     <tr>
                                         <th scope="row">JID</th>
-                                        <td>{{ $user->JID }}</td>
+                                        <td>{{ $data->JID }}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Username</th>
-                                        <td>{{ $user->StrUserID }}</td>
+                                        <td>{{ $data->StrUserID }}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Email</th>
-                                        <td>{{ $user->Email }}</td>
+                                        <td>{{ $data->Email }}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row">{{ __('Silk') }}</th>
-                                        <td>{{ $user->getSkSilk->silk_own ?? 0 }}</td>
+                                        <td>{{ $data->getSkSilk->silk_own ?? 0 }}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row">{{ __('Gift Silk') }}</th>
-                                        <td>{{ $user->getSkSilk->silk_gift ?? 0 }}</td>
+                                        <td>{{ $data->getSkSilk->silk_gift ?? 0 }}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row">{{ __('Point Silk') }}</th>
-                                        <td>{{ $user->getSkSilk->silk_point ?? 0 }}</td>
+                                        <td>{{ $data->getSkSilk->silk_point ?? 0 }}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row">{{ __('Reg. Date') }}</th>
-                                        <td>{{ $user->regtime ?? '—' }}</td>
+                                        <td>{{ $data->regtime ?? '—' }}</td>
                                     </tr>
                                     </tbody>
                                 @else
                                     <tbody>
                                     <tr>
                                         <th scope="row">Portal JID</th>
-                                        <td>{{ $user->PortalJID }}</td>
+                                        <td>{{ $data->PortalJID }}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Username</th>
-                                        <td>{{ $user->StrUserID }}</td>
+                                        <td>{{ $data->StrUserID }}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Email</th>
-                                        <td>{{ $user->muUser->muEmail->EmailAddr }}</td>
+                                        <td>{{ $data->muUser->muEmail->EmailAddr }}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row">{{ __('Silk') }}</th>
-                                        @php $cash = $user->muUser->getJCash() @endphp
-                                        <td>{{ $cash->Silk ?? 0 }}</td>
+                                        <td>{{ $data->muUser->JCash->Silk ?? 0 }}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row">{{ __('Premium Silk') }}</th>
-                                        <td>{{ $cash->PremiumSilk ?? 0 }}</td>
+                                        <td>{{ $data->muUser->JCash->PremiumSilk ?? 0 }}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row">{{ __('Month Usage') }}</th>
-                                        <td>{{ $cash->MonthUsage ?? 0 }}</td>
+                                        <td>{{ $data->muUser->JCash->MonthUsage ?? 0 }}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row">{{ __('3Month Usage') }}</th>
-                                        <td>{{ $cash->ThreeMonthUsage ?? 0 }}</td>
+                                        <td>{{ $data->muUser->JCash->ThreeMonthUsage ?? 0 }}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row">VIP</th>
                                         <td>
-                                            @isset($user->muUser->muVIPInfo->VIPUserType)
-                                                <img src="{{ asset($vipLevel['level'][$user->muUser->muVIPInfo->VIPLv]['image']) }}" width="24" height="24" alt="">
-                                                <span>{{ $vipLevel['level'][$user->muUser->muVIPInfo->VIPLv]['name'] }}</span>
+                                            @isset($data->muUser->muVIPInfo->VIPUserType)
+                                                <img src="{{ asset(config('ranking.vip_level')['level'][$data->muUser->muVIPInfo->VIPLv]['image']) }}" width="24" height="24" alt="">
+                                                <span>{{ config('ranking.vip_level')['level'][$data->muUser->muVIPInfo->VIPLv]['name'] }}</span>
                                             @else
                                                 <span>{{ __('None') }}</span>
                                             @endisset
@@ -153,16 +152,16 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @forelse($donationLogs as $log)
+                                @forelse($data->donationLogs as $row)
                                     <tr>
-                                        <td>{{ $log->created_at }}</td>
-                                        <td>{{ $log->method }}</td>
-                                        <td>{{ $log->transaction_id }}</td>
-                                        <td>{{ $log->status }}</td>
-                                        <td>{{ $log->amount }}</td>
-                                        <td>{{ $log->value }}</td>
-                                        <td>{{ $log->desc }}</td>
-                                        <td>{{ $log->ip }}</td>
+                                        <td>{{ $row->created_at }}</td>
+                                        <td>{{ $row->method }}</td>
+                                        <td>{{ $row->transaction_id }}</td>
+                                        <td>{{ $row->status }}</td>
+                                        <td>{{ $row->amount }}</td>
+                                        <td>{{ $row->value }}</td>
+                                        <td>{{ $row->desc }}</td>
+                                        <td>{{ $row->ip }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -182,7 +181,7 @@
                         <h4 class="text-center">Add Silk</h4>
                     </div>
                     <div class="card-body">
-                        <form method="POST" action="{{ route('admin.users.silk', $user->JID) }}">
+                        <form method="POST" action="{{ route('admin.users.silk', $data->JID) }}">
                             @csrf
                             <div class="row mb-3">
                                 <label for="amount" class="col-md-12 col-form-label text-md-start">{{ __('Silk Amount') }}</label>
@@ -237,22 +236,22 @@
                         <h4 class="text-center">Block Account</h4>
                     </div>
                     <div class="card-body">
-                        @if($user->blockedUser && \Carbon\Carbon::parse($user->blockedUser->timeEnd)->isFuture())
+                        @if($data->blockedUser && \Carbon\Carbon::parse($data->blockedUser->timeEnd)->isFuture())
                             <div class="alert alert-danger py-1 px-2 mb-2 small text-center">
                                 <strong>Currently banned</strong><br>
-                                Reason: <em>{{ $activePunishment->Guide }}</em><br>
-                                {{ \Carbon\Carbon::parse($activePunishment->BlockStartTime)->format('d.m.Y H:i') }}
+                                Reason: <em>{{ $data->activeBlock?->punishment->Guide }}</em><br>
+                                {{ \Carbon\Carbon::parse($data->activeBlock?->punishment->BlockStartTime)->format('d.m.Y H:i') }}
                                 –
-                                {{ \Carbon\Carbon::parse($activePunishment->BlockEndTime)->format('d.m.Y H:i') }}
-                                ({{ \Carbon\Carbon::parse($activePunishment->BlockStartTime)->diffForHumans(\Carbon\Carbon::parse($activePunishment->BlockEndTime), true) }})
+                                {{ \Carbon\Carbon::parse($data->activeBlock?->punishment->BlockEndTime)->format('d.m.Y H:i') }}
+                                ({{ \Carbon\Carbon::parse($data->activeBlock?->punishment->BlockStartTime)->diffForHumans(\Carbon\Carbon::parse($data->activeBlock?->punishment->BlockEndTime), true) }})
                             </div>
 
-                            <form id="unblock" method="POST" action="{{ route('admin.users.unblock', $user->JID) }}">
+                            <form id="unblock" method="POST" action="{{ route('admin.users.unblock', $data->JID) }}">
                                 @csrf
                             </form>
                         @endif
 
-                        <form method="POST" action="{{ route('admin.users.block', $user->JID) }}">
+                        <form method="POST" action="{{ route('admin.users.block', $data->JID) }}">
                             @csrf
 
                             <div class="row mb-3">
@@ -308,7 +307,7 @@
                                 </div>
                             </div>
 
-                            @if($user->blockedUser && \Carbon\Carbon::parse($user->blockedUser->timeEnd)->isFuture())
+                            @if($data->blockedUser && \Carbon\Carbon::parse($data->blockedUser->timeEnd)->isFuture())
                                 <hr class="my-2">
                                 <div class="row mb-0">
                                     <div class="col-md-12">

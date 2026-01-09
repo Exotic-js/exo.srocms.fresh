@@ -17,7 +17,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('admin.pages.update', $pages->id) }}">
+        <form method="POST" action="{{ route('admin.pages.update', $data->id) }}">
             @csrf
             @method('PUT')
 
@@ -25,7 +25,7 @@
                 <label for="title" class="col-md-2 col-form-label text-md-end">{{ __('Title') }}</label>
 
                 <div class="col-md-10">
-                    <input id="title" type="text" class="form-control @error('title') is-invalid @enderror" name="title" value="{{ old('title', $pages->title) }}" required>
+                    <input id="title" type="text" class="form-control @error('title') is-invalid @enderror" name="title" value="{{ old('title', $data->title) }}" required>
 
                     @error('title')
                     <span class="invalid-feedback" role="alert">
@@ -40,7 +40,7 @@
 
                 <div class="col-md-10">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="active" value="{{ old('active', $pages->active ?? 0) ? '1' : '0' }}" id="active" {{ old('active', $pages->active ?? 0) ? 'checked' : '' }}>
+                        <input class="form-check-input" type="checkbox" name="active" value="{{ old('active', $data->active ?? 0) ? '1' : '0' }}" id="active" {{ old('active', $data->active ?? 0) ? 'checked' : '' }}>
                         <label class="form-check-label" for="active">
                             Active
                         </label>
@@ -58,7 +58,7 @@
                 <label for="content" class="col-md-2 col-form-label text-md-end">{{ __('Content') }}</label>
 
                 <div class="col-md-10">
-                    <textarea id="summernote" rows="10" class="form-control" name="content">{{ old('content', $pages->content) }}</textarea>
+                    <textarea id="summernote" rows="10" class="form-control" name="content">{{ old('content', $data->content) }}</textarea>
 
                     @error('content')
                     <span class="invalid-feedback" role="alert">

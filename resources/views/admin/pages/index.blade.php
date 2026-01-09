@@ -30,20 +30,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($data as $value)
+                    @forelse($data as $row)
                         <tr>
-                            <td>{{ $value->id }}</td>
-                            <td>{{ $value->title }}</td>
+                            <td>{{ $row->id }}</td>
+                            <td>{{ $row->title }}</td>
                             <td>
-                                @if($value->active == 1)
+                                @if($row->active == 1)
                                     <span class="text-success">Active</span>
-                                @elseif($value->active == 0)
+                                @elseif($row->active == 0)
                                     <span class="text-danger">Not Active</span>
                                 @endif
                             </td>
                             <td>
-                                <a href="{{ route('admin.pages.edit', $value->id) }}" class="btn btn-secondary btn-sm">Edit</a>
-                                <a href="{{ route('admin.pages.delete', $value->id) }}" class="btn btn-danger btn-sm">Delete</a>
+                                <a href="{{ route('admin.pages.edit', $row->id) }}" class="btn btn-secondary btn-sm">Edit</a>
+                                <a href="{{ route('admin.pages.delete', $row->id) }}" class="btn btn-danger btn-sm">Delete</a>
                             </td>
                         </tr>
                     @empty

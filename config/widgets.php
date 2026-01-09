@@ -2,13 +2,13 @@
 
 return [
     'discord' => [
-        'enabled' => false,
+        'enabled' => true,
         'server_id' => '1004443821570019338',
         'channel_id' => '1374482240427528254',
         'theme' => 'dark', //dark, light
     ],
     'globals_history' => [
-        'enabled' => true,
+        'enabled' => false,
         'limit' => 5,
     ],
     'unique_history' => [
@@ -20,27 +20,27 @@ return [
         'limit' => 5,
     ],
     'top_guild' => [
-        'enabled' => false,
+        'enabled' => true,
         'limit' => 5,
     ],
     'sox_plus' => [
-        'enabled' => false,
+        'enabled' => true,
         'limit' => 5,
     ],
     'sox_drop' => [
-        'enabled' => false,
+        'enabled' => true,
         'limit' => 5,
     ],
     'pvp_kills' => [
-        'enabled' => false,
+        'enabled' => true,
         'limit' => 5,
     ],
     'job_kills' => [
-        'enabled' => false,
+        'enabled' => true,
         'limit' => 5,
     ],
     'server_info' => [
-        'enabled' => false,
+        'enabled' => true,
         'data' => [
             0 => [
                 //To changing icon https://fontawesome.com/icons
@@ -86,7 +86,7 @@ return [
         ],
     ],
     'event_schedule' => [
-        'enabled' => false,
+        'enabled' => true,
         'names' => [
             10 => 'Roc',
             9 => 'Medusa',
@@ -105,7 +105,7 @@ return [
         ],
     ],
     'fortress_war' => [
-        'enabled' => false,
+        'enabled' => true,
         'names' => [
             1 => [
                 'name' => 'Jangan',
@@ -127,7 +127,7 @@ return [
     ],
     'custom' => [
         'owned_titles' => [
-            'enabled' => false,
+            'enabled' => true,
             'template' => 'partials.character-owned-titles',
             'query' => 'SELECT TOP(:Limit)
                             _CharTitle.TitleID,

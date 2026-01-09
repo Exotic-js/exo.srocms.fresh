@@ -8,7 +8,7 @@
 
             <div class="btn-toolbar mb-2 mb-md-0">
                 <div class="btn-group me-2">
-                    <form method="GET" action="{{ route('admin.smc.logs') }}" class="mb-4">
+                    <form method="GET" action="{{ route('admin.logs.smc') }}" class="mb-4">
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search logs..." class="form-control d-inline w-auto">
                         <button type="submit" class="btn btn-sm btn-outline-secondary">Search</button>
                     </form>
@@ -27,12 +27,12 @@
                 </tr>
                 </thead>
                 <tbody>
-                @forelse($data as $value)
+                @forelse($data as $row)
                     <tr>
-                        <td>{{ $value->szUserID }}</td>
-                        <td>{{ $value->Catagory }}</td>
-                        <td>{{ $value->szLog }}</td>
-                        <td>{{ $value->dLogDate }}</td>
+                        <td>{{ $row->szUserID }}</td>
+                        <td>{{ $row->Catagory }}</td>
+                        <td>{{ $row->szLog }}</td>
+                        <td>{{ $row->dLogDate }}</td>
                     </tr>
                 @empty
                     <tr>

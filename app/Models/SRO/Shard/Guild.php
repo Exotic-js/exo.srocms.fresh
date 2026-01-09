@@ -109,20 +109,18 @@ class Guild extends Model
         });
     }
 
-    public static function getGuildAllianceAttribute($GuildID)
+    public function getAllianceAttribute()
     {
-        $minutes = config('global.cache.guild_info', 1440);
-
-        return Cache::remember("guild_info_alliance_{$GuildID}", now()->addMinutes($minutes), function () use ($GuildID) {
+        return Cache::remember("guild_info_alliance_{$this->ID}", config('global.cache.guild_info', 1440), function () {
             return self::select('Name')
-            ->where('Alliance', function ($query) use ($GuildID) {
-                $query->select('Alliance')
-                    ->from('_Guild')
-                    ->where('ID', $GuildID)
-                    ->where('Alliance', '>', 0);
-            })
-            ->where('ID', '!=', $GuildID)
-            ->get();
+                ->where('Alliance', function ($query) {
+                    $query->select('Alliance')
+                        ->from('_Guild')
+                        ->where('ID', $this->ID)
+                        ->where('Alliance', '>', 0);
+                })
+                ->where('ID', '!=', $this->ID)
+                ->get();
         });
     }
 

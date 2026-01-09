@@ -11,9 +11,9 @@ class SettingController extends Controller
 {
     public function index()
     {
-        $settings = Setting::cached();
+        $data = Setting::cached();
 
-        return view('admin.settings', compact('settings'));
+        return view('admin.settings', compact('data'));
     }
 
     public function update(Request $request)

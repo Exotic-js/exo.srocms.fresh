@@ -128,24 +128,11 @@ return [
     ],
     'extra' => [
         'character_status' => true,
-        'advanced_unique_ranking' => true,
-        'kill_logs' => [
-            'pvp' => false,
-            'job' => false,
-        ],
-        'item_logs' => [
-            'plus' => [
-                'enabled' => true,
-                'plus' => 8,
-                'degree' => 8,
-                'type' => 'Seal of Sun', //Seal of Star, Seal of Moon, Seal of Sun, Seal of roc
-            ],
-            'drop' => [
-                'enabled' => true,
-                'degree' => 8,
-                'type' => 'Seal of Sun', //Seal of Star, Seal of Moon, Seal of Sun, Seal of roc
-            ],
-        ],
+        'advanced_unique_tracker' => true,
+        'pvp_kill_logs' => true,
+        'job_kill_logs' => true,
+        'item_plus_logs' => true,
+        'item_drop_logs' => true,
     ],
     'uniques' => [
         'MOB_CH_TIGERWOMAN' => [

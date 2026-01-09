@@ -32,22 +32,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($data as $value)
+                    @forelse($data as $row)
                         <tr>
-                            <td>{{ $value->id }}</td>
-                            <td style="white-space: nowrap;max-width: 150px;overflow: hidden;text-overflow: ellipsis;">{{ $value->title }}</td>
-                            <td style="white-space: nowrap;max-width: 150px;overflow: hidden;text-overflow: ellipsis;">{{ $value->slug }}</td>
-                            <td>{{ $value->category }}</td>
+                            <td>{{ $row->id }}</td>
+                            <td style="white-space: nowrap;max-width: 150px;overflow: hidden;text-overflow: ellipsis;">{{ $row->title }}</td>
+                            <td style="white-space: nowrap;max-width: 150px;overflow: hidden;text-overflow: ellipsis;">{{ $row->slug }}</td>
+                            <td>{{ $row->category }}</td>
                             <td>
-                                @if($value->active == 1)
+                                @if($row->active == 1)
                                     <span class="text-success">Active</span>
-                                @elseif($value->active == 0)
+                                @elseif($row->active == 0)
                                     <span class="text-danger">Not Active</span>
                                 @endif
                             </td>
                             <td>
-                                <a href="{{ route('admin.news.edit', $value->id) }}" class="btn btn-secondary btn-sm">Edit</a>
-                                <a href="{{ route('admin.news.delete', $value->id) }}" class="btn btn-danger btn-sm">Delete</a>
+                                <a href="{{ route('admin.news.edit', $row->id) }}" class="btn btn-secondary btn-sm">Edit</a>
+                                <a href="{{ route('admin.news.delete', $row->id) }}" class="btn btn-danger btn-sm">Delete</a>
                             </td>
                         </tr>
                     @empty

@@ -20,14 +20,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                @foreach ($data as $i => $value)
+                @foreach ($data as $key => $row)
                     <tr>
-                        <td>{{ $i + 1 }}</td>
-                        <td>{{ $value->jid }}</td>
-                        <td>{{ $value->site }}</td>
-                        <td>{{ $value->ip }}</td>
-                        <td>{{ $value->created_at }}</td>
-                        <td>{{ $value->expire }}</td>
+                        <td>{{ $key + 1 }}</td>
+                        <td>{{ $row->jid }}</td>
+                        <td>{{ $row->site }}</td>
+                        <td>{{ $row->ip }}</td>
+                        <td>{{ $row->created_at }}</td>
+                        <td>{{ $row->expire }}</td>
                     </tr>
                 @endforeach
                 </tbody>

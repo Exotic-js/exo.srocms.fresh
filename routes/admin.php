@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CharactersController;
+use App\Http\Controllers\Admin\LogsController;
 use App\Http\Controllers\Admin\TicketController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\DownloadController;
@@ -15,10 +16,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/index', [AdminController::class, 'index'])->name('admin');
 
     Route::prefix('admin')->name('admin.')->group(function() {
-        Route::get('/donate-logs', [AdminController::class, 'donateLogs'])->name('donate.logs');
-        Route::get('/referral-logs', [AdminController::class, 'referralLogs'])->name('referral.logs');
-        Route::get('/vote-logs', [AdminController::class, 'voteLogs'])->name('vote.logs');
-        Route::get('/smc-logs', [AdminController::class, 'smcLogs'])->name('smc.logs');
+        Route::get('/logs/donate', [LogsController::class, 'donateLogs'])->name('logs.donate');
+        Route::get('/logs/referral', [LogsController::class, 'referralLogs'])->name('logs.referral');
+        Route::get('/logs/vote', [LogsController::class, 'voteLogs'])->name('logs.vote');
+        Route::get('/logs/smc', [LogsController::class, 'smcLogs'])->name('logs.smc');
 
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');

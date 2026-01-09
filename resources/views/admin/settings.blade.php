@@ -31,7 +31,7 @@
                 <label for="site_title" class="col-md-2 col-form-label text-md-end">{{ __('Site Title') }}</label>
 
                 <div class="col-md-10">
-                    <input id="site_title" type="text" class="form-control @error('site_title') is-invalid @enderror" name="site_title" value="{{ $settings['site_title'] ?? '' }}" placeholder="" required>
+                    <input id="site_title" type="text" class="form-control @error('site_title') is-invalid @enderror" name="site_title" value="{{ $data['site_title'] ?? '' }}" placeholder="" required>
 
                     @error('site_title')
                     <span class="invalid-feedback" role="alert">
@@ -45,7 +45,7 @@
                 <label for="site_desc" class="col-md-2 col-form-label text-md-end">{{ __('Site Description') }}</label>
 
                 <div class="col-md-10">
-                    <input id="site_desc" type="text" class="form-control @error('site_desc') is-invalid @enderror" name="site_desc" value="{{ $settings['site_desc'] ?? '' }}" placeholder="" required>
+                    <input id="site_desc" type="text" class="form-control @error('site_desc') is-invalid @enderror" name="site_desc" value="{{ $data['site_desc'] ?? '' }}" placeholder="" required>
 
                     @error('site_desc')
                     <span class="invalid-feedback" role="alert">
@@ -59,7 +59,7 @@
                 <label for="site_url" class="col-md-2 col-form-label text-md-end">{{ __('Site URL') }}</label>
 
                 <div class="col-md-10">
-                    <input id="site_url" type="text" class="form-control @error('site_url') is-invalid @enderror" name="site_url" value="{{ $settings['site_url'] ?? '' }}" placeholder="" required>
+                    <input id="site_url" type="text" class="form-control @error('site_url') is-invalid @enderror" name="site_url" value="{{ $data['site_url'] ?? '' }}" placeholder="" required>
 
                     @error('site_url')
                     <span class="invalid-feedback" role="alert">
@@ -73,7 +73,7 @@
                 <label for="site_favicon" class="col-md-2 col-form-label text-md-end">{{ __('Site Favicon') }}</label>
 
                 <div class="col-md-10">
-                    <input id="site_favicon" type="text" class="form-control @error('site_favicon') is-invalid @enderror" name="site_favicon" value="{{ $settings['site_favicon'] ?? '' }}" placeholder="" required>
+                    <input id="site_favicon" type="text" class="form-control @error('site_favicon') is-invalid @enderror" name="site_favicon" value="{{ $data['site_favicon'] ?? '' }}" placeholder="" required>
 
                     @error('site_favicon')
                     <span class="invalid-feedback" role="alert">
@@ -87,7 +87,7 @@
                 <label for="site_logo" class="col-md-2 col-form-label text-md-end">{{ __('Site Logo') }}</label>
 
                 <div class="col-md-10">
-                    <input id="site_logo" type="text" class="form-control @error('site_logo') is-invalid @enderror" name="site_logo" value="{{ $settings['site_logo'] ?? '' }}" placeholder="" required>
+                    <input id="site_logo" type="text" class="form-control @error('site_logo') is-invalid @enderror" name="site_logo" value="{{ $data['site_logo'] ?? '' }}" placeholder="" required>
 
                     @error('site_logo')
                     <span class="invalid-feedback" role="alert">
@@ -101,7 +101,7 @@
                 <label for="hero_background" class="col-md-2 col-form-label text-md-end">{{ __('Background') }}</label>
 
                 <div class="col-md-10">
-                    <input id="hero_background" type="text" class="form-control @error('hero_background') is-invalid @enderror" name="hero_background" value="{{ $settings['hero_background'] ?? '' }}" placeholder="" required>
+                    <input id="hero_background" type="text" class="form-control @error('hero_background') is-invalid @enderror" name="hero_background" value="{{ $data['hero_background'] ?? '' }}" placeholder="" required>
 
                     @error('hero_background')
                     <span class="invalid-feedback" role="alert">
@@ -115,7 +115,7 @@
                 <label for="max_player" class="col-md-2 col-form-label text-md-end">{{ __('Max Online Player') }}</label>
 
                 <div class="col-md-10">
-                    <input id="max_player" type="number" class="form-control @error('max_player') is-invalid @enderror" name="max_player" value="{{ $settings['max_player'] ?? '' }}" placeholder="" required>
+                    <input id="max_player" type="number" class="form-control @error('max_player') is-invalid @enderror" name="max_player" value="{{ $data['max_player'] ?? '' }}" placeholder="" required>
 
                     @error('max_player')
                     <span class="invalid-feedback" role="alert">
@@ -129,7 +129,7 @@
                 <label for="fake_player" class="col-md-2 col-form-label text-md-end">{{ __('Add Fake Player') }}</label>
 
                 <div class="col-md-10">
-                    <input id="fake_player" type="number" class="form-control @error('fake_player') is-invalid @enderror" name="fake_player" value="{{ $settings['fake_player'] ?? '' }}" placeholder="" required>
+                    <input id="fake_player" type="number" class="form-control @error('fake_player') is-invalid @enderror" name="fake_player" value="{{ $data['fake_player'] ?? '' }}" placeholder="" required>
 
                     @error('fake_player')
                     <span class="invalid-feedback" role="alert">
@@ -143,7 +143,7 @@
                 <label for="max_level" class="col-md-2 col-form-label text-md-end">{{ __('Max Character Level') }}</label>
 
                 <div class="col-md-10">
-                    <input id="max_level" type="number" class="form-control @error('max_level') is-invalid @enderror" name="max_level" value="{{ $settings['max_level'] ?? '' }}" placeholder="" required>
+                    <input id="max_level" type="number" class="form-control @error('max_level') is-invalid @enderror" name="max_level" value="{{ $data['max_level'] ?? '' }}" placeholder="" required>
 
                     @error('max_level')
                     <span class="invalid-feedback" role="alert">

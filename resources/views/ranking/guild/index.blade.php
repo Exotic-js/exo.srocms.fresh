@@ -12,7 +12,7 @@
                                 <div>
                                     <h2>
                                         @if(isset($data->Crest))
-                                            <img src="{{ route('ranking.guild-crest', ['hex' => $data->Crest]) }}" alt="" width="32" height="32">
+                                            <img src="{{ route('ranking.guild.crest', ['bin' => $data->Crest]) }}" alt="" width="32" height="32">
                                         @endif
                                         {{ $data->Name }}
                                     </h2>

@@ -131,22 +131,20 @@ class ViewServiceProvider extends ServiceProvider
             }
 
             $soxPlusConfig = config('widgets.sox_plus');
-            $soxPlusRankingConfig = config('ranking.extra.item_logs.plus');
             if($soxPlusConfig['enabled']) {
-                View::composer(['partials.sox-plus'], function ($view) use ($soxPlusConfig, $soxPlusRankingConfig) {
+                View::composer(['partials.sox-plus'], function ($view) use ($soxPlusConfig) {
                     $view->with([
-                        'soxPlus' => LogEventItem::getLogEventItem('plus', $soxPlusRankingConfig['plus'], $soxPlusRankingConfig['degree'], $soxPlusRankingConfig['type'], null, $soxPlusConfig['limit']),
+                        'soxPlus' => LogEventItem::getLogEventItem('plus', 8, 8, 'Seal of Sun', null, $soxPlusConfig['limit']),
                         'soxPlusConfig' => $soxPlusConfig
                     ]);
                 });
             }
 
             $soxDropConfig = config('widgets.sox_drop');
-            $soxDropRankingConfig = config('ranking.extra.item_logs.drop');
             if($soxDropConfig['enabled']) {
-                View::composer(['partials.sox-drop'], function ($view) use ($soxDropConfig, $soxDropRankingConfig) {
+                View::composer(['partials.sox-drop'], function ($view) use ($soxDropConfig) {
                     $view->with([
-                        'soxDrop' => LogEventItem::getLogEventItem('drop', null, $soxDropRankingConfig['degree'], $soxDropRankingConfig['type'], null, $soxDropConfig['limit']),
+                        'soxDrop' => LogEventItem::getLogEventItem('drop', null, 8, 'Seal of Sun', null, $soxDropConfig['limit']),
                         'soxDropConfig' => $soxDropConfig
                     ]);
                 });

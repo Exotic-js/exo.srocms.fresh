@@ -251,9 +251,9 @@ class Char extends Model
         });
     }
 
-    public function getCharInventorySet()
+    public function getCharInventorySet(int $max = 12, int $min = 0, int $not = 8)
     {
-        return app(InventoryService::class)->getInventorySet($this->CharID, 12, 0, 8);
+        return app(InventoryService::class)->getInventorySet($this->CharID, $max, $min, $not);
     }
 
     public function getCharInventoryAvatar()
@@ -265,6 +265,16 @@ class Char extends Model
     {
         if (config('global.server.version') === 'vSRO') return collect();
         return app(InventoryService::class)->getInventoryJob($this->CharID);
+    }
+
+    public function getCharStorageItems()
+    {
+        return app(InventoryService::class)->getStorageItems($this->user?->UserJID ?? 0, 180, 0);
+    }
+
+    public function getCharPetItems(?int $petId = null)
+    {
+        return app(InventoryService::class)->getPetItems($this->CharID, $petId, 196, 0);
     }
 
     public function getUniqueHistoryAttribute()
@@ -336,7 +346,7 @@ class Char extends Model
         return (bool) Inventory::getInventorySlot($this->CharID, 8);
     }
 
-    public function getCharPets()
+    public function getCharPetsAttribute()
     {
         return InvCOS::getPetNames($this->CharID);
     }

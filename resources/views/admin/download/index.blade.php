@@ -30,14 +30,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($data as $value)
+                    @forelse($data as $row)
                         <tr>
-                            <td>{{ $value->id }}</td>
-                            <td>{{ $value->name }}</td>
-                            <td>{{ $value->url }}</td>
+                            <td>{{ $row->id }}</td>
+                            <td>{{ $row->name }}</td>
+                            <td>{{ $row->url }}</td>
                             <td>
-                                <a href="{{ route('admin.download.edit', $value->id) }}" class="btn btn-secondary btn-sm">Edit</a>
-                                <a href="{{ route('admin.download.delete', $value->id) }}" class="btn btn-danger btn-sm">Delete</a>
+                                <a href="{{ route('admin.download.edit', $row->id) }}" class="btn btn-secondary btn-sm">Edit</a>
+                                <a href="{{ route('admin.download.delete', $row->id) }}" class="btn btn-danger btn-sm">Delete</a>
                             </td>
                         </tr>
                     @empty

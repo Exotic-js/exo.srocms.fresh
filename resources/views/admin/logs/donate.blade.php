@@ -7,7 +7,7 @@
             <h1 class="h2">Donate Logs</h1>
         </div>
 
-        <form method="GET" action="{{ route('admin.donate.logs') }}" class="mb-4 row g-3">
+        <form method="GET" action="{{ route('admin.logs.donate') }}" class="mb-4 row g-3">
             <div class="col-md-2">
                 <input type="text" name="transaction_id" class="form-control" placeholder="Transaction ID" value="{{ request('transaction_id') }}">
             </div>
@@ -58,17 +58,17 @@
                 </tr>
                 </thead>
                 <tbody>
-                @forelse($data as $value)
+                @forelse($data as $row)
                     <tr>
-                        <td>{{ $value->method }}</td>
-                        <td>{{ $value->transaction_id }}</td>
-                        <td>{{ $value->jid }}</td>
-                        <td>{{ $value->ip }}</td>
-                        <td>{{ $value->amount }}</td>
-                        <td>{{ $value->value }}</td>
-                        <td>{{ $value->updated_at->format('Y-m-d H:i:s') }}</td>
+                        <td>{{ $row->method }}</td>
+                        <td>{{ $row->transaction_id }}</td>
+                        <td>{{ $row->jid }}</td>
+                        <td>{{ $row->ip }}</td>
+                        <td>{{ $row->amount }}</td>
+                        <td>{{ $row->value }}</td>
+                        <td>{{ $row->updated_at->format('Y-m-d H:i:s') }}</td>
                         <td>
-                            @if($value->status)
+                            @if($row->status)
                                 <span class="text-success">Success<span>
                             @else
                                 <span class="text-danger">Failed</span>

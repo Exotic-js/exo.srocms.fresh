@@ -22,23 +22,10 @@ class UsersController extends Controller
 
     public function view(TbUser $user)
     {
-        $user->load([
-            'shardUser' => fn($q) => $q->orderByDesc('CurLevel'),
-            'donationLogs' => fn($q) => $q->latest()->limit(10),
-            'activeBlock.punishment',
-        ]);
-
-        return view('admin.users.view', [
-            'user' => $user,
-            'vipLevel' => config('ranking.vip_level'),
-            'characters' => $user->shardUser,
-            'donationLogs' => $user->donationLogs,
-            'activePunishment' => $user->activeBlock?->punishment,
-            'activeBlock' => $user->activeBlock,
-        ]);
+        return view('admin.users.view', ['data' => $user]);
     }
 
-    public function update(Request $request, TbUser $user)
+    public function update()
     {
         return back()->with('success', 'Test!');
     }

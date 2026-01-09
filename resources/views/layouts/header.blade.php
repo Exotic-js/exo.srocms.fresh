@@ -12,31 +12,32 @@
                 <li><a href="{{ route('ranking') }}" class="nav-link {{ request()->routeIs('ranking') ? 'active' : '' }} px-2 text-white">{{ __('Ranking') }}</a></li>
 
                 <li class="dropdown">
-                    <a href="#" class="nav-link px-2 text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{{ __('Server History') }}</a>
+                    <a href="{{ route('history') }}" class="nav-link px-2 text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{{ __('Server History') }}</a>
                     <ul class="dropdown-menu" style="">
-                        <li><a class="dropdown-item" href="{{ route('pages.timers') }}">{{ __('Event Times') }}</a></li>
-                        <li><a class="dropdown-item" href="{{ route('pages.uniques') }}">{{ __('Unique Tracker') }}</a></li>
-                        @if(config("ranking.extra.advanced_unique_ranking"))
-                        <li><a class="dropdown-item" href="{{ route('pages.uniques-advanced') }}">{{ __('Advanced Unique Tracker') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ route('history.schedule') }}">{{ __('Event Schedule') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ route('history.unique') }}">{{ __('Unique Tracker') }}</a></li>
+                        @if(config("ranking.extra.advanced_unique_tracker"))
+                        <li><a class="dropdown-item" href="{{ route('history.unique-advanced') }}">{{ __('Advanced Unique Tracker') }}</a></li>
                         @endif
-                        <li><a class="dropdown-item" href="{{ route('pages.fortress') }}">{{ __('Fortress History') }}</a></li>
-                        <li><a class="dropdown-item" href="{{ route('pages.globals') }}">{{ __('Global History') }}</a></li>
-                        @if(config("ranking.extra.item_logs.plus.enabled"))
-                        <li><a class="dropdown-item" href="{{ route('pages.sox-plus') }}">{{ __('Sox Plus') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ route('history.fortress') }}">{{ __('Fortress History') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ route('history.global') }}">{{ __('Global History') }}</a></li>
+                        @if(config("ranking.extra.item_plus_logs"))
+                        <li><a class="dropdown-item" href="{{ route('history.item-plus') }}">{{ __('Item Plus Logs') }}</a></li>
                         @endif
-                        @if(config("ranking.extra.item_logs.drop.enabled"))
-                        <li><a class="dropdown-item" href="{{ route('pages.sox-drop') }}">{{ __('Sox Drop') }}</a></li>
+                        @if(config("ranking.extra.item_drop_logs"))
+                        <li><a class="dropdown-item" href="{{ route('history.item-drop') }}">{{ __('Item Drop Logs') }}</a></li>
                         @endif
-                        @if(config("ranking.extra.kill_logs.pvp"))
-                        <li><a class="dropdown-item" href="{{ route('pages.pvp-kills') }}">{{ __('Pvp Kills') }}</a></li>
+                        @if(config("ranking.extra.pvp_kill_logs"))
+                        <li><a class="dropdown-item" href="{{ route('history.pvp-kill') }}">{{ __('Pvp Kills Logs') }}</a></li>
                         @endif
-                        @if(config("ranking.extra.kill_logs.job"))
-                        <li><a class="dropdown-item" href="{{ route('pages.job-kills') }}">{{ __('Job Kills') }}</a></li>
+                        @if(config("ranking.extra.job_kill_logs"))
+                        <li><a class="dropdown-item" href="{{ route('history.job-kill') }}">{{ __('Job Kills Logs') }}</a></li>
                         @endif
                     </ul>
                 </li>
+
                 <li class="dropdown">
-                    <a href="#" class="nav-link px-2 text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{{ __('Server Information') }}</a>
+                    <a href="#" class="nav-link px-2 text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{{ __('Pages') }}</a>
                     <ul class="dropdown-menu" style="">
                         @forelse ($pages as $page)
                             <li><a class="dropdown-item" href="{{ route('pages.page.show', ['slug' => $page->slug]) }}">{{ $page->title }}</a></li>

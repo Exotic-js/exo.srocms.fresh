@@ -37,7 +37,7 @@ class PagesController extends Controller
 
     public function edit(Pages $pages)
     {
-        return view('admin.pages.edit', compact('pages'));
+        return view('admin.pages.edit', ['data' => $pages]);
     }
 
     public function update(Request $request, Pages $pages)
@@ -58,7 +58,7 @@ class PagesController extends Controller
 
     public function confirmDelete(Pages $pages)
     {
-        return view('admin.pages.delete', compact('pages'));
+        return view('admin.pages.delete', ['data' => $pages]);
     }
 
     public function destroy(Pages $pages)

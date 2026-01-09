@@ -33,13 +33,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($data as $value)
+                    @forelse($data as $row)
                         <tr>
-                            <td>{{ $value->PortalJID ?? $value->JID }}</td>
-                            <td>{{ $value->StrUserID }}</td>
-                            <td>{{ $value->muUser->muEmail->EmailAddr ?? $value->Email }}</td>
+                            <td>{{ $row->PortalJID ?? $row->JID }}</td>
+                            <td>{{ $row->StrUserID }}</td>
+                            <td>{{ $row->muUser->muEmail->EmailAddr ?? $row->Email }}</td>
                             <td>
-                                <a href="{{ route('admin.users.view', $value->JID) }}" class="btn btn-secondary btn-sm">View</a>
+                                <a href="{{ route('admin.users.view', $row->JID) }}" class="btn btn-secondary btn-sm">View</a>
                             </td>
                         </tr>
                     @empty

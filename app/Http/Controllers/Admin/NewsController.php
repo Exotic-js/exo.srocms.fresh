@@ -41,7 +41,7 @@ class NewsController extends Controller
 
     public function edit(News $news)
     {
-        return view('admin.news.edit', compact('news'));
+        return view('admin.news.edit', ['data' => $news]);
     }
 
     public function update(Request $request, News $news)
@@ -65,7 +65,7 @@ class NewsController extends Controller
 
     public function confirmDelete(News $news)
     {
-        return view('admin.news.delete', compact('news'));
+        return view('admin.news.delete', ['data' => $news]);
     }
 
     public function destroy(News $news)

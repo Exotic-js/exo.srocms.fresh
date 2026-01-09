@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Log;
 
 class InventoryService
 {
+    protected array $itemNames = [];
+
     /**
      * Get inventory items for a character within a slot range.
      */
@@ -68,6 +70,8 @@ class InventoryService
         if (!$inventory) {
             return $convertedItems;
         }
+
+        $this->loadItemNames($inventory);
 
         $index = 0;
         foreach ($inventory as $item) {
@@ -130,7 +134,7 @@ class InventoryService
         $info->TypeID3 = $item->TypeID3;
         $info->TypeID4 = $item->TypeID4;
 
-        $info->ItemName = $this->getItemName($item);
+        $info->ItemName = $this->itemNames[$item->NameStrID128] ?? $item->NameStrID128 ?? 'Unknown';
         $info->ItemDesc = config('itemdesc')[$item->DescStrID128] ?? null;
         $info->Amount = $item->MaxStack > 1 ? $item->Data : 0;
         $info->OptLevel = $item->OptLevel ?? 0;
@@ -151,9 +155,14 @@ class InventoryService
         return $info;
     }
 
-    private function getItemName(object $item): string
+    private function loadItemNames(object $inventory): void
     {
-        return ItemNameDesc::getItemRealName($item->NameStrID128 ?? 'Unknown');
+        $ids = collect($inventory)->pluck('NameStrID128')->filter()->unique()->values()->all();
+        if (empty($ids)) {
+            return;
+        }
+
+        $this->itemNames = ItemNameDesc::getItemNames($ids);
     }
 
     private function getItemIcon(?string $assocFile): string

@@ -8,9 +8,9 @@ use Illuminate\Http\Request;
 
 class DownloadController extends Controller
 {
-    public function index()
+    public function index(Download $download)
     {
-        $data = Download::latest()->paginate(20);
+        $data = $download->latest()->paginate(20);
 
         return view('admin.download.index', compact('data'));
     }
@@ -36,7 +36,7 @@ class DownloadController extends Controller
 
     public function edit(Download $download)
     {
-        return view('admin.download.edit', compact('download'));
+        return view('admin.download.edit', ['data' => $download]);
     }
 
     public function update(Request $request, Download $download)
@@ -55,7 +55,7 @@ class DownloadController extends Controller
 
     public function confirmDelete(Download $download)
     {
-        return view('admin.download.delete', compact('download'));
+        return view('admin.download.delete', ['data' => $download]);
     }
 
     public function destroy(Download $download)

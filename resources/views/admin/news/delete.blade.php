@@ -17,7 +17,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('admin.news.destroy', $news->id) }}">
+        <form method="POST" action="{{ route('admin.news.destroy', $data->id) }}">
             @csrf
             @method('DELETE')
 

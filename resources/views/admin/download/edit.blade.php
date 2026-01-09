@@ -17,7 +17,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('admin.download.update', $download->id) }}">
+        <form method="POST" action="{{ route('admin.download.update', $data->id) }}">
             @csrf
             @method('PUT')
 
@@ -25,7 +25,7 @@
                 <label for="name" class="col-md-2 col-form-label text-md-end">{{ __('Name') }}</label>
 
                 <div class="col-md-10">
-                    <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name', $download->name) }}" required>
+                    <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name', $data->name) }}" required>
 
                     @error('name')
                     <span class="invalid-feedback" role="alert">
@@ -39,7 +39,7 @@
                 <label for="desc" class="col-md-2 col-form-label text-md-end">{{ __('Description') }}</label>
 
                 <div class="col-md-10">
-                    <input id="desc" type="text" class="form-control @error('desc') is-invalid @enderror" name="desc" value="{{ old('desc', $download->desc) }}" required>
+                    <input id="desc" type="text" class="form-control @error('desc') is-invalid @enderror" name="desc" value="{{ old('desc', $data->desc) }}" required>
 
                     @error('desc')
                     <span class="invalid-feedback" role="alert">
@@ -53,7 +53,7 @@
                 <label for="url" class="col-md-2 col-form-label text-md-end">{{ __('Link') }}</label>
 
                 <div class="col-md-10">
-                    <input id="url" type="url" class="form-control @error('url') is-invalid @enderror" name="url" value="{{ old('url', $download->url) }}" required>
+                    <input id="url" type="url" class="form-control @error('url') is-invalid @enderror" name="url" value="{{ old('url', $data->url) }}" required>
 
                     @error('url')
                     <span class="invalid-feedback" role="alert">
@@ -67,7 +67,7 @@
                 <label for="image" class="col-md-2 col-form-label text-md-end">{{ __('Image') }}</label>
 
                 <div class="col-md-10">
-                    <input id="image" type="text" class="form-control @error('image') is-invalid @enderror" name="image" value="{{ old('image', $download->image) }}">
+                    <input id="image" type="text" class="form-control @error('image') is-invalid @enderror" name="image" value="{{ old('image', $data->image) }}">
 
                     @error('image')
                     <span class="invalid-feedback" role="alert">

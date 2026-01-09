@@ -33,27 +33,27 @@
                 </tr>
                 </thead>
                 <tbody>
-                @forelse($data as $value)
+                @forelse($data as $row)
                     <tr>
-                        <td>{{ $value->code }}</td>
-                        <td>{{ $value->amount }}</td>
-                        <td>{{ $value->type == 0 ? 'Normal' : 'Premium' }}</td>
-                        <td>{{ $value->valid_date ? $value->valid_date->format('Y-m-d H:i:s') : 'No Expiration' }}</td>
-                        <td>{{ $value->user->username ?? 'None' }}</td>
+                        <td>{{ $row->code }}</td>
+                        <td>{{ $row->amount }}</td>
+                        <td>{{ $row->type == 0 ? 'Normal' : 'Premium' }}</td>
+                        <td>{{ $row->valid_date ? $row->valid_date->format('Y-m-d H:i:s') : 'No Expiration' }}</td>
+                        <td>{{ $row->user->username ?? 'None' }}</td>
                         <td>
-                            @if($value->status == 'Used')
+                            @if($row->status == 'Used')
                                 <span class="text-success">Used<span>
-                            @elseif($value->status == 'Unused')
-                                            <span class="text-warning">Unused</span>
-                                        @else
-                                            <span class="text-danger">Disabled</span>
+                            @elseif($row->status == 'Unused')
+                                <span class="text-warning">Unused</span>
+                            @else
+                                <span class="text-danger">Disabled</span>
                             @endif
                         </td>
                         <td>
-                            @if($value->status == 'Unused')
-                                <a href="{{ route('admin.vouchers.toggle', $value->id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to disable voucher?')">Disable</a>
-                            @elseif($value->status == 'Disabled')
-                                <a href="{{ route('admin.vouchers.toggle', $value->id) }}" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to enable voucher?')">Enable</a>
+                            @if($row->status == 'Unused')
+                                <a href="{{ route('admin.vouchers.toggle', $row->id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to disable voucher?')">Disable</a>
+                            @elseif($row->status == 'Disabled')
+                                <a href="{{ route('admin.vouchers.toggle', $row->id) }}" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to enable voucher?')">Enable</a>
                             @else
                                 <button href="#" class="btn btn-danger btn-sm" disabled="">Disable</button>
                             @endif

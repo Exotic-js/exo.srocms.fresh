@@ -18,8 +18,8 @@
                             @forelse($data as $value)
                                 <tr>
                                     <td>
-                                        <img src="{{ $config->fortressList->names[$value->FortressID]->image }}" alt="">
-                                        {{ $config->fortressList->names[$value->FortressID]->name }}
+                                        <img src="{{ $config->fortressList['names'][$value->FortressID]['image'] }}" alt="">
+                                        {{ $config->fortressList['names'][$value->FortressID]['name'] }}
                                     </td>
                                     <td>
                                         @if(!empty($value->strDesc))

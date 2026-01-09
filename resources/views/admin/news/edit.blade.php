@@ -17,7 +17,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('admin.news.update', $news->id) }}">
+        <form method="POST" action="{{ route('admin.news.update', $data->id) }}">
             @csrf
             @method('PUT')
 
@@ -25,7 +25,7 @@
                 <label for="title" class="col-md-2 col-form-label text-md-end">{{ __('Title') }}</label>
 
                 <div class="col-md-10">
-                    <input id="title" type="text" class="form-control @error('title') is-invalid @enderror" name="title" value="{{ old('title', $news->title) }}" required>
+                    <input id="title" type="text" class="form-control @error('title') is-invalid @enderror" name="title" value="{{ old('title', $data->title) }}" required>
 
                     @error('title')
                     <span class="invalid-feedback" role="alert">
@@ -40,9 +40,9 @@
 
                 <div class="col-md-10">
                     <select class="form-select" name="category" aria-label="Default select example">
-                        <option value="news" {{ $news->category == 'news' ? 'selected' : '' }}>News</option>
-                        <option value="event" {{ $news->category == 'event' ? 'selected' : '' }}>Event</option>
-                        <option value="update" {{ $news->category == 'update' ? 'selected' : '' }}>Update</option>
+                        <option value="news" {{ $data->category == 'news' ? 'selected' : '' }}>News</option>
+                        <option value="event" {{ $data->category == 'event' ? 'selected' : '' }}>Event</option>
+                        <option value="update" {{ $data->category == 'update' ? 'selected' : '' }}>Update</option>
                     </select>
 
                     @error('category')
@@ -57,7 +57,7 @@
                 <label for="image" class="col-md-2 col-form-label text-md-end">{{ __('Thumbnail') }}</label>
 
                 <div class="col-md-10">
-                    <input id="image" type="text" class="form-control @error('image') is-invalid @enderror" name="image" value="{{ old('image', $news->image) }}">
+                    <input id="image" type="text" class="form-control @error('image') is-invalid @enderror" name="image" value="{{ old('image', $data->image) }}">
 
                     @error('image')
                     <span class="invalid-feedback" role="alert">
@@ -71,7 +71,7 @@
                 <label for="published_at" class="col-md-2 col-form-label text-md-end">{{ __('Published At') }}</label>
 
                 <div class="col-md-10">
-                    <input id="published_at" type="date" class="form-control @error('published_at') is-invalid @enderror" name="published_at" value="{{ old('published_at', $news->published_at ? $news->published_at->format('Y-m-d') : '') }}" required>
+                    <input id="published_at" type="date" class="form-control @error('published_at') is-invalid @enderror" name="published_at" value="{{ old('published_at', $data->published_at ? $data->published_at->format('Y-m-d') : '') }}" required>
 
                     @error('published_at')
                     <span class="invalid-feedback" role="alert">
@@ -86,7 +86,7 @@
 
                 <div class="col-md-10">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="active" value="{{ old('active', $news->active ?? 0) ? '1' : '0' }}" id="active" {{ old('active', $news->active ?? 0) ? 'checked' : '' }}>
+                        <input class="form-check-input" type="checkbox" name="active" value="{{ old('active', $data->active ?? 0) ? '1' : '0' }}" id="active" {{ old('active', $data->active ?? 0) ? 'checked' : '' }}>
                         <label class="form-check-label" for="active">
                             Active
                         </label>
@@ -104,7 +104,7 @@
                 <label for="content" class="col-md-2 col-form-label text-md-end">{{ __('Content') }}</label>
 
                 <div class="col-md-10">
-                    <textarea id="summernote" rows="10" class="form-control" name="content">{{ old('content', $news->content) }}</textarea>
+                    <textarea id="summernote" rows="10" class="form-control" name="content">{{ old('content', $data->content) }}</textarea>
 
                     @error('content')
                     <span class="invalid-feedback" role="alert">

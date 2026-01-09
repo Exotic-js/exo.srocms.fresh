@@ -2,21 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SRO\Shard\TimedJob;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use App\Models\SRO\Log\LogChatMessage;
 use App\Models\SRO\Log\LogEventChar;
 use App\Models\SRO\Log\LogInstanceWorldInfo;
 use App\Models\SRO\Shard\Char;
-use App\Models\SRO\Shard\CharSkillMastery;
 use App\Models\SRO\Shard\CharTradeConflictJob;
 use App\Models\SRO\Shard\CharTrijob;
 use App\Models\SRO\Shard\Guild;
 use App\Models\SRO\Shard\GuildMember;
 use App\Models\SRO\Shard\TrainingCampHonorRank;
 use App\Services\CrestService;
-use App\Services\InventoryService;
 use Illuminate\Http\Request;
 
 class RankingController extends Controller
@@ -50,7 +46,7 @@ class RankingController extends Controller
         ]);
     }
 
-    public function player()
+    public function playerRanking()
     {
         $data = Char::getPlayerRanking();
 
@@ -65,7 +61,7 @@ class RankingController extends Controller
         ]);
     }
 
-    public function guild()
+    public function guildRanking()
     {
         $data = Guild::getGuildRanking();
 
@@ -79,7 +75,7 @@ class RankingController extends Controller
         ]);
     }
 
-    public function unique()
+    public function uniqueRanking()
     {
         $data = LogInstanceWorldInfo::getUniqueRanking();
 
@@ -95,7 +91,7 @@ class RankingController extends Controller
         ]);
     }
 
-    public function unique_monthly()
+    public function uniqueMonthlyRanking()
     {
         $data = LogInstanceWorldInfo::getUniqueRanking(25, 1);
 
@@ -111,7 +107,7 @@ class RankingController extends Controller
         ]);
     }
 
-    public function fortress_player()
+    public function fortressPlayerRanking()
     {
         $data = GuildMember::getFortressPlayerRanking();
 
@@ -126,7 +122,7 @@ class RankingController extends Controller
         ]);
     }
 
-    public function fortress_guild()
+    public function fortressGuildRanking()
     {
         $data = Guild::getFortressGuildRanking();
 
@@ -140,7 +136,7 @@ class RankingController extends Controller
         ]);
     }
 
-    public function honor()
+    public function honorRanking()
     {
         $data = TrainingCampHonorRank::getHonorRanking();
 
@@ -155,7 +151,7 @@ class RankingController extends Controller
         ]);
     }
 
-    public function job()
+    public function jobRanking()
     {
         if (config('global.server.version') === 'vSRO') {
             $data = CharTrijob::getJobRanking();
@@ -176,7 +172,7 @@ class RankingController extends Controller
         ]);
     }
 
-    public function job_all()
+    public function jobAllRanking()
     {
         if (config('global.server.version') === 'vSRO') {
             $data = CharTrijob::getJobRanking();
@@ -197,7 +193,7 @@ class RankingController extends Controller
         ]);
     }
 
-    public function job_hunter()
+    public function jobHunterRanking()
     {
         if (config('global.server.version') === 'vSRO') {
             $data = CharTrijob::getJobRanking(25, 3);
@@ -216,7 +212,7 @@ class RankingController extends Controller
         ]);
     }
 
-    public function job_thieve()
+    public function jobThieveRanking()
     {
         if (config('global.server.version') === 'vSRO') {
             $data = CharTrijob::getJobRanking(25, 2);
@@ -235,7 +231,7 @@ class RankingController extends Controller
         ]);
     }
 
-    public function job_trader()
+    public function jobTraderRanking()
     {
         if (config('global.server.version') === 'vSRO') {
             $data = CharTrijob::getJobRanking(25, 1);
@@ -254,7 +250,7 @@ class RankingController extends Controller
         ]);
     }
 
-    public function pvp_kd()
+    public function pvpKDRanking()
     {
         if (config('ranking.extra.kill_logs.pvp')) {
             $data = LogEventChar::getKillDeathRanking('pvp', 25);
@@ -272,7 +268,7 @@ class RankingController extends Controller
         ]);
     }
 
-    public function job_kd()
+    public function jobKDRanking()
     {
         if (config('ranking.extra.kill_logs.job')) {
             $data = LogEventChar::getKillDeathRanking('job', 25);
@@ -290,7 +286,7 @@ class RankingController extends Controller
         ]);
     }
 
-    public function custom(string $type)
+    public function customRanking(string $type)
     {
         $ranking = config("ranking.custom.$type");
         if (!$ranking || empty($ranking['enabled'])) {
@@ -353,18 +349,19 @@ class RankingController extends Controller
         ]);
     }
 
-    public function guild_crest($hex)
+    public function guildCrest(string $bin)
     {
-        if (!preg_match('/^[a-fA-F0-9]+$/', $hex)) {
-            abort(400, 'Invalid crest data.');
-        }
+        abort_if(!ctype_xdigit($bin), 404, 'Invalid crest data.');
 
-        $img = CrestService::generateGuildCrest($hex);
+        $image = CrestService::generateGuildCrest($bin);
 
-        return response()->stream(function () use ($img) {
-            header('Content-Type: image/png');
-            imagepng($img);
-            imagedestroy($img);
-        });
+        return response()->stream(
+            function () use ($image) {
+                imagepng($image);
+                imagedestroy($image);
+            },
+            200,
+            ['Content-Type' => 'image/png']
+        );
     }
 }
