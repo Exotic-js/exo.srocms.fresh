@@ -103,6 +103,24 @@ return [
             50 => 'Survival (Solo)',
             49 => 'Survival (Party)',
         ],
+        'custom' => [
+            101 => [
+                'enabled' => true,
+                'name' => 'Custom Event #1',
+                'days' => ['Sunday', 'Monday'],
+                'hour' => 8,
+                'min' => 14,
+                'duration' => 3600,
+            ],
+            102 => [
+                'enabled' => false,
+                'name' => 'Custom Event #2',
+                'days' => ['Friday'],
+                'hour' => 21,
+                'min' => 30,
+                'duration' => 1800,
+            ],
+        ],
     ],
     'fortress_war' => [
         'enabled' => true,

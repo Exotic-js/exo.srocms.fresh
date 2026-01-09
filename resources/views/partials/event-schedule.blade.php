@@ -8,12 +8,12 @@
                 @php $i = 0; @endphp
                 @foreach($eventSchedule as $value)
                     <li>
-                        <span>{{ $value['name'] }}</span>
+                        <span>{{ $value->name }}</span>
                         <span class="float-end">
-                            @if($value['status'])
+                            @if($value->status)
                                 <span class="text-success">{{ __('Active') }}</span>
                             @else
-                                <span class="timerCountdown" id="idTimeCountdown_{{ $i }}" data-time="{{ $value['timestamp'] }}"></span>
+                                <span class="timerCountdown" id="idTimeCountdown_{{ $i }}" data-time="{{ $value->timestamp }}"></span>
                             @endif
                         </span>
                     </li>

@@ -49,7 +49,7 @@
 </svg>
 
 <header class="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow" data-bs-theme="dark">
-    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="#">iSRO CMS v2 - <small>by:m1xawy</small></a>
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="#">SRO CMS v2.5 - <small>by:m1xawy</small></a>
 
     <ul class="navbar-nav flex-row">
         <li class="nav-item text-nowrap">

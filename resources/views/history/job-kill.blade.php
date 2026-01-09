@@ -15,23 +15,23 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @forelse($data as $value)
+                        @forelse($data as $row)
                             <tr>
                                 <td>
-                                    @if(!empty($value->KillerCharName))
-                                        <a href="{{ route('ranking.character.view', ['name' => $value->KillerCharName]) }}" class="text-decoration-none">{{ $value->KillerCharName }}</a>
+                                    @if(!empty($row->KillerCharName))
+                                        <a href="{{ route('ranking.character.view', ['name' => $row->KillerCharName]) }}" class="text-decoration-none">{{ $row->KillerCharName }}</a>
                                     @else
                                         <span>{{ __('NoName') }}</span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if(!empty($value->DeadCharName))
-                                        <a href="{{ route('ranking.character.view', ['name' => $value->DeadCharName]) }}" class="text-decoration-none">{{ $value->DeadCharName }}</a>
+                                    @if(!empty($row->DeadCharName))
+                                        <a href="{{ route('ranking.character.view', ['name' => $row->DeadCharName]) }}" class="text-decoration-none">{{ $row->DeadCharName }}</a>
                                     @else
                                         <span>{{ __('NoName') }}</span>
                                     @endif
                                 </td>
-                                <td>{{ \Carbon\Carbon::make($value->EventTime)->diffForHumans() }}</td>
+                                <td>{{ \Carbon\Carbon::make($row->EventTime)->diffForHumans() }}</td>
                             </tr>
                         @empty
                             <tr>

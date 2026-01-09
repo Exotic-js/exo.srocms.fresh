@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -49,6 +50,18 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function updateGamePassword(string $password): void
+    {
+        DB::transaction(function () use ($password) {
+            if (config('global.server.version') === 'vSRO') {
+                $this->tbUser?->update(['password' => md5($password)]);
+            } else {
+                $this->muUser?->update(['UserPwd' => md5($password)]);
+                $this->tbUser?->update(['password' => md5($password)]);
+            }
+        });
     }
 
     public static function getUserCount()

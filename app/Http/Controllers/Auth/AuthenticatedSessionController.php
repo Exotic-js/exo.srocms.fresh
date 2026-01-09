@@ -36,17 +36,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->authenticate();
 
-        $user = Auth::user();
-
-        if (config("settings.verify_jid_{$user->tbUser->JID}")) {
-            $code = random_int(100000, 999999);
-            PasswordResetToken::setToken($user->email, $code);
-
-            $user->notify(new SendVerifyCode($code));
-
-            session(['login_verify_user' => $user->id, 'login_verify_time' => now(),]);
-
-            return redirect()->route('login.verify');
+        if ($response = $this->sendVerify()) {
+            return $response;
         }
 
         $request->session()->regenerate();
@@ -77,31 +68,29 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login-verify');
     }
 
-    public function verify(Request $request)
+    protected function sendVerify(): ?RedirectResponse
     {
-        $request->validate([
-            'code' => 'required|string',
-        ]);
+        $user = Auth::user();
 
-        $userId = session('login_verify_user');
-        $user = User::findOrFail($userId);
-
-        $token = PasswordResetToken::getToken($user->email);
-
-        if (!$token || $token->isExpired() || $token->token !== $request->code) {
-            return back()->withErrors(['code' => 'Invalid or expired verification code']);
+        if (! config("settings.verify_jid_{$user->tbUser->JID}")) {
+            return null;
         }
 
-        $token->deleteToken();
+        $code = random_int(100000, 999999);
 
-        Auth::login($user);
+        PasswordResetToken::setToken($user->email, $code);
 
-        session()->forget(['login_verify_user', 'login_verify_time']);
+        $user->notify(new SendVerifyCode($code));
 
-        return redirect()->intended(route('profile', absolute: false));
+        session([
+            'login_verify_user' => $user->id,
+            'login_verify_time' => now(),
+        ]);
+
+        return redirect()->route('login.verify');
     }
 
-    public function resend(Request $request)
+    public function resendVerify(Request $request)
     {
 
         $userId = session('login_verify_user');
@@ -124,5 +113,29 @@ class AuthenticatedSessionController extends Controller
         $user->notify(new SendVerifyCode($code));
 
         return back()->with('status', 'Verification code sent again');
+    }
+
+    public function verify(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string',
+        ]);
+
+        $userId = session('login_verify_user');
+        $user = User::findOrFail($userId);
+
+        $token = PasswordResetToken::getToken($user->email);
+
+        if (!$token || $token->isExpired() || $token->token !== $request->code) {
+            return back()->withErrors(['code' => 'Invalid or expired verification code']);
+        }
+
+        $token->deleteToken();
+
+        Auth::login($user);
+
+        session()->forget(['login_verify_user', 'login_verify_time']);
+
+        return redirect()->intended(route('profile', absolute: false));
     }
 }

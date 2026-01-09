@@ -15,17 +15,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($data as $value)
+                            @forelse($data as $row)
                                 <tr>
-                                    <td>{!! $value->Comment !!}</td>
+                                    <td>{!! $row->Comment !!}</td>
                                     <td>
-                                        @if(!empty($value->CharName))
-                                            <a href="{{ route('ranking.character.view', ['name' => $value->CharName]) }}" class="text-decoration-none">{{ $value->CharName }}</a>
+                                        @if(!empty($row->CharName))
+                                            <a href="{{ route('ranking.character.view', ['name' => $row->CharName]) }}" class="text-decoration-none">{{ $row->CharName }}</a>
                                         @else
                                             <span>{{ __('NoName') }}</span>
                                         @endif
                                     </td>
-                                    <td>{{ \Carbon\Carbon::make($value->EventTime)->diffForHumans() }}</td>
+                                    <td>{{ \Carbon\Carbon::make($row->EventTime)->diffForHumans() }}</td>
                                 </tr>
                             @empty
                                 <tr>

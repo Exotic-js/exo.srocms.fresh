@@ -15,20 +15,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($data as $value)
+                            @forelse($data as $row)
                                 <tr>
                                     <td>
-                                        <img src="{{ $config->fortressList['names'][$value->FortressID]['image'] }}" alt="">
-                                        {{ $config->fortressList['names'][$value->FortressID]['name'] }}
+                                        <img src="{{ config('widgets.fortress_war')['names'][$row->FortressID]['image'] }}" alt="">
+                                        {{ config('widgets.fortress_war')['names'][$row->FortressID]['name'] }}
                                     </td>
                                     <td>
-                                        @if(!empty($value->strDesc))
-                                            <a href="{{ route('ranking.guild.view', ['name' => $value->strDesc]) }}" class="text-decoration-none">{{ $value->strDesc }}</a>
+                                        @if(!empty($row->strDesc))
+                                            <a href="{{ route('ranking.guild.view', ['name' => $row->strDesc]) }}" class="text-decoration-none">{{ $row->strDesc }}</a>
                                         @else
                                             <span>{{ __('No Winner') }}</span>
                                         @endif
                                     </td>
-                                    <td>{{ \Carbon\Carbon::make($value->EventTime)->diffForHumans() }}</td>
+                                    <td>{{ \Carbon\Carbon::make($row->EventTime)->diffForHumans() }}</td>
                                 </tr>
                             @empty
                                 <tr>

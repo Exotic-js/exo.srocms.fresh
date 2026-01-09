@@ -6,13 +6,13 @@
         <div class="card border-0">
             <div class="card-body">
                 <div class="row">
-                    @foreach($data as $key => $value)
+                    @foreach($data as $key => $row)
                         <div class="col-md-4">
                             <div class="card mb-4">
                                 <div class="card-header">
                                     <h3>
-                                        <img src="{{ asset($config->uniqueList[$key]['image']) }}" alt=""/>
-                                        {{ $config->uniqueList[$key]['name'] }}
+                                        <img src="{{ asset(config('ranking.uniques')[$key]['image']) }}" alt=""/>
+                                        {{ config('ranking.uniques')[$key]['name'] }}
                                     </h3>
                                     <small>{{ __('Last 5 Killers') }}</small>
                                 </div>
@@ -26,13 +26,13 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        @foreach($value as $index => $kill)
+                                        @foreach($row as $i => $value)
                                             <tr>
-                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $i + 1 }}</td>
                                                 <td>
-                                                    <a href="{{ route('ranking.character.view', ['name' => $kill->CharName16]) }}" class="text-decoration-none">{{ $kill->CharName16 }}</a>
+                                                    <a href="{{ route('ranking.character.view', ['name' => $value->CharName16]) }}" class="text-decoration-none">{{ $value->CharName16 }}</a>
                                                 </td>
-                                                <td>{{ $kill->Points }}</td>
+                                                <td>{{ $value->Points }}</td>
                                             </tr>
                                         @endforeach
                                         </tbody>

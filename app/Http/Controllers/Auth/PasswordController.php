@@ -34,16 +34,9 @@ class PasswordController extends Controller
 
         $user = $request->user();
 
-        DB::transaction(function () use ($user, $validated) {
-            if (config('global.server.version') === 'vSRO') {
-                TbUser::where('JID', $user->jid)->update(['password' => md5($validated['password'])]);
-            } else {
-                MuUser::where('JID', $user->jid)->update(['UserPwd' => md5($validated['password'])]);
-                TbUser::where('PortalJID', $user->jid)->update(['password' => md5($validated['password'])]);
-            }
+        $user->updateGamePassword($validated['password']);
 
-            $user->update(['password' => Hash::make($validated['password'])]);
-        });
+        $user->update(['password' => Hash::make($validated['password'])]);
 
         return back()->with('status', 'password-updated');
     }
@@ -64,18 +57,11 @@ class PasswordController extends Controller
             ]);
         }
 
-        DB::transaction(function () use ($token, $user, $validated) {
-            if (config('global.server.version') === 'vSRO') {
-                TbUser::where('JID', $user->jid)->update(['password' => md5($validated['password'])]);
-            } else {
-                MuUser::where('JID', $user->jid)->update(['UserPwd' => md5($validated['password'])]);
-                TbUser::where('PortalJID', $user->jid)->update(['password' => md5($validated['password'])]);
-            }
+        $user->updateGamePassword($validated['password']);
 
-            $user->update(['password' => Hash::make($validated['password'])]);
+        $user->update(['password' => Hash::make($validated['password'])]);
 
-            $token->deleteToken();
-        });
+        $token->deleteToken();
 
         return back()->with('status', 'password-updated');
     }

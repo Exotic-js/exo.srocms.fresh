@@ -11,7 +11,8 @@ class VoteController extends Controller
     public function index(Request $request)
     {
         $data = VoteLog::getVoteStatus($request, session('fingerprint'));
-        return view('profile.vote', ['data' => $data]);
+
+        return view('profile.panel.vote', compact('data'));
     }
 
     public function voting(string $site, Request $request)

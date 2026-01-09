@@ -17,39 +17,28 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @forelse($data as $key => $value)
+                        @forelse($data as $key => $row)
                             <tr>
                                 <td>
-                                    <img src="{{ asset($config->uniqueList[$value->Value]['image']) }}" alt=""/>
-                                    {{ $config->uniqueList[$value->Value]['name'] }}
+                                    <img src="{{ asset(config('ranking.uniques')[$row->Value]['image']) }}" alt=""/>
+                                    {{ config('ranking.uniques')[$row->Value]['name'] }}
                                 </td>
-                                <td>{{ \Carbon\Carbon::make($value->EventTime)->diffForHumans() }}</td>
+                                <td>{{ \Carbon\Carbon::make($row->EventTime)->diffForHumans() }}</td>
                                 <td>
-                                    @if($value->CharName16 && $value['ValueCodeName128'] == 'KILL_UNIQUE_MONSTER')
-                                        @if($value->RefObjID > 2000)
-                                            <img src="{{ asset($config->characterRace[1]['image']) }}" width="16" height="16" alt=""/>
+                                    @if($row->CharName16 && $row['ValueCodeName128'] == 'KILL_UNIQUE_MONSTER')
+                                        @if($row->RefObjID > 2000)
+                                            <img src="{{ asset(config('ranking.character_race')[1]['image']) }}" width="16" height="16" alt=""/>
                                         @else
-                                            <img src="{{ asset($config->characterRace[0]['image']) }}" width="16" height="16" alt=""/>
+                                            <img src="{{ asset(config('ranking.character_race')[0]['image']) }}" width="16" height="16" alt=""/>
                                         @endif
-                                        <a href="{{ route('ranking.character.view', ['name' => $value->CharName16]) }}" class="text-decoration-none">{{ $value->CharName16 }}</a>
+                                        <a href="{{ route('ranking.character.view', ['name' => $row->CharName16]) }}" class="text-decoration-none">{{ $row->CharName16 }}</a>
                                     @endif
                                 </td>
+                                <td>{{ $row->AreaName }}</td>
                                 <td>
-                                    @switch($value->AreaName)
-                                        @case('Eu')
-                                            {{ __('Constantinople') }}
-                                            @break
-                                        @case('Am')
-                                            {{ __('Asia Minor') }}
-                                            @break
-                                        @default
-                                            {{ $value->AreaName }}
-                                    @endswitch
-                                </td>
-                                <td>
-                                    @if($value['ValueCodeName128'] == 'KILL_UNIQUE_MONSTER')
+                                    @if($row['ValueCodeName128'] == 'KILL_UNIQUE_MONSTER')
                                         <span class="text-danger">{{ __('Killed') }}</span>
-                                    @elseif($value['ValueCodeName128'] == 'SPAWN_UNIQUE_MONSTER')
+                                    @elseif($row['ValueCodeName128'] == 'SPAWN_UNIQUE_MONSTER')
                                         <span class="text-success">{{ __('Spawned') }}</span>
                                     @endif
                                 </td>

@@ -60,5 +60,5 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/login/verify', [AuthenticatedSessionController::class, 'show'])->name('login.show');
     Route::post('/login/verify', [AuthenticatedSessionController::class, 'verify'])->name('login.verify');
-    Route::post('/login/verify/resend', [AuthenticatedSessionController::class, 'resend'])->name('login.resend');
+    Route::post('/login/verify/resend', [AuthenticatedSessionController::class, 'resendVerify'])->name('login.resend');
 });

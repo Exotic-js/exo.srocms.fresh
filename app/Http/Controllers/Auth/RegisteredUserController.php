@@ -42,18 +42,15 @@ class RegisteredUserController extends Controller
             return back()->withErrors(['username' => ["Register page is disabled!"]]);
         }
 
-        $rules = $this->getValidationRules($request);
-        $request->validate($rules);
-        $ip = filter_var($request->ip(), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ?: '0.0.0.0';
-        $jid = null;
+        $request->validate($this->getValidationRules($request));
 
-        DB::transaction(function () use ($ip, $request, &$jid) {
-            if (config('global.server.version') === 'vSRO') {
-                $jid = $this->createAccountVSRO($request, $ip);
-            } else {
-                $jid = $this->createAccountISRO($request, $ip);
-            }
-        });
+        $ip = filter_var($request->ip(), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ?: '0.0.0.0';
+
+        if (config('global.server.version') === 'vSRO') {
+            $jid = $this->createAccountVSRO($request, $ip);
+        } else {
+            $jid = $this->createAccountISRO($request, $ip);
+        }
 
         $user = User::create([
             'jid' => $jid,
@@ -62,13 +59,7 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        if (config('global.referral.enabled', true) && $request->filled('fingerprint')) {
-            Referral::createReferral($user, $request->input('fingerprint'), $request->ip());
-        }
-
-        if (config('global.referral.enabled', true) && $request->filled('invite') && $request->filled('fingerprint')) {
-            Referral::inviteReferral($user, $request->input('invite'), $request->input('fingerprint'), $request->ip());
-        }
+        $this->handleReferral($user, $request);
 
         if (config('settings.register_confirm')) {
             event(new Registered($user));
@@ -104,27 +95,45 @@ class RegisteredUserController extends Controller
 
     private function createAccountVSRO(Request $request, string $ip): int
     {
-        $tbUser = TbUser::setGameAccount(null, $request->username, $request->password, $request->email, $ip);
-        SkSilk::setSkSilk($tbUser->JID, 0, 0);
+        return DB::transaction(function () use ($request, $ip) {
+            $tbUser = TbUser::setGameAccount(null, $request->username, $request->password, $request->email, $ip);
+            SkSilk::setSkSilk($tbUser->JID, 0, 0);
 
-        return $tbUser->JID;
+            return $tbUser->JID;
+        });
     }
 
     private function createAccountISRO(Request $request, string $ip): int
     {
-        $userBinIP = ip2long($ip);
-        $portalUser = MuUser::setPortalAccount($request->username, $request->password);
+        return DB::transaction(function () use ($request, $ip) {
+            $userBinIP = ip2long($ip);
 
-        MuEmail::setEmail($portalUser->JID, $request->email);
-        MuhAlteredInfo::setAlteredInfo($portalUser->JID, $request->username, $request->email, $userBinIP);
-        AuhAgreedService::setAgreedService($portalUser->JID, $userBinIP);
-        MuJoiningInfo::setJoiningInfo($portalUser->JID, $userBinIP);
-        MuVIPInfo::setVIPInfo($portalUser->JID);
-        //AphChangedSilk::setChangedSilk($portalUser->JID, 1, 0);
-        //AphChangedSilk::setChangedSilk($portalUser->JID, 3, 0);
+            $portalUser = MuUser::setPortalAccount($request->username, $request->password);
 
-        TbUser::setGameAccount($portalUser->JID, $request->username, $request->password, $request->email, $ip);
+            MuEmail::setEmail($portalUser->JID, $request->email);
+            MuhAlteredInfo::setAlteredInfo($portalUser->JID, $request->username, $request->email, $userBinIP);
+            AuhAgreedService::setAgreedService($portalUser->JID, $userBinIP);
+            MuJoiningInfo::setJoiningInfo($portalUser->JID, $userBinIP);
+            MuVIPInfo::setVIPInfo($portalUser->JID);
 
-        return $portalUser->JID;
+            TbUser::setGameAccount($portalUser->JID, $request->username, $request->password, $request->email, $ip);
+
+            return $portalUser->JID;
+        });
+    }
+
+    private function handleReferral(User $user, Request $request): void
+    {
+        if (!config('global.referral.enabled', true)) {
+            return;
+        }
+
+        if ($request->filled('fingerprint')) {
+            Referral::createReferral($user, $request->input('fingerprint'), $request->ip());
+        }
+
+        if ($request->filled('invite') && $request->filled('fingerprint')) {
+            Referral::inviteReferral($user, $request->input('invite'), $request->input('fingerprint'), $request->ip());
+        }
     }
 }

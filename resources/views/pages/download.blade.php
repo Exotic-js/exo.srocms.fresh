@@ -8,18 +8,18 @@
                 <h2 class="mb-4">{{ __('Downloads') }}</h2>
 
                 <div class="row">
-                    @forelse($data as $value)
+                    @forelse($data as $row)
                         <div class="col-lg-6 col-sm-12">
-                            <a href="{{ $value->url }}" target="_blank" class="text-decoration-none">
+                            <a href="{{ $row->url }}" target="_blank" class="text-decoration-none">
                                 <div class="card mb-3">
                                     <div class="card-body p-4 d-flex flex-row align-items-center justify-content-between">
                                         <div class="d-flex align-items-center">
-                                            @if ($value->image)
-                                                <img class="d-block mx-auto me-2" src="{{ $value->image }}" alt="" width="60">
+                                            @if ($row->image)
+                                                <img class="d-block mx-auto me-2" src="{{ $row->image }}" alt="" width="60">
                                             @endif
                                             <div>
-                                                <h4 class="mb-0">{{ $value->name }}</h4>
-                                                <p class="mb-0">{{ $value->desc }}</p>
+                                                <h4 class="mb-0">{{ $row->name }}</h4>
+                                                <p class="mb-0">{{ $row->desc }}</p>
                                             </div>
                                         </div>
                                         <button class="btn btn-primary btn-lg">{{ __('Download') }}</button>

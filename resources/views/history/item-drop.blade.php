@@ -17,31 +17,27 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @forelse($data as $value)
+                        @forelse($data as $row)
                             <tr>
                                 <td>
-                                    <img src="{{ asset('images/sro/' . $value->AssocFileIcon128 . '.png') }}" alt="" width="32" height="32" class="">
-                                    @if(config('global.server.version') === 'vSRO')
-                                        {{ $value->RealName }}
-                                    @else
-                                        {{ $value->ENG }}
-                                    @endif
+                                    <img src="{{ asset('images/sro/'.$row->AssocFileIcon128.'.png') }}" alt="" width="32" height="32" class="">
+                                    {{ $row->RealName ?? $row->ENG }}
                                 </td>
                                 <td>
-                                    {{ $value->Degree }} degrees
+                                    {{ $row->Degree }} degrees
                                 </td>
                                 <td>
                                     <!-- TODO: getting mob real name-->
-                                    {{ $value->MobCode }}
+                                    {{ $row->MobCode }}
                                 </td>
                                 <td>
-                                    @if(!empty($value->CharName16))
-                                        <a href="{{ route('ranking.character.view', ['name' => $value->CharName16]) }}" class="text-decoration-none">{{ $value->CharName16 }}</a>
+                                    @if(!empty($row->CharName16))
+                                        <a href="{{ route('ranking.character.view', ['name' => $row->CharName16]) }}" class="text-decoration-none">{{ $row->CharName16 }}</a>
                                     @else
                                         <span>{{ __('NoName') }}</span>
                                     @endif
                                 </td>
-                                <td>{{ \Carbon\Carbon::make($value->EventTime)->diffForHumans() }}</td>
+                                <td>{{ \Carbon\Carbon::make($row->EventTime)->diffForHumans() }}</td>
                             </tr>
                         @empty
                             <tr>

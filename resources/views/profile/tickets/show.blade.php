@@ -11,17 +11,17 @@
             <div class="card-body">
                 <a href="{{ route('profile.tickets') }}" class="btn btn-secondary mb-3">Back to Tickets</a>
 
-                <h4>{{ $ticket->subject }}</h4>
+                <h4>{{ $data->subject }}</h4>
 
                 <div class="card mb-2">
                     <div class="card-body">
                         <strong>You</strong>
-                        <p>{!! $ticket->message !!}</p>
-                        <small class="text-muted">{{ $ticket->created_at }}</small>
+                        <p>{!! $data->message !!}</p>
+                        <small class="text-muted">{{ $data->created_at }}</small>
                     </div>
                 </div>
 
-                @foreach($ticket->replies as $reply)
+                @foreach($data->replies as $reply)
                     <div class="card mb-2 {{ $reply->type === 'admin' ? 'text-end' : '' }}">
                         <div class="card-body">
                             <strong>{{ $reply->type === 'admin' ? 'Admin' : 'You' }}</strong>
@@ -31,10 +31,10 @@
                     </div>
                 @endforeach
 
-                @if($ticket->status)
-                    <form action="{{ route('profile.ticket.send', $ticket) }}" method="POST" class="mt-3">
+                @if($data->status)
+                    <form action="{{ route('profile.ticket.send', $data) }}" method="POST" class="mt-3">
                         @csrf
-                        <input type="hidden" name="parent_id" value="{{ $ticket->id }}">
+                        <input type="hidden" name="parent_id" value="{{ $data->id }}">
 
                         <div class="mb-3">
                             <textarea name="message" id="summernote" class="form-control" rows="3" required placeholder="Write your reply..."></textarea>

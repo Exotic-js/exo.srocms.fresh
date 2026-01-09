@@ -9,12 +9,12 @@
     <div class="container">
         <h3 class="">{{ __('Characters') }}</h3>
         <div class="row">
-            @if(!Auth::user()->tbUser || Auth::user()->tbUser->shardUser->isEmpty())
+            @if(!auth()->user()->tbUser || auth()->user()->tbUser->shardUser->isEmpty())
                 <div class="alert alert-danger text-center" role="alert">
                     {{ __('No Characters Found!') }}
                 </div>
             @else
-                @foreach(Auth::user()->tbUser->shardUser as $value)
+                @foreach(auth()->user()->tbUser->shardUser as $value)
                     <div class="col-md-3">
                         <div class="card">
                             <div class="card-body text-center">
@@ -46,7 +46,7 @@
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-striped mb-0">
-                        @if(!Auth::user()->tbUser)
+                        @if(!auth()->user()->tbUser)
                             <tr>
                                 <td class="text-center">{{ __('Cannot load your account information!') }}</td>
                             </tr>
@@ -55,58 +55,57 @@
                                 <tbody>
                                 <tr>
                                     <th scope="row">Username</th>
-                                    <td>{{ Auth::user()->tbUser->StrUserID }}</td>
+                                    <td>{{ auth()->user()->tbUser->StrUserID }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">Email</th>
-                                    <td>{{ Auth::user()->tbUser->Email }}</td>
+                                    <td>{{ auth()->user()->tbUser->Email }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ __('Silk') }}</th>
-                                    <td>{{ Auth::user()->tbUser->getSkSilk->silk_own ?? 0 }}</td>
+                                    <td>{{ auth()->user()->tbUser->getSkSilk->silk_own ?? 0 }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ __('Gift Silk') }}</th>
-                                    <td>{{ Auth::user()->tbUser->getSkSilk->silk_gift ?? 0 }}</td>
+                                    <td>{{ auth()->user()->tbUser->getSkSilk->silk_gift ?? 0 }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ __('Point Silk') }}</th>
-                                    <td>{{ Auth::user()->tbUser->getSkSilk->silk_point ?? 0 }}</td>
+                                    <td>{{ auth()->user()->tbUser->getSkSilk->silk_point ?? 0 }}</td>
                                 </tr>
                                 </tbody>
                             @else
                                 <tbody>
                                 <tr>
                                     <th scope="row">Username</th>
-                                    <td>{{ Auth::user()->tbUser->StrUserID }}</td>
+                                    <td>{{ auth()->user()->tbUser->StrUserID }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">Email</th>
-                                    <td>{{ Auth::user()->muUser->muEmail->EmailAddr }}</td>
+                                    <td>{{ auth()->user()->muUser->muEmail->EmailAddr }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ __('Silk') }}</th>
-                                    @php $cash = Auth::user()->muUser->getJCash() @endphp
-                                    <td>{{ $cash->Silk ?? 0 }}</td>
+                                    <td>{{ auth()->user()->muUser->JCash->Silk ?? 0 }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ __('Premium Silk') }}</th>
-                                    <td>{{ $cash->PremiumSilk ?? 0 }}</td>
+                                    <td>{{ auth()->user()->muUser->JCash->PremiumSilk ?? 0 }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ __('Month Usage') }}</th>
-                                    <td>{{ $cash->MonthUsage ?? 0 }}</td>
+                                    <td>{{ auth()->user()->muUser->JCash->MonthUsage ?? 0 }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ __('3Month Usage') }}</th>
-                                    <td>{{ $cash->ThreeMonthUsage ?? 0 }}</td>
+                                    <td>{{ auth()->user()->muUser->JCash->ThreeMonthUsage ?? 0 }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ __('VIP') }}</th>
                                     <td>
-                                        @isset(Auth::user()->muUser->muVIPInfo->VIPUserType)
-                                            <img src="{{ asset($config['vipLevel']['level'][Auth::user()->muUser->muVIPInfo->VIPLv]['image']) }}" width="24" height="24" alt="">
-                                            <span>{{ $config['vipLevel']['level'][Auth::user()->muUser->muVIPInfo->VIPLv]['name'] }}</span>
+                                        @isset(auth()->user()->muUser->muVIPInfo->VIPUserType)
+                                            <img src="{{ asset($config['vipLevel']['level'][auth()->user()->muUser->muVIPInfo->VIPLv]['image']) }}" width="24" height="24" alt="">
+                                            <span>{{ $config['vipLevel']['level'][auth()->user()->muUser->muVIPInfo->VIPLv]['name'] }}</span>
                                         @else
                                             <span>{{ __('None') }}</span>
                                         @endisset

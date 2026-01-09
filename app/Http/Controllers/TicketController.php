@@ -9,29 +9,27 @@ class TicketController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
-
-        $data = $user->tickets()->paginate(20);
+        $data = auth()->user()->tickets()->paginate(20);
 
         return view('profile.tickets.index', compact('data'));
     }
 
     public function show(Ticket $ticket)
     {
-        $ticket->load('replies');
+        $data = $ticket->load('replies');
 
         if ($ticket->user_id != auth()->id()) {
             abort(403, 'Ticket not yours');
         }
 
-        return view('profile.tickets.show', compact('ticket'));
+        return view('profile.tickets.show', compact('data'));
     }
 
     public function create()
     {
-        $config = config('global.tickets.categories');
+        $data = config('global.tickets.categories');
 
-        return view('profile.tickets.create', compact('config'));
+        return view('profile.tickets.create', compact('data'));
     }
 
     public function send(Request $request)

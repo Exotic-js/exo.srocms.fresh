@@ -17,24 +17,22 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @php $i = 0; @endphp
-                            @foreach($data as $value)
+                            @foreach($data as $row)
                                 <tr>
-                                    <td>{{ $value['idx'] }}</td>
-                                    <td>{{ $value['name'] }}</td>
+                                    <td>{{ $row->idx }}</td>
+                                    <td>{{ $row->name }}</td>
                                     <td>
-                                        <span class="timerCountdown" id="idTimeCountdown_{{ $i }}" data-time="{{ $value['timestamp'] }}"></span>
+                                        <span class="timerCountdown" id="idTimeCountdown_{{ $row->idx }}" data-time="{{ $row->timestamp }}"></span>
                                     </td>
-                                    <td>{{ Carbon\CarbonInterval::seconds($value['duration'])->cascade()->forHumans() }}</td>
+                                    <td>{{ Carbon\CarbonInterval::seconds($row->duration)->cascade()->forHumans() }}</td>
                                     <td>
-                                        @if($value['status'])
+                                        @if($row->status)
                                             <span class="text-success">{{ __('Active') }}</span>
                                         @else
                                             <span class="text-warning">{{ __('Planned') }}</span>
                                         @endif
                                     </td>
                                 </tr>
-                                @php $i++; @endphp
                             @endforeach
                         </tbody>
                     </table>

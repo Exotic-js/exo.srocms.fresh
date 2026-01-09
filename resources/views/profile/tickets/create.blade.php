@@ -22,7 +22,7 @@
                     <div class="mb-3">
                         <label class="form-label">Category</label>
                         <select name="category" class="form-control" required>
-                            @foreach($config as $key => $value)
+                            @foreach($data as $key => $value)
                                 <option value="{{ $key }}">{{ $value }}</option>
                             @endforeach
                         </select>
