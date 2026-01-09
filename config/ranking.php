@@ -14,18 +14,6 @@ return [
             'image' => 'fa fa-users',
             'route' => 'ranking.guild',
         ],
-        'ranking_unique' => [
-            'enabled' => true,
-            'name' => 'Unique Ranking',
-            'image' => 'fa fa-users',
-            'route' => 'ranking.unique',
-        ],
-        'ranking_unique-monthly' => [
-            'enabled' => true,
-            'name' => 'Unique Ranking (Monthly)',
-            'image' => 'fa fa-users',
-            'route' => 'ranking.unique-monthly',
-        ],
         'ranking_job' => [
             'enabled' => true,
             'name' => 'Job Ranking',
@@ -37,6 +25,18 @@ return [
             'name' => 'Honor Ranking',
             'image' => 'fa fa-users',
             'route' => 'ranking.honor',
+        ],
+        'ranking_unique' => [
+            'enabled' => true,
+            'name' => 'Unique Ranking',
+            'image' => 'fa fa-users',
+            'route' => 'ranking.unique',
+        ],
+        'ranking_unique-monthly' => [
+            'enabled' => true,
+            'name' => 'Unique Ranking (Monthly)',
+            'image' => 'fa fa-users',
+            'route' => 'ranking.unique-monthly',
         ],
         'ranking-fortress-player' => [
             'enabled' => true,
@@ -51,13 +51,13 @@ return [
             'route' => 'ranking.fortress-guild',
         ],
         'ranking-pvp-kd' => [
-            'enabled' => false,
+            'enabled' => true,
             'name' => 'Pvp K/D Ranking',
             'image' => 'fa fa-users',
             'route' => 'ranking.pvp-kd',
         ],
         'ranking-job-kd' => [
-            'enabled' => false,
+            'enabled' => true,
             'name' => 'Job K/D Ranking',
             'image' => 'fa fa-users',
             'route' => 'ranking.job-kd',
@@ -83,7 +83,7 @@ return [
             'route' => 'ranking.job-thieve',
         ],
         'ranking_job_traders' => [
-            'enabled' => false,
+            'enabled' => true,
             'name' => 'Traders',
             'image' => 'fa fa-users',
             'route' => 'ranking.job-trader',
@@ -127,21 +127,21 @@ return [
         ],
     ],
     'extra' => [
-        'character_status' => false,
-        'advanced_unique_ranking' => false,
+        'character_status' => true,
+        'advanced_unique_ranking' => true,
         'kill_logs' => [
             'pvp' => false,
             'job' => false,
         ],
         'item_logs' => [
             'plus' => [
-                'enabled' => false,
+                'enabled' => true,
                 'plus' => 8,
                 'degree' => 8,
                 'type' => 'Seal of Sun', //Seal of Star, Seal of Moon, Seal of Sun, Seal of roc
             ],
             'drop' => [
-                'enabled' => false,
+                'enabled' => true,
                 'degree' => 8,
                 'type' => 'Seal of Sun', //Seal of Star, Seal of Moon, Seal of Sun, Seal of roc
             ],

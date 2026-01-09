@@ -8,10 +8,10 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($uniqueHistory as $value)
+            @forelse($data->unique_history as $value)
                 <tr>
-                    <td>{{ $uniqueList[$value->Value]['name'] }}</td>
-                    <td>+{{ $uniqueList[$value->Value]['points'] }}</td>
+                    <td>{{ $config->uniqueList[$value->Value]['name'] }}</td>
+                    <td>+{{ $config->uniqueList[$value->Value]['points'] }}</td>
                     <td>{{ \Carbon\Carbon::make($value->EventTime)->diffForHumans() }}</td>
                 </tr>
             @empty

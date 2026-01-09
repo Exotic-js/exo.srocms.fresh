@@ -8,7 +8,7 @@ return [
         'theme' => 'dark', //dark, light
     ],
     'globals_history' => [
-        'enabled' => false,
+        'enabled' => true,
         'limit' => 5,
     ],
     'unique_history' => [

@@ -1,3 +1,11 @@
+<div class="mt-1">
+    <form method="GET" action="{{ route('ranking') }}" class="mb-4">
+        <input type="hidden" name="type" value="guild">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('Search guild...') }}" class="form-control d-inline w-auto">
+        <button type="submit" class="btn btn-sm btn-outline-secondary">{{ __('Search') }}</button>
+    </form>
+</div>
+
 <div class="table-responsive">
     <table class="table table-striped">
         <thead class="table-dark">
@@ -10,14 +18,13 @@
         </tr>
         </thead>
         <tbody>
-            @php $i = 1; @endphp
-            @forelse($data as $value)
+            @forelse($data as $key => $value)
                 <tr>
                     <td>
-                        @if($i <= 3)
-                            <img src="{{ asset($topImage[$i]) }}" alt=""/>
+                        @if($key < 3)
+                            <img src="{{ asset($config->topImage[$key + 1]) }}" alt=""/>
                         @else
-                            {{ $i }}
+                            {{ $key + 1 }}
                         @endif
                     </td>
                     <td>
@@ -30,7 +37,6 @@
                     <td>{{ $value->TotalMember }}</td>
                     <td>{{ $value->ItemPoints }}</td>
                 </tr>
-                @php $i++ @endphp
             @empty
                 <tr>
                     <td colspan="5" class="text-center">{{ __('No Records Found!') }}</td>
@@ -39,10 +45,3 @@
         </tbody>
     </table>
 </div>
-
-<form method="GET" action="{{ route('ranking') }}" class="mb-4">
-    <input type="hidden" name="type" value="guild">
-    <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('Search guild...') }}" class="form-control d-inline w-auto">
-    <button type="submit" class="btn btn-sm btn-outline-secondary">{{ __('Search') }}</button>
-</form>
-

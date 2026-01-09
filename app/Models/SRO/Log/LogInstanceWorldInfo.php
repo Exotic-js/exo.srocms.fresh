@@ -112,7 +112,7 @@ class LogInstanceWorldInfo extends Model
 		});
 	}
 
-    public static function getUniquesTop(int $limit = 5)
+    public static function getUniquesAdvanced(int $limit = 5)
     {
         $config = config('ranking.uniques');
         $minutes = config('global.cache.unique_history', 10);

@@ -21,7 +21,7 @@ Route::prefix('ranking')->name('ranking.')->group(function() {
     Route::any('/job-kd', [RankingController::class, 'job_kd'])->name('job-kd');
     Route::any('/custom/{type}', [RankingController::class, 'custom'])->name('custom');
 
-    Route::get('/character/{name}', [RankingController::class, 'character_view'])->name('character.view');
-    Route::get('/guild/{name}', [RankingController::class, 'guild_view'])->name('guild.view');
+    Route::get('/character/{name}', [RankingController::class, 'characterView'])->name('character.view');
+    Route::get('/guild/{name}', [RankingController::class, 'guildView'])->name('guild.view');
     Route::any('/guild-crest/{hex}', [RankingController::class, 'guild_crest'])->name('guild-crest');
 });

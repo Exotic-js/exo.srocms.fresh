@@ -7,7 +7,7 @@ return [
         'route' => 'xtremetop100',
         'image' => 'https://www.xtremetop100.com/votenew.jpg',
         'url' => 'https://www.xtremetop100.com/in.php?site=SERVER_ID&postback={JID}',
-        'ip' => '137.74.41.178, 2001:41d0:305:2100::413b',
+        'ip' => '137.74.41.178, 2001:41d0:305:2100::413b, ::1',
         'reward' => 5,
         'timeout' => 12,
     ],

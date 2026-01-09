@@ -2,8 +2,10 @@
 
 namespace App\Models\SRO\Shard;
 
-use App\Models\SRO\Account\TbUser;
+use App\Models\SRO\Log\LogChatMessage;
 use App\Models\SRO\Log\LogEventChar;
+use App\Models\SRO\Log\LogInstanceWorldInfo;
+use App\Services\InventoryService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
@@ -62,86 +64,71 @@ class Char extends Model
 
     protected $dateFormat = 'Y-m-d H:i:s';
 
+    protected $appends = [
+        'jid',
+        'Item_points',
+        'char_job',
+        'unique_history',
+        'globals_history',
+        'pvp_kill',
+        'job_kill'
+    ];
+
     public static function getPlayerRanking($limit = 25, $CharID = 0, $CharName = '')
     {
-        $minutes = config('global.cache.ranking_player', 60);
-        $CharName = substr(preg_replace('/[^a-zA-Z0-9_]/', '', $CharName), 0, 50);
-
-        return Cache::remember("ranking_player_{$limit}_{$CharID}_{$CharName}", now()->addMinutes($minutes), function () use ($CharName, $CharID, $limit) {
-            $query = self::select(
+        return Cache::remember("ranking_player_fast_{$limit}_{$CharID}_{$CharName}", now()->addMinutes(config('global.cache.ranking_player', 60)), function () use ($limit, $CharID, $CharName) {
+            $query = self::from(DB::raw('_Char WITH (NOLOCK)'))
+            ->select(
                 '_Char.CharID',
                 '_Char.CharName16',
                 '_Char.CurLevel',
                 '_Char.RefObjID',
-                '_Guild.ID',
-                '_Guild.Name',
                 '_Char.NickName16',
                 '_Char.HwanLevel',
                 '_Char.HP',
                 '_Char.MP',
                 '_Char.Strength',
                 '_Char.Intellect',
-                DB::raw("ISNULL((
-                    SUM(ISNULL(_BindingOptionWithItem.nOptValue, 0)) +
-                    SUM(ISNULL(_Items.OptLevel, 0)) +
-                    SUM(ISNULL(_RefObjCommon.ReqLevel1, 0)) +
-                    SUM(ISNULL(CASE WHEN _RefObjCommon.CodeName128 LIKE '%_A_RARE%' THEN 5 ELSE 0 END, 0)) +
-                    SUM(ISNULL(CASE WHEN _RefObjCommon.CodeName128 LIKE '%_B_RARE%' THEN 10 ELSE 0 END, 0)) +
-                    SUM(ISNULL(CASE WHEN _RefObjCommon.CodeName128 LIKE '%_C_RARE%' THEN 15 ELSE 0 END, 0))
-                ), 0) AS ItemPoints")
+                '_Guild.ID',
+                '_Guild.Name',
+
+                DB::raw("(
+                    SELECT
+                          SUM(ISNULL(b.nOptValue,0))
+                        + SUM(ISNULL(i.OptLevel,0))
+                        + SUM(ISNULL(r.ReqLevel1,0))
+                        + SUM(CASE WHEN r.CodeName128 LIKE '%_A_RARE%' THEN 5 ELSE 0 END)
+                        + SUM(CASE WHEN r.CodeName128 LIKE '%_B_RARE%' THEN 10 ELSE 0 END)
+                        + SUM(CASE WHEN r.CodeName128 LIKE '%_C_RARE%' THEN 15 ELSE 0 END)
+                    FROM _Inventory inv WITH (NOLOCK)
+                    JOIN _Items i WITH (NOLOCK) ON i.ID64 = inv.ItemID
+                    JOIN _RefObjCommon r WITH (NOLOCK) ON r.ID = i.RefItemID
+                    LEFT JOIN _BindingOptionWithItem b WITH (NOLOCK)
+                        ON b.nItemDBID = i.ID64
+                       AND b.bOptType = 2
+                       AND b.nOptValue > 0
+                    WHERE inv.CharID = _Char.CharID
+                      AND inv.Slot < 13
+                      AND inv.Slot NOT IN (7,8)
+                      AND inv.ItemID > 0
+                ) AS ItemPoints")
             );
 
             if (config('global.server.version') === 'vSRO') {
                 $query->addSelect('_CharTrijob.JobType', '_CharTrijob.Level')
-                    ->leftJoin('_CharTrijob', '_Char.CharID', '=', '_CharTrijob.CharID');
+                    ->leftJoin(DB::raw('_CharTrijob WITH (NOLOCK)'), '_Char.CharID', '=', '_CharTrijob.CharID');
             } else {
                 $query->addSelect('_UserTradeConflictJob.JobType', '_CharTradeConflictJob.JobLevel')
-                    ->join('_User', '_User.CharID', '=', '_Char.CharID')
-                    ->join('_UserTradeConflictJob', '_UserTradeConflictJob.UserJID', '=', '_User.UserJID')
-                    ->leftJoin('_CharTradeConflictJob', '_CharTradeConflictJob.CharID', '=', '_Char.CharID');
+                    ->join(DB::raw('_User WITH (NOLOCK)'), '_User.CharID', '=', '_Char.CharID')
+                    ->join(DB::raw('_UserTradeConflictJob WITH (NOLOCK)'), '_UserTradeConflictJob.UserJID', '=', '_User.UserJID')
+                    ->leftJoin(DB::raw('_CharTradeConflictJob WITH (NOLOCK)'), '_CharTradeConflictJob.CharID', '=', '_Char.CharID');
             }
 
-            $query->leftJoin('_Guild', '_Char.GuildID', '=', '_Guild.ID')
-                ->join('_Inventory', '_Inventory.CharID', '=', '_Char.CharID')
-                ->join('_Items', '_Items.ID64', '=', '_Inventory.ItemID')
-                ->join('_RefObjCommon', '_RefObjCommon.ID', '=', '_Items.RefItemID')
-                ->leftJoin('_BindingOptionWithItem', function ($join) {
-                    $join->on('_BindingOptionWithItem.nItemDBID', '=', '_Items.ID64')
-                        ->where('_BindingOptionWithItem.nOptValue', '>', 0)
-                        ->where('_BindingOptionWithItem.bOptType', '=', 2);
-                })
-                ->where('_Inventory.Slot', '<', 13)
-                ->whereNotIn('_Inventory.Slot', [7, 8])
-                ->where('_Inventory.ItemID', '>', 0)
-                ->where('_Char.deleted', '=', 0)
-                ->when($CharID > 0, fn($q) => $q->where('_Char.CharID', $CharID))
-                ->when(!empty($CharName), fn($q) => $q->where('_Char.CharName16', 'like', "%{$CharName}%"))
-                ->whereNotIn('_Char.CharName16', config('ranking.hidden.characters'));
-
-            $groupBy = [
-                '_Char.CharID',
-                '_Char.CharName16',
-                '_Char.CurLevel',
-                '_Char.RefObjID',
-                '_Guild.ID',
-                '_Guild.Name',
-                '_Char.NickName16',
-                '_Char.HwanLevel',
-                '_Char.HP',
-                '_Char.MP',
-                '_Char.Strength',
-                '_Char.Intellect',
-            ];
-
-            if (config('global.server.version') === 'vSRO') {
-                $groupBy[] = '_CharTrijob.JobType';
-                $groupBy[] = '_CharTrijob.Level';
-            } else {
-                $groupBy[] = '_UserTradeConflictJob.JobType';
-                $groupBy[] = '_CharTradeConflictJob.JobLevel';
-            }
-
-            $query->groupBy(...$groupBy)
+            $query->leftJoin(DB::raw('_Guild WITH (NOLOCK)'), '_Char.GuildID', '=', '_Guild.ID')
+                ->where('_Char.deleted', 0)
+                ->when($CharID > 0, fn ($q) => $q->where('_Char.CharID', $CharID))
+                ->when($CharName, fn ($q) => $q->where('_Char.CharName16', 'like', "%{$CharName}%"))
+                ->whereNotIn('_Char.CharName16', config('ranking.hidden.characters'))
                 ->orderByDesc('ItemPoints')
                 ->orderByDesc('_Char.CurLevel')
                 ->limit($limit);
@@ -152,36 +139,89 @@ class Char extends Model
 
     public static function getLevelRanking($limit = 25)
     {
-        $minutes = config('global.cache.ranking_player', 60);
-
-        return Cache::remember("ranking_level_{$limit}", now()->addMinutes($minutes), function () use ($limit) {
-            $query = self::select(
-                '_Char.CharID',
-                '_Char.CharName16',
-                '_Char.CurLevel',
-                '_Char.RefObjID',
-                '_Char.ExpOffset',
-                '_Guild.ID',
-                '_Guild.Name',
-            );
-            $query->join('_Guild', '_Char.GuildID', '=', '_Guild.ID')
-                ->where('_Char.deleted', '=', 0)
-                ->whereNotIn('_Char.CharName16', config('ranking.hidden.characters'));
-            $groupBy = [
-                '_Char.CharID',
-                '_Char.CharName16',
-                '_Char.CurLevel',
-                '_Char.RefObjID',
-                '_Char.ExpOffset',
-                '_Guild.ID',
-                '_Guild.Name',
-            ];
-            $query->groupBy(...$groupBy)
+        return Cache::remember("ranking_level_{$limit}", now()->addMinutes(config('global.cache.ranking_player', 60)), function () use ($limit) {
+            return self::from(DB::raw('_Char WITH (NOLOCK)'))
+                ->select(
+                    '_Char.CharID',
+                    '_Char.CharName16',
+                    '_Char.CurLevel',
+                    '_Char.RefObjID',
+                    '_Char.ExpOffset',
+                    '_Guild.ID',
+                    '_Guild.Name',
+                )
+                ->leftJoin(DB::raw('_Guild WITH (NOLOCK)'), '_Char.GuildID', '=', '_Guild.ID')
+                ->where('_Char.deleted', 0)
+                ->whereNotIn('_Char.CharName16', config('ranking.hidden.characters'))
                 ->orderByDesc('_Char.CurLevel')
                 ->orderByDesc('_Char.ExpOffset')
-                ->limit($limit);
-            return $query->get();
+                ->limit($limit)
+                ->get();
         });
+    }
+
+    public function getItemPointsAttribute()
+    {
+        return cache()->remember("char_item_points_{$this->CharID}", now()->addMinutes(30), function () {
+            return DB::connection($this->getConnectionName())
+                ->table(DB::raw('_Inventory AS inv WITH (NOLOCK)'))
+                ->join(DB::raw('_Items AS i WITH (NOLOCK)'), 'i.ID64', '=', 'inv.ItemID')
+                ->join(DB::raw('_RefObjCommon AS r WITH (NOLOCK)'), 'r.ID', '=', 'i.RefItemID')
+                ->leftJoin(DB::raw('_BindingOptionWithItem AS b WITH (NOLOCK)'), function ($join) {
+                    $join->on('b.nItemDBID', '=', 'i.ID64')
+                        ->where('b.bOptType', 2)
+                        ->where('b.nOptValue', '>', 0);
+                })
+                ->where('inv.CharID', $this->CharID)
+                ->where('inv.Slot', '<', 13)
+                ->whereNotIn('inv.Slot', [7, 8])
+                ->where('inv.ItemID', '>', 0)
+                ->selectRaw("
+                  SUM(ISNULL(b.nOptValue,0))
+                + SUM(ISNULL(i.OptLevel,0))
+                + SUM(ISNULL(r.ReqLevel1,0))
+                + SUM(CASE WHEN r.CodeName128 LIKE '%_A_RARE%' THEN 5 ELSE 0 END)
+                + SUM(CASE WHEN r.CodeName128 LIKE '%_B_RARE%' THEN 10 ELSE 0 END)
+                + SUM(CASE WHEN r.CodeName128 LIKE '%_C_RARE%' THEN 15 ELSE 0 END)
+            ")
+            ->value(DB::raw(''));
+        });
+    }
+
+    public function getCharJob()
+    {
+        return cache()->remember("char_job_{$this->CharID}", now()->addMinutes(30), function () {
+            return DB::connection($this->getConnectionName())
+                ->table(DB::raw('_User as u WITH (NOLOCK)'))
+                ->join(DB::raw('_UserTradeConflictJob as j WITH (NOLOCK)'), 'j.UserJID', '=', 'u.UserJID')
+                ->leftJoin(DB::raw('_CharTradeConflictJob as c WITH (NOLOCK)'), 'c.CharID', '=', 'u.CharID')
+                ->where('u.CharID', $this->CharID)
+                ->select(
+                    'j.JobType',
+                    DB::raw('ISNULL(c.JobLevel, 0) as JobLevel')
+                )
+                ->first();
+        });
+    }
+
+    public function getCharJobVSRO()
+    {
+        return cache()->remember("char_job_vsro_{$this->CharID}", now()->addMinutes(30), function () {
+            return DB::connection($this->getConnectionName())
+                ->table(DB::raw('_CharTrijob WITH (NOLOCK)'))
+                ->where('CharID', $this->CharID)
+                ->select('JobType', 'Level')
+                ->first();
+        });
+    }
+
+    public function getCharJobAttribute()
+    {
+        if (config('global.server.version') === 'vSRO') {
+            return $this->getCharJobVSRO();
+        }
+
+        return $this->getCharJob();
     }
 
     public function setCharUnstuckPosition()
@@ -204,6 +244,74 @@ class Char extends Model
         ]);
     }
 
+    public static function getCharByName($name)
+    {
+        return Cache::remember("character_info_name_{$name}", config('global.cache.character_info', 1440), function () use ($name) {
+            return self::where('CharName16', $name)->firstOrFail();
+        });
+    }
+
+    public function getCharInventorySet()
+    {
+        return app(InventoryService::class)->getInventorySet($this->CharID, 12, 0, 8);
+    }
+
+    public function getCharInventoryAvatar()
+    {
+        return app(InventoryService::class)->getInventoryAvatar($this->CharID);
+    }
+
+    public function getCharInventoryJob()
+    {
+        if (config('global.server.version') === 'vSRO') return collect();
+        return app(InventoryService::class)->getInventoryJob($this->CharID);
+    }
+
+    public function getUniqueHistoryAttribute()
+    {
+        if (!config('widgets.unique_history.enabled')) {
+            return collect();
+        }
+
+        return LogInstanceWorldInfo::getUniquesKill(5, $this->CharID) ?? collect();
+    }
+
+    public function getGlobalsHistoryAttribute()
+    {
+        if (!config('widgets.globals_history.enabled')) {
+            return collect();
+        }
+
+        return LogChatMessage::getGlobalsHistory(5, $this->CharName16) ?? collect();
+    }
+
+    public function getPvpKillAttribute()
+    {
+        if (!config('ranking.extra.kill_logs.pvp')) {
+            return null;
+        }
+
+        return LogEventChar::getKillDeathRanking('pvp', 1, $this->CharID)->first();
+    }
+
+    public function getJobKillAttribute()
+    {
+        if (!config('ranking.extra.kill_logs.job')) {
+            return null;
+        }
+
+        return LogEventChar::getKillDeathRanking('job', 1, $this->CharID)->first();
+    }
+
+    public function getJIDAttribute(): ?int
+    {
+        return cache()->remember("char_jid_{$this->CharID}", now()->addMinutes(60),
+            function () {
+                return $this->user?->UserJID;
+            }
+        );
+    }
+
     public function getCharStatus()
     {
         return $this->hasMany(LogEventChar::class, 'CharID', 'CharID')
@@ -213,7 +321,9 @@ class Char extends Model
 
     public function isOnline(): bool
     {
-        return optional($this->getCharStatus()->first())->EventID == 4;
+        return cache()->remember("char_online_{$this->CharID}", now()->addSeconds(30),
+            fn () => optional($this->getCharStatus()->first())->EventID === 4
+        );
     }
 
     public function isOffline(): bool
@@ -226,18 +336,19 @@ class Char extends Model
         return (bool) Inventory::getInventorySlot($this->CharID, 8);
     }
 
-    public function getPetNames()
+    public function getCharPets()
     {
         return InvCOS::getPetNames($this->CharID);
     }
 
-    public static function getCharIDByName($CharName)
+    public function getBuildInfo()
     {
-        $minutes = config('global.cache.character_info', 1440);
+        return CharSkillMastery::getCharBuildInfo($this->CharID);
+    }
 
-        return Cache::remember("character_info_name_{$CharName}", now()->addMinutes($minutes), function () use ($CharName) {
-            return self::select('CharID')->where('CharName16', $CharName)->first()->CharID ?? null;
-        });
+    public function getBuffInfo()
+    {
+        return TimedJob::getCharBuffInfo($this->CharID);
     }
 
     public static function getCharCount()

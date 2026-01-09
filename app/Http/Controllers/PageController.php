@@ -5,14 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Download;
 use App\Models\News;
 use App\Models\Pages;
-use App\Models\SRO\Account\WebItemCertifyKey;
 use App\Models\SRO\Log\LogChatMessage;
 use App\Models\SRO\Log\LogEventChar;
 use App\Models\SRO\Log\LogEventItem;
 use App\Models\SRO\Log\LogEventSiegeFortress;
 use App\Models\SRO\Log\LogInstanceWorldInfo;
 use App\Services\ScheduleService;
-use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
@@ -63,33 +61,38 @@ class PageController extends Controller
     public function timers(ScheduleService $scheduleService)
     {
         $data = $scheduleService->getEventSchedules();
-        return view('pages.timers', compact('data'));
+        return view('history.schedule', compact('data'));
     }
 
     public function uniques()
     {
         $data = LogInstanceWorldInfo::getUniquesKill();
-        $config = config('ranking.uniques');
-        $characterRace = config('ranking.character_race');
 
-        return view('pages.uniques', [
+        $config = (object) [
+            'uniqueList' => config('ranking.uniques'),
+            'topImage' => config('ranking.top_image'),
+            'characterRace' => config('ranking.character_race'),
+        ];
+
+        return view('history.unique', [
             'data' => $data,
             'config' => $config,
-            'characterRace' => $characterRace,
         ]);
     }
 
     public function uniquesAdvanced()
     {
-        $config = config('ranking.uniques');
-
-        if (!config('ranking.extra.advanced_unique_ranking')) {
-            $data = collect();
+        if (config('ranking.extra.advanced_unique_ranking')) {
+            $data = LogInstanceWorldInfo::getUniquesAdvanced(5);
         } else {
-            $data = LogInstanceWorldInfo::getUniquesTop(5);
+            $data = collect();
         }
 
-        return view('pages.uniques-advanced', [
+        $config = (object) [
+            'uniqueList' => config('ranking.uniques'),
+        ];
+
+        return view('history.unique-advanced', [
             'data' => $data,
             'config' => $config,
         ]);
@@ -98,9 +101,12 @@ class PageController extends Controller
     public function fortress()
     {
         $data = LogEventSiegeFortress::getFortressHistory(25);
-        $config = config('widgets.fortress_war');
 
-        return view('pages.fortress', [
+        $config = (object) [
+            'fortressList' => config('widgets.fortress_war'),
+        ];
+
+        return view('history.fortress', [
             'data' => $data,
             'config' => $config,
         ]);
@@ -109,29 +115,31 @@ class PageController extends Controller
     public function globals()
     {
         $data = LogChatMessage::getGlobalsHistory(25);
-        return view('pages.globals', compact('data'));
+        return view('history.global', compact('data'));
     }
 
     public function sox_plus()
     {
         $config = config('ranking.extra.item_logs.plus');
-        if ($config['enabled']) {
-            $data = LogEventItem::getLogEventItem('plus', $config['plus'], $config['degree'], $config['type'], null, 25);
+        if ($config->enabled) {
+            $data = LogEventItem::getLogEventItem('plus', $config->plus, $config->degree, $config->type, null, 25);
         } else {
             $data = collect();
         }
-        return view('pages.sox-plus', compact('data'));
+
+        return view('history.item-plus', compact('data'));
     }
 
     public function sox_drop()
     {
         $config = config('ranking.extra.item_logs.drop');
-        if ($config['enabled']) {
-            $data = LogEventItem::getLogEventItem('drop', null, $config['degree'], $config['type'], null, 25);
+        if ($config->enabled) {
+            $data = LogEventItem::getLogEventItem('drop', null, $config->degree, $config->type, null, 25);
         } else {
             $data = collect();
         }
-        return view('pages.sox-drop', compact('data'));
+
+        return view('history.item-drop', compact('data'));
     }
 
     public function pvp_kills()
@@ -141,7 +149,8 @@ class PageController extends Controller
         } else {
             $data = collect();
         }
-        return view('pages.pvp-kills', compact('data'));
+
+        return view('history.pvp-kill', compact('data'));
     }
 
     public function job_kills()
@@ -151,19 +160,7 @@ class PageController extends Controller
         } else {
             $data = collect();
         }
-        return view('pages.job-kills', compact('data'));
-    }
 
-    public function gateway(Request $request)
-    {
-        $user = $request->user();
-        $data = WebItemCertifyKey::getCertifyKey($user->tbUser->JID);
-        $config = config('global.server');
-        $key = strtoupper(md5($data->UserJID.$data->Certifykey.$config['saltKey']));
-        $data = "{$config['WebMallAddr']}?jid={$data->UserJID}&key={$key}&loc=us";
-
-        return view('pages.gateway', [
-            'data' => $data,
-        ]);
+        return view('history.job-kill', compact('data'));
     }
 }

@@ -7,7 +7,7 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($globalsHistory as $value)
+            @forelse($data->globals_history as $value)
                 <tr>
                     <td>{!! $value->Comment !!}</td>
                     <td>{{ \Carbon\Carbon::make($value->EventTime)->diffForHumans() }}</td>

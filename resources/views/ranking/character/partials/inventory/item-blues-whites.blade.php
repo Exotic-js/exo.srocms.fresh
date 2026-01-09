@@ -46,7 +46,7 @@
     @endif
 </span>
 
-@if(!config("settings.item_stats_jid_{$data->user->UserJID}") || auth()->user()?->role?->is_admin)
+@if(!config("settings.item_stats_jid_{$data->jid}") || auth()->user()?->role?->is_admin)
     @if($item->WhiteInfo)
         @foreach($item->WhiteInfo as $sWhites)
             @if(!empty($sWhites))
@@ -139,7 +139,7 @@
     <br />
 @endif
 
-@if(!config("settings.item_stats_jid_{$data->user->UserJID}") || auth()->user()?->role?->is_admin)
+@if(!config("settings.item_stats_jid_{$data->jid}") || auth()->user()?->role?->is_admin)
     @if(!in_array((int) $item->TypeID2, [4], true) && !in_array((int) $item->TypeID3, [13, 14], true))
         @if($item->MagParam1 >= 4611686018427387904)
             <span style="color:#ff2f51;">{{ __('You may not use normal Magic Stone') }}</span><br />

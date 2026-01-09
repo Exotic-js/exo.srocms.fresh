@@ -9,7 +9,7 @@
                     <div class="col-md-6">
                         <div class="d-flex">
                             <div class="d-flex me-3 overflow-hidden align-items-center">
-                                <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.$characterImage[$data->RefObjID]) }}" width="100" height="100" alt=""/>
+                                <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.$config->characterImage[$data->RefObjID]) }}" width="100" height="100" alt=""/>
                             </div>
 
                             <div class="mt-3">
@@ -17,14 +17,14 @@
                                 <p class="m-0">{{ __('Item Points:') }} <span class="">{{ $data->ItemPoints }}</span></p>
 
                                 <p class="mb-0">
-                                    @foreach($build as $key => $value)
-                                        @if(isset($skillMastery[$value->MasteryID]))
-                                            <span>{{ $skillMastery[$value->MasteryID]['name'] }}</span> @if($key < count($build) - 1) / @endif
+                                    @foreach($data->getBuildInfo() as $key => $value)
+                                        @if(isset($config->skillMastery[$value->MasteryID]))
+                                            <span>{{ $config->skillMastery[$value->MasteryID]['name'] }}</span> @if($key < count($data->getBuildInfo()) - 1) / @endif
                                         @endif
                                     @endforeach
                                 </p>
                                 <ul class="list-unstyled d-flex">
-                                    @foreach($buff as $value)
+                                    @foreach($data->getBuffInfo() as $value)
                                         <li class="me-1">
                                             <img src="{{ asset('images/sro/' . $value->UI_IconFile_PNG) }}" title="{{ $value->UI_SkillName }}" alt="" width="24" height="24">
                                         </li>
@@ -35,18 +35,18 @@
                     </div>
                     <div class="col-md-6">
                         <div class="row mt-3 justify-content-end">
-                            @if($data->JobType > 0)
+                            @if($data->charJob->JobType)
                                 <div class="col-md-4">
                                     <div class="d-flex">
                                         <div class="d-flex align-items-center">
-                                            <img src="{{ asset($jobType[$data->JobType]['image']) }}" width="50" height="" alt=""/>
+                                            <img src="{{ asset($config->jobType[$data->charJob->JobType]['image']) }}" width="50" height="" alt=""/>
                                         </div>
 
                                         <ul class="list-unstyled mt-3">
                                             <li class="mb-0">
-                                                <span>{{ $jobType[$data->JobType]['name'] }}</span>
+                                                <span>{{ $config->jobType[$data->charJob->JobType]['name'] }}</span>
                                             </li>
-                                            <li class="mb-0">{{ __('Job Level:') }} <span class="">{{ $data->JobLevel ?? $data->Level }}</span></li>
+                                            <li class="mb-0">{{ __('Job Level:') }} <span class="">{{ $data->charJob->JobLevel ?? $data->charJob->Level }}</span></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -101,27 +101,31 @@
                             <div class="tab-pane fade" id="uniques-tab-pane" role="tabpanel" aria-labelledby="uniques-tab" tabindex="0">
                                 @include('ranking.character.partials.character-unique-history')
                             </div>
-                            <div class="tab-pane fade" id="titles-tab-pane" role="tabpanel" aria-labelledby="titles-tab" tabindex="0">
-                                @include('partials.character-owned-titles', ['Limit' => 5, 'CharID' => $data->CharID])
-                            </div>
+                            @if(config('global.server.version') !== 'vSRO')
+                                @if(config('widgets.custom.owned_titles.enabled'))
+                                <div class="tab-pane fade" id="titles-tab-pane" role="tabpanel" aria-labelledby="titles-tab" tabindex="0">
+                                    @include('partials.character-owned-titles', ['Limit' => 5, 'CharID' => $data->CharID])
+                                </div>
+                                @endif
+                            @endif
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="card" style="height: 345px">
                             <div class="card-body d-flex flex-column position-relative h-100" id="display-inventory">
                                 <div class="position-absolute top-0 start-0 w-100 h-100 p-4 d-block" id="display-inventory-set">
-                                    @include('ranking.character.partials.inventory.inventory-view', ['inventorySetList' => $inventorySet])
+                                    @include('ranking.character.partials.inventory.inventory-view', ['inventorySetList' => $data->getCharInventorySet()])
                                 </div>
                                 @if(config('global.server.version') !== 'vSRO')
                                     <div class="position-absolute top-0 start-0 w-100 h-100 p-4 d-none" id="display-inventory-job">
-                                        @include('ranking.character.partials.inventory.inventory-job-view', ['inventoryJobList' => $inventoryJob])
+                                        @include('ranking.character.partials.inventory.inventory-job-view', ['inventoryJobList' => $data->getCharInventoryJob()])
                                     </div>
                                 @endif
                                 <div class="position-absolute top-0 start-0 w-100 h-100 p-4 d-none" id="display-inventory-avatar">
-                                    @include('ranking.character.partials.inventory.inventory-avatar-view', ['inventoryAvatarList' => $inventoryAvatar])
+                                    @include('ranking.character.partials.inventory.inventory-avatar-view', ['inventoryAvatarList' => $data->getCharInventoryAvatar()])
                                 </div>
 
-                                <img class="position-absolute top-50 start-50 translate-middle h-100 w-auto object-fit-cover z-0 pt-4" src="{{ asset('images/character_full/'.$characterImage[$data->RefObjID]) }}" alt=""/>
+                                <img class="position-absolute top-50 start-50 translate-middle h-100 w-auto object-fit-cover z-0 pt-4" src="{{ asset('images/character_full/'.$config->characterImage[$data->RefObjID]) }}" alt=""/>
                                 <button id="display-inventory-switch-isro" data-type="set" class="btn btn-secondary mt-auto w-auto align-self-center position-relative z-1">{{ __('Switch') }}</button>
                             </div>
                         </div>

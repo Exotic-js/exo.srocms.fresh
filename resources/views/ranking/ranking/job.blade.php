@@ -1,9 +1,11 @@
 <div class="container">
     <div class="col-md-12">
         <div class="d-inline-block mb-4 mx-2">
-            @foreach($config as $value)
-                @if($value['enabled'])
-                    <button class="btn btn-secondary rounded-0 me-2 mb-2 btn-sm" data-link-job="{{ route($value['route']) }}">{{ __($value['name']) }}</button>
+            @foreach($config->menu as $item)
+                @if($item->enabled)
+                    <button class="btn btn-secondary rounded-0 me-2 mb-2 btn-sm" data-link-job="{{ route($item->route) }}">
+                        {{ __($item->name) }}
+                    </button>
                 @endif
             @endforeach
         </div>

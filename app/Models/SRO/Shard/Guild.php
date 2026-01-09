@@ -4,6 +4,7 @@ namespace App\Models\SRO\Shard;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -27,77 +28,54 @@ class Guild extends Model
 
     protected $dateFormat = 'Y-m-d H:i:s';
 
-    public static function getGuildRanking($limit = 25, $GuildID = 0, $Name = '')
+    public static function getGuildRanking(int $limit = 25, int $GuildID = 0, string $Name = '')
     {
-        $minutes = config('global.cache.ranking_guild', 60);
-        $Name = substr(preg_replace('/[^a-zA-Z0-9_]/', '', $Name), 0, 50);
-
-        return Cache::remember("ranking_guild_{$limit}_{$GuildID}_{$Name}", now()->addMinutes($minutes), function () use ($Name, $GuildID, $limit) {
-            $query = self::select(
+        return Cache::remember("ranking_guild_{$limit}_{$GuildID}_{$Name}", now()->addMinutes(config('global.cache.ranking_guild', 60)), function () use ($limit, $GuildID, $Name) {
+            $query = self::from(DB::raw('_Guild WITH (NOLOCK)'))
+            ->select(
                 '_Guild.ID',
                 '_Guild.Name',
                 '_Guild.Lvl',
                 '_Guild.GatheredSP',
                 '_Guild.FoundationDate',
-                DB::raw("(SELECT CharID FROM _GuildMember WHERE GuildID = _Guild.ID AND MemberClass = 0) AS LeaderID"),
-                DB::raw("(SELECT CharName FROM _GuildMember WHERE GuildID = _Guild.ID AND MemberClass = 0) AS LeaderName"),
-                DB::raw("(SELECT COUNT(CharID) FROM _GuildMember WHERE GuildID = _Guild.ID) AS TotalMember"),
-                DB::raw("ISNULL((
-                    SUM(ISNULL(_BindingOptionWithItem.nOptValue, 0)) +
-                    SUM(ISNULL(_Items.OptLevel, 0)) +
-                    SUM(ISNULL(_RefObjCommon.ReqLevel1, 0)) +
-                    SUM(ISNULL(CASE WHEN _RefObjCommon.CodeName128 LIKE '%_A_RARE%' THEN 5 ELSE 0 END, 0)) +
-                    SUM(ISNULL(CASE WHEN _RefObjCommon.CodeName128 LIKE '%_B_RARE%' THEN 10 ELSE 0 END, 0)) +
-                    SUM(ISNULL(CASE WHEN _RefObjCommon.CodeName128 LIKE '%_C_RARE%' THEN 15 ELSE 0 END, 0))
-                ), 0) AS ItemPoints")
+
+                DB::raw("(SELECT TOP 1 CharID FROM _GuildMember WITH (NOLOCK) WHERE GuildID = _Guild.ID AND MemberClass = 0 ) AS LeaderID"),
+                DB::raw("(SELECT TOP 1 CharName FROM _GuildMember WITH (NOLOCK) WHERE GuildID = _Guild.ID AND MemberClass = 0 ) AS LeaderName"),
+                DB::raw("(SELECT COUNT(*) FROM _GuildMember WITH (NOLOCK) WHERE GuildID = _Guild.ID ) AS TotalMember"),
+
+                DB::raw("(
+                SELECT
+                      SUM(ISNULL(b.nOptValue,0))
+                    + SUM(ISNULL(i.OptLevel,0))
+                    + SUM(ISNULL(r.ReqLevel1,0))
+                    + SUM(CASE WHEN r.CodeName128 LIKE '%_A_RARE%' THEN 5 ELSE 0 END)
+                    + SUM(CASE WHEN r.CodeName128 LIKE '%_B_RARE%' THEN 10 ELSE 0 END)
+                    + SUM(CASE WHEN r.CodeName128 LIKE '%_C_RARE%' THEN 15 ELSE 0 END)
+                FROM _GuildMember gm WITH (NOLOCK)
+                JOIN _Inventory inv WITH (NOLOCK) ON inv.CharID = gm.CharID
+                JOIN _Items i WITH (NOLOCK) ON i.ID64 = inv.ItemID
+                JOIN _RefObjCommon r WITH (NOLOCK) ON r.ID = i.RefItemID
+                LEFT JOIN _BindingOptionWithItem b WITH (NOLOCK)
+                    ON b.nItemDBID = i.ID64
+                   AND b.bOptType = 2
+                   AND b.nOptValue > 0
+                WHERE gm.GuildID = _Guild.ID
+                  AND inv.Slot < 13
+                  AND inv.Slot NOT IN (7,8)
+                  AND inv.ItemID > 0
+            ) AS ItemPoints")
             );
 
             if (config('global.server.version') !== 'vSRO') {
-                $query->addSelect(DB::raw("CONVERT(VARCHAR(MAX), _GuildCrest.CrestBinary, 2) AS CrestIcon"));
+                $query->addSelect(DB::raw("CONVERT(VARCHAR(MAX), _GuildCrest.CrestBinary, 2) AS CrestIcon"))
+                    ->leftJoin(DB::raw('_GuildCrest WITH (NOLOCK)'), '_GuildCrest.GuildID', '=', '_Guild.ID');
             }
 
-            $query->join('_GuildMember', '_GuildMember.GuildID', '=', '_Guild.ID')
-                ->join('_Inventory', '_Inventory.CharID', '=', '_GuildMember.CharID')
-                ->join('_Items', '_Items.ID64', '=', '_Inventory.ItemID')
-                ->join('_RefObjCommon', '_RefObjCommon.ID', '=', '_Items.RefItemID')
-                ->leftJoin('_BindingOptionWithItem', function ($join) {
-                    $join->on('_BindingOptionWithItem.nItemDBID', '=', '_Items.ID64')
-                        ->where('_BindingOptionWithItem.nOptValue', '>', 0)
-                        ->where('_BindingOptionWithItem.bOptType', '=', 2);
-                });
-
-            if (config('global.server.version') !== 'vSRO') {
-                $query->leftJoin('_GuildCrest', '_GuildCrest.GuildID', '=', '_Guild.ID');
-            }
-
-            $query->where('_Inventory.Slot', '<', 13)
-                ->where('_Inventory.Slot', '!=', 8)
-                ->where('_Inventory.Slot', '!=', 7)
-                ->where('_Inventory.ItemID', '>', 0)
-                ->when($GuildID > 0, function ($query) use ($GuildID) {
-                    $query->where('_Guild.ID', '=', $GuildID);
-                })
-                ->when(!empty($Name), function ($query) use ($Name) {
-                    $query->where('_Guild.Name', 'like', "%{$Name}%");
-                })
-                ->whereNotIn('_Guild.Name', config('ranking.hidden.guilds'));
-
-            $groupBy = [
-                '_Guild.ID',
-                '_Guild.Name',
-                '_Guild.Lvl',
-                '_Guild.GatheredSP',
-                '_Guild.FoundationDate',
-            ];
-
-            if (config('global.server.version') !== 'vSRO') {
-                $groupBy[] = '_GuildCrest.CrestBinary';
-            }
-
-            $query->groupBy(...$groupBy)
+            $query->when($GuildID > 0, fn ($q) => $q->where('_Guild.ID', $GuildID))
+                ->when($Name !== '', fn ($q) => $q->where('_Guild.Name', 'like', "%{$Name}%"))
+                ->whereNotIn('_Guild.Name', config('ranking.hidden.guilds'))
                 ->orderByDesc('ItemPoints')
                 ->orderByDesc('_Guild.Lvl')
-                ->orderByDesc('_Guild.GatheredSP')
                 ->limit($limit);
 
             return $query->get();
@@ -124,16 +102,14 @@ class Guild extends Model
         });
     }
 
-    public static function getGuildIDByName($GuildName)
+    public static function getGuildByName($name)
     {
-        $minutes = config('global.cache.guild_info', 1440);
-
-        return Cache::remember("guild_info_name_{$GuildName}", now()->addMinutes($minutes), function () use ($GuildName) {
-            return self::select('ID')->where('Name', $GuildName)->first()->ID ?? null;
+        return Cache::remember("guild_info_name_{$name}", config('global.cache.guild_info', 1440), function () use ($name) {
+            return self::where('Name', $name)->firstOrFail();
         });
     }
 
-    public static function getGuildInfoAlliance($GuildID)
+    public static function getGuildAllianceAttribute($GuildID)
     {
         $minutes = config('global.cache.guild_info', 1440);
 
@@ -157,5 +133,80 @@ class Guild extends Model
         return Cache::remember('guild_info_count', now()->addMinutes($minutes), function () {
             return self::count();
         });
+    }
+
+    public function getLeaderNameAttribute()
+    {
+        return Cache::remember("guild_leader_{$this->ID}", now()->addMinutes(30), function () {
+            return DB::connection($this->getConnectionName())
+                ->table('_GuildMember')
+                ->where('GuildID', $this->ID)
+                ->where('MemberClass', 0)
+                ->value('CharName');
+        });
+    }
+
+    public function getTotalMemberAttribute()
+    {
+        return Cache::remember("guild_total_member_{$this->ID}", now()->addMinutes(30), function () {
+            return DB::connection($this->getConnectionName())
+                ->table('_GuildMember')
+                ->where('GuildID', $this->ID)
+                ->count();
+        });
+    }
+
+    public function getItemPointsAttribute()
+    {
+        return Cache::remember("guild_item_points_{$this->ID}", now()->addMinutes(30), function () {
+            return DB::connection($this->getConnectionName())
+                ->table('_GuildMember as gm')
+                ->join('_Inventory as inv', 'inv.CharID', '=', 'gm.CharID')
+                ->join('_Items as i', 'i.ID64', '=', 'inv.ItemID')
+                ->join('_RefObjCommon as r', 'r.ID', '=', 'i.RefItemID')
+                ->leftJoin('_BindingOptionWithItem as b', function ($join) {
+                    $join->on('b.nItemDBID', '=', 'i.ID64')
+                        ->where('b.bOptType', 2)
+                        ->where('b.nOptValue', '>', 0);
+                })
+                ->where('gm.GuildID', $this->ID)
+                ->where('inv.Slot', '<', 13)
+                ->whereNotIn('inv.Slot', [7, 8])
+                ->where('inv.ItemID', '>', 0)
+                ->selectRaw("
+                      SUM(ISNULL(b.nOptValue,0))
+                    + SUM(ISNULL(i.OptLevel,0))
+                    + SUM(ISNULL(r.ReqLevel1,0))
+                    + SUM(CASE WHEN r.CodeName128 LIKE '%_A_RARE%' THEN 5 ELSE 0 END)
+                    + SUM(CASE WHEN r.CodeName128 LIKE '%_B_RARE%' THEN 10 ELSE 0 END)
+                    + SUM(CASE WHEN r.CodeName128 LIKE '%_C_RARE%' THEN 15 ELSE 0 END)
+                ")
+                ->value(DB::raw(''));
+        });
+    }
+
+    public function getCrestAttribute()
+    {
+        if (config('global.server.version') !== 'vSRO') {
+            return Cache::remember("guild_crest_{$this->ID}", now()->addMinutes(30), function () {
+                return DB::connection($this->getConnectionName())
+                    ->table('_GuildCrest')
+                    ->where('GuildID', $this->ID)
+                    ->value(DB::raw("CONVERT(VARCHAR(MAX), CrestBinary, 2)"));
+            });
+        }
+        return null;
+    }
+
+    public function getMembersAttribute()
+    {
+        return Cache::remember("guild_members_{$this->ID}", 3600, function () {
+            return $this->members()->get();
+        });
+    }
+
+    public function members()
+    {
+        return $this->hasMany(GuildMember::class, 'GuildID', 'ID');
     }
 }

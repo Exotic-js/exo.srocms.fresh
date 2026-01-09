@@ -11,8 +11,8 @@
                             <div class="d-flex">
                                 <div>
                                     <h2>
-                                        @if(isset($data->CrestIcon))
-                                            <img src="{{ route('ranking.guild-crest', ['hex' => $data->CrestIcon]) }}" alt="" width="32" height="32">
+                                        @if(isset($data->Crest))
+                                            <img src="{{ route('ranking.guild-crest', ['hex' => $data->Crest]) }}" alt="" width="32" height="32">
                                         @endif
                                         {{ $data->Name }}
                                     </h2>

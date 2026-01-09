@@ -8,14 +8,13 @@
             </tr>
         </thead>
         <tbody>
-        @php $i = 1; @endphp
-        @forelse($data as $value)
+            @forelse($data as $key => $value)
             <tr>
                 <td>
-                    @if($i <= 3)
-                        <img src="{{ asset($topImage[$i]) }}" alt=""/>
+                    @if($key < 3)
+                        <img src="{{ asset($config->topImage[$key + 1]) }}" alt=""/>
                     @else
-                        {{ $i }}
+                        {{ $key + 1 }}
                     @endif
                 </td>
                 <td>
@@ -23,7 +22,6 @@
                 </td>
                 <td>{{ $value->KillCount }} / {{ $value->DeathCount }}</td>
             </tr>
-            @php $i++ @endphp
         @empty
             <tr>
                 <td colspan="3" class="text-center">{{ __('No Records Found!') }}</td>

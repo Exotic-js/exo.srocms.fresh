@@ -20,16 +20,16 @@
                         @forelse($data as $key => $value)
                             <tr>
                                 <td>
-                                    <img src="{{ asset($config[$value->Value]['image']) }}" alt=""/>
-                                    {{ $config[$value->Value]['name'] }}
+                                    <img src="{{ asset($config->uniqueList[$value->Value]['image']) }}" alt=""/>
+                                    {{ $config->uniqueList[$value->Value]['name'] }}
                                 </td>
                                 <td>{{ \Carbon\Carbon::make($value->EventTime)->diffForHumans() }}</td>
                                 <td>
                                     @if($value->CharName16 && $value['ValueCodeName128'] == 'KILL_UNIQUE_MONSTER')
                                         @if($value->RefObjID > 2000)
-                                            <img src="{{ asset($characterRace[1]['image']) }}" width="16" height="16" alt=""/>
+                                            <img src="{{ asset($config->characterRace[1]['image']) }}" width="16" height="16" alt=""/>
                                         @else
-                                            <img src="{{ asset($characterRace[0]['image']) }}" width="16" height="16" alt=""/>
+                                            <img src="{{ asset($config->characterRace[0]['image']) }}" width="16" height="16" alt=""/>
                                         @endif
                                         <a href="{{ route('ranking.character.view', ['name' => $value->CharName16]) }}" class="text-decoration-none">{{ $value->CharName16 }}</a>
                                     @endif
