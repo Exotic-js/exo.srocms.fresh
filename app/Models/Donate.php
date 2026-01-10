@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class DonateLog extends Model
+class Donate extends Model
 {
     protected $connection = 'sqlsrv';
 
-    protected $table = 'donate_logs';
+    protected $table = 'donates';
 
     protected $primaryKey = 'id';
 

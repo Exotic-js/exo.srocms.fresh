@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('donate_logs', function (Blueprint $table) {
+        Schema::create('donates', function (Blueprint $table) {
             $table->increments('id');
             $table->string('method');
             $table->string('transaction_id');

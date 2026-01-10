@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\DonateLog;
+use App\Models\Donate;
 use App\Models\SRO\Account\SkSilk;
 use App\Models\SRO\Portal\AphChangedSilk;
 use App\Models\User;
@@ -148,7 +148,7 @@ class DonateService
             AphChangedSilk::setChangedSilk($user->jid, 3, $package['value']);
         }
 
-        DonateLog::setDonateLog(
+        Donate::setDonateLog(
             'Paypal',
             (string) Str::uuid(),
             'success',
@@ -175,7 +175,7 @@ class DonateService
             return response('Invalid receiver', 403);
         }
 
-        if (DonateLog::where('transaction_id', $data['txn_id'])->exists()) {
+        if (Donate::where('transaction_id', $data['txn_id'])->exists()) {
             return response('Duplicate TXN', 409);
         }
 
@@ -206,7 +206,7 @@ class DonateService
             AphChangedSilk::setChangedSilk($user->jid, 3, $package['value']);
         }
 
-        DonateLog::setDonateLog(
+        Donate::setDonateLog(
             'Paypal-IPN',
             $data['txn_id'],
             'success',
@@ -313,7 +313,7 @@ class DonateService
                     AphChangedSilk::setChangedSilk($user->jid, 3, $package['value']);
                 }
 
-                DonateLog::setDonateLog(
+                Donate::setDonateLog(
                     'Stripe',
                     $session['id'],
                     'success',
@@ -394,7 +394,7 @@ class DonateService
             }
         }
 
-        $transactionExists = DonateLog::where('transaction_id', $pingback['ref'])->where('status', 'success')->exists();
+        $transactionExists = Donate::where('transaction_id', $pingback['ref'])->where('status', 'success')->exists();
         if ($transactionExists) {
             return response('Duplicard Ref', 409);
         }
@@ -412,7 +412,7 @@ class DonateService
                 AphChangedSilk::setChangedSilk($user->jid, 3, $pingback['currency']);
             }
 
-            DonateLog::setDonateLog(
+            Donate::setDonateLog(
                 'Paymentwall',
                 $pingback['ref'],
                 'success',
@@ -512,7 +512,7 @@ class DonateService
                 AphChangedSilk::setChangedSilk($user->jid, 3, $package['value']);
             }
 
-            DonateLog::setDonateLog(
+            Donate::setDonateLog(
                 'CoinPayments',
                 $data['txn_id'],
                 'success',
@@ -572,7 +572,7 @@ class DonateService
             $paymentUrl = $response['data']['url'] ?? null;
 
             if ($paymentUrl) {
-                DonateLog::setDonateLog(
+                Donate::setDonateLog(
                     'Fawaterk',
                     $response['data']['invoiceId'],
                     'pending',
@@ -598,7 +598,7 @@ class DonateService
         $invoice_id = $request->query('invoice_id');
 
         if ($status === 'success') {
-            $transaction_id = DonateLog::where('transaction_id', $invoice_id)->where('status', 'pending')->first();
+            $transaction_id = Donate::where('transaction_id', $invoice_id)->where('status', 'pending')->first();
             if (!$transaction_id) {
                 return response('Invalid transaction ID.', 400);
             }
@@ -681,7 +681,7 @@ class DonateService
                     AphChangedSilk::setChangedSilk($user->jid, 3, $package['value']);
                 }
 
-                DonateLog::setDonateLog(
+                Donate::setDonateLog(
                     'MaxiCard',
                     $orderNumber,
                     'success',
@@ -737,7 +737,7 @@ class DonateService
                     AphChangedSilk::setChangedSilk($user->jid, 3, $package['value']);
                 }
 
-                DonateLog::setDonateLog(
+                Donate::setDonateLog(
                     'HipoCard',
                     uniqid().rand(100,999),
                     'success',
@@ -842,7 +842,7 @@ class DonateService
                 AphChangedSilk::setChangedSilk($user->jid, 3, $package['value']);
             }
 
-            DonateLog::setDonateLog(
+            Donate::setDonateLog(
                 'HipoPay',
                 $data['transaction_id'],
                 'success',

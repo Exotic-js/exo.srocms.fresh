@@ -147,7 +147,7 @@
                                 <div class="card mt-3">
                                     <div id="display-pet" class="card-body p-3 d-flex flex-column justify-content-center align-items-center">
                                         <h2 class="text-center">Pet</h2>
-                                        @include('ranking.character.partials.inventory.inventory-view', ['inventorySetList' => $data->getCharPetItems(request()->input('pet') ?? $data->CharPets->first()->ID), 'min' => 0, 'max' => 195])
+                                        @include('ranking.character.partials.inventory.inventory-view', ['inventorySetList' => $data->getCharPetItems(request()->input('pet') ?? ($data->CharPets->first()->ID ?? null)), 'min' => 0, 'max' => 195])
 
                                         <form method="GET" action="">
                                             <div class="row mb-3">

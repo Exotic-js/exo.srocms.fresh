@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
-use App\Models\DonateLog;
+use App\Models\Donate;
 use App\Models\PasswordResetToken;
 use App\Models\Referral;
 use App\Models\Setting;
@@ -26,16 +26,8 @@ class ProfileController extends Controller
 {
     public function index(Request $request): View
     {
-        $config = [
-            'characterImage' => config('ranking.character_image'),
-            'characterImageVSRO' => config('ranking.character_image_vsro'),
-            'characterRace' => config('ranking.character_race'),
-            'vipLevel' => config('ranking.vip_level'),
-        ];
-
         return view('profile.index', [
             'user' => $request->user(),
-            'config' => $config,
         ]);
     }
 
@@ -73,19 +65,7 @@ class ProfileController extends Controller
 
         $user->save();
 
-        DB::transaction(function () use ($user) {
-            if (config('global.server.version') === 'vSRO') {
-                TbUser::where('JID', $user->jid)->update(['Email' => $user->email,]);
-            } else {
-                MuEmail::where('JID', $user->jid)->update(['EmailAddr' => $user->email,]);
-
-                MuhAlteredInfo::where('JID', $user->jid)->update([
-                    'EmailAddr' => $user->email,
-                    'EmailReceptionStatus' => config('settings.register_confirm') ? 'N' : 'Y',
-                    'EmailCertificationStatus' => config('settings.register_confirm') ? 'N' : 'Y',
-                ]);
-            }
-        });
+        $user->updateGameEmail();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
@@ -112,19 +92,7 @@ class ProfileController extends Controller
             $user->email_verified_at = null;
             $user->save();
 
-            DB::transaction(function () use ($user) {
-                if (config('global.server.version') === 'vSRO') {
-                    TbUser::where('JID', $user->jid)->update(['Email' => $user->email,]);
-                } else {
-                    MuEmail::where('JID', $user->jid)->update(['EmailAddr' => $user->email,]);
-
-                    MuhAlteredInfo::where('JID', $user->jid)->update([
-                        'EmailAddr' => $user->email,
-                        'EmailReceptionStatus' => config('settings.register_confirm') ? 'N' : 'Y',
-                        'EmailCertificationStatus' => config('settings.register_confirm') ? 'N' : 'Y',
-                    ]);
-                }
-            });
+            $user->updateGameEmail();
         }
 
         if ($request->has('verify_login')) {
@@ -280,7 +248,7 @@ class ProfileController extends Controller
 
         $user->tbUser->giveSilk($voucher->type, $voucher->amount);
 
-        DonateLog::setDonateLog([
+        Donate::setDonateLog([
             'method' => 'Voucher',
             'amount' => $voucher->amount,
             'jid' => $user->jid,
@@ -329,7 +297,7 @@ class ProfileController extends Controller
 
         $user->tbUser->giveSilk(3, $invites->sum('points'));
 
-        DonateLog::setDonateLog([
+        Donate::setDonateLog([
             'method' => 'Voucher',
             'amount' => $invites->sum('points'),
             'jid' => $user->jid,

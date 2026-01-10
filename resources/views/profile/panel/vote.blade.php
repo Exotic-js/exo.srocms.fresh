@@ -28,10 +28,10 @@
                                 <p class="text-muted mb-0">{{ __('Reward:') }} {{ $value->reward }} Silk</p>
                                 <p class="text-muted mb-2">{{ __('Timeout:') }} {{ $value->timeout }} Hours</p>
 
-                                @if($value->canVote)
-                                    <a href="{{ route('profile.vote.voting', $key) }}" target="_blank" class="btn btn-primary vote-btn" data-site="{{ $key }}">Vote Now</a>
-                                @else
+                                @if($value->expire)
                                     {{ __('Wait until') }} {{ $value->expire?->format('Y-m-d H:i') }}
+                                @else
+                                    <a href="#" target="_blank" class="btn btn-primary vote-btn" data-site="{{ $key }}" data-url="{{ route('profile.vote.voting', $key) }}">Vote Now</a>
                                 @endif
                             </div>
                         </div>
@@ -49,13 +49,13 @@
             const result = await fp.get();
             const fingerprint = result.visitorId;
 
-            const params = new URLSearchParams(window.location.search);
-
-            if (params.get('fingerprint') !== fingerprint) {
-                params.set('fingerprint', fingerprint);
-                history.replaceState({}, '', `${location.pathname}?${params}`);
-                location.reload();
-            }
+            document.querySelectorAll('.vote-btn').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.preventDefault();
+                    const url = btn.dataset.url + '?fingerprint=' + fingerprint;
+                    window.open(url, '_blank');
+                });
+            });
         })();
     </script>
 @endpush

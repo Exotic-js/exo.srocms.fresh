@@ -3,17 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\DonateLog;
+use App\Models\Donate;
 use App\Models\Referral;
 use App\Models\SRO\Account\SmcLog;
-use App\Models\VoteLog;
+use App\Models\Vote;
 use Illuminate\Http\Request;
 
 class LogsController extends Controller
 {
-    public function donateLogs(Request $request)
+    public function donate(Request $request)
     {
-        $query = DonateLog::query();
+        $query = Donate::query();
 
         $query->when($request->filled('transaction_id'), fn($q) =>
             $q->where('transaction_id', 'like', "%{$request->transaction_id}%")
@@ -36,21 +36,21 @@ class LogsController extends Controller
         return view('admin.logs.donate', compact('data'));
     }
 
-    public function referralLogs()
+    public function referral()
     {
         $data = Referral::getReferralLogs(20);
 
         return view('admin.logs.referral', compact('data'));
     }
 
-    public function voteLogs()
+    public function vote()
     {
-        $data = VoteLog::latest()->paginate(20);
+        $data = Vote::whereNotNull('expire')->latest()->paginate(20);
 
         return view('admin.logs.vote', compact('data'));
     }
 
-    public function smcLogs(Request $request)
+    public function smc(Request $request)
     {
         $query = SmcLog::query();
 

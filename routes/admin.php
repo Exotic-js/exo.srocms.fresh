@@ -16,10 +16,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/index', [AdminController::class, 'index'])->name('admin');
 
     Route::prefix('admin')->name('admin.')->group(function() {
-        Route::get('/logs/donate', [LogsController::class, 'donateLogs'])->name('logs.donate');
-        Route::get('/logs/referral', [LogsController::class, 'referralLogs'])->name('logs.referral');
-        Route::get('/logs/vote', [LogsController::class, 'voteLogs'])->name('logs.vote');
-        Route::get('/logs/smc', [LogsController::class, 'smcLogs'])->name('logs.smc');
+        Route::get('/logs/donate', [LogsController::class, 'donate'])->name('logs.donate');
+        Route::get('/logs/referral', [LogsController::class, 'referral'])->name('logs.referral');
+        Route::get('/logs/vote', [LogsController::class, 'vote'])->name('logs.vote');
+        Route::get('/logs/smc', [LogsController::class, 'smc'])->name('logs.smc');
 
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');

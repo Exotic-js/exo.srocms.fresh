@@ -20,16 +20,16 @@
                             <div class="card-body text-center">
                                 <div class="d-flex overflow-hidden align-items-center justify-content-center mb-2">
                                     @if(config('global.server.version') === 'vSRO')
-                                        <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.$config['characterImageVSRO'][$value->RefObjID]) }}" width="100" height="100" alt=""/>
+                                        <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.config('ranking.character_image_vsro')[$value->RefObjID]) }}" width="100" height="100" alt=""/>
                                     @else
-                                        <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.$config['characterImage'][$value->RefObjID]) }}" width="100" height="100" alt=""/>
+                                        <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.config('ranking.character_image')[$value->RefObjID]) }}" width="100" height="100" alt=""/>
                                     @endif
                                 </div>
 
                                 @if($value->RefObjID > 2000)
-                                    <img src="{{ asset($config['characterRace'][1]['image']) }}" width="16" height="16" alt=""/>
+                                    <img src="{{ asset(config('ranking.character_race')[1]['image']) }}" width="16" height="16" alt=""/>
                                 @else
-                                    <img src="{{ asset($config['characterRace'][0]['image']) }}" width="16" height="16" alt=""/>
+                                    <img src="{{ asset(config('ranking.character_race')[0]['image']) }}" width="16" height="16" alt=""/>
                                 @endif
                                 <a href="{{ route('ranking.character.view', ['name' => $value->CharName16]) }}" class="text-decoration-none">{{ $value->CharName16 }}</a>
                                 <p>{{ __('Lv:') }} {{ $value->CurLevel }}</p>
@@ -104,8 +104,8 @@
                                     <th scope="row">{{ __('VIP') }}</th>
                                     <td>
                                         @isset(auth()->user()->muUser->muVIPInfo->VIPUserType)
-                                            <img src="{{ asset($config['vipLevel']['level'][auth()->user()->muUser->muVIPInfo->VIPLv]['image']) }}" width="24" height="24" alt="">
-                                            <span>{{ $config['vipLevel']['level'][auth()->user()->muUser->muVIPInfo->VIPLv]['name'] }}</span>
+                                            <img src="{{ asset(config('ranking.vip_level')['level'][auth()->user()->muUser->muVIPInfo->VIPLv]['image']) }}" width="24" height="24" alt="">
+                                            <span>{{ config('ranking.vip_level')['level'][auth()->user()->muUser->muVIPInfo->VIPLv]['name'] }}</span>
                                         @else
                                             <span>{{ __('None') }}</span>
                                         @endisset

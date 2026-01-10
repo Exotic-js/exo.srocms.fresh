@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\DonateLog;
+use App\Models\Donate;
 use App\Models\SRO\Account\TbUser;
 use Illuminate\Http\Request;
 
@@ -39,7 +39,7 @@ class UsersController extends Controller
 
         $user->giveSilk($validated['type'], $validated['amount']);
 
-        DonateLog::setDonateLog([
+        Donate::setDonateLog([
             'method' => 'AdminPanel',
             'amount' => $validated['amount'],
             'jid' => $user->JID,

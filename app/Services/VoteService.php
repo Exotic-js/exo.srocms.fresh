@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\DonateLog;
+use App\Models\Donate;
 use App\Models\SRO\Account\SkSilk;
 use App\Models\SRO\Portal\AphChangedSilk;
 use App\Models\User;
-use App\Models\VoteLog;
+use App\Models\Vote;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -39,7 +39,7 @@ class VoteService
         $timeout = $config['timeout'] ?? 12;
         $rewardAmount = $config['reward'] ?? 0;
 
-        $voteLog = VoteLog::where('jid', $jid)->where('site', $config['route'])->first();
+        $voteLog = Vote::where('jid', $jid)->where('site', $config['route'])->first();
         if ($voteLog && $voteLog->expire && $now->lessThan(Carbon::parse($voteLog->expire))) {
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
@@ -51,7 +51,7 @@ class VoteService
         }
 
         //DonateLog::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
-        VoteLog::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
+        Vote::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
 
         return response("OK", 200);
     }
@@ -85,7 +85,7 @@ class VoteService
         $timeout = $config['timeout'] ?? 12;
         $rewardAmount = $config['reward'] ?? 0;
 
-        $voteLog = VoteLog::where('jid', $jid)->where('site', $config['route'])->first();
+        $voteLog = Vote::where('jid', $jid)->where('site', $config['route'])->first();
         if ($voteLog && $voteLog->expire && $now->lessThan(Carbon::parse($voteLog->expire))) {
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
@@ -96,8 +96,8 @@ class VoteService
             AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
         }
 
-        DonateLog::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
-        VoteLog::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
+        Donate::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
+        Vote::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
 
         return response("OK", 200);
     }
@@ -127,7 +127,7 @@ class VoteService
         $timeout = $config['timeout'] ?? 12;
         $rewardAmount = $config['reward'] ?? 0;
 
-        $voteLog = VoteLog::where('jid', $jid)->where('site', $config['route'])->first();
+        $voteLog = Vote::where('jid', $jid)->where('site', $config['route'])->first();
         if ($voteLog && $voteLog->expire && $now->lessThan(Carbon::parse($voteLog->expire))) {
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
@@ -138,8 +138,8 @@ class VoteService
             AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
         }
 
-        DonateLog::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
-        VoteLog::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
+        Donate::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
+        Vote::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
 
         return response("OK", 200);
     }
@@ -169,7 +169,7 @@ class VoteService
         $timeout = $config['timeout'] ?? 12;
         $rewardAmount = $config['reward'] ?? 0;
 
-        $voteLog = VoteLog::where('jid', $jid)->where('site', $config['route'])->first();
+        $voteLog = Vote::where('jid', $jid)->where('site', $config['route'])->first();
         if ($voteLog && $voteLog->expire && $now->lessThan(Carbon::parse($voteLog->expire))) {
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
@@ -180,8 +180,8 @@ class VoteService
             AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
         }
 
-        DonateLog::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
-        VoteLog::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
+        Donate::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
+        Vote::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
 
         return response("OK", 200);
     }
@@ -215,7 +215,7 @@ class VoteService
         $timeout = $config['timeout'] ?? 12;
         $rewardAmount = $config['reward'] ?? 0;
 
-        $voteLog = VoteLog::where('jid', $jid)->where('site', $config['route'])->first();
+        $voteLog = Vote::where('jid', $jid)->where('site', $config['route'])->first();
         if ($voteLog && $voteLog->expire && $now->lessThan(Carbon::parse($voteLog->expire))) {
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
@@ -226,8 +226,8 @@ class VoteService
             AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
         }
 
-        DonateLog::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
-        VoteLog::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
+        Donate::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
+        Vote::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
 
         return response("OK", 200);
     }
@@ -257,7 +257,7 @@ class VoteService
         $timeout = $config['timeout'] ?? 12;
         $rewardAmount = $config['reward'] ?? 0;
 
-        $voteLog = VoteLog::where('jid', $jid)->where('site', $config['route'])->first();
+        $voteLog = Vote::where('jid', $jid)->where('site', $config['route'])->first();
         if ($voteLog && $voteLog->expire && $now->lessThan(Carbon::parse($voteLog->expire))) {
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
@@ -268,8 +268,8 @@ class VoteService
             AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
         }
 
-        DonateLog::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
-        VoteLog::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
+        Donate::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
+        Vote::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
 
         return response("OK", 200);
     }
@@ -299,7 +299,7 @@ class VoteService
         $timeout = $config['timeout'] ?? 12;
         $rewardAmount = $config['reward'] ?? 0;
 
-        $voteLog = VoteLog::where('jid', $jid)->where('site', $config['route'])->first();
+        $voteLog = Vote::where('jid', $jid)->where('site', $config['route'])->first();
         if ($voteLog && $voteLog->expire && $now->lessThan(Carbon::parse($voteLog->expire))) {
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
@@ -310,8 +310,8 @@ class VoteService
             AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
         }
 
-        DonateLog::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
-        VoteLog::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
+        Donate::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
+        Vote::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
 
         return response("OK", 200);
     }

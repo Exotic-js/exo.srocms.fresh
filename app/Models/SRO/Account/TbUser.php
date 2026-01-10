@@ -2,7 +2,7 @@
 
 namespace App\Models\SRO\Account;
 
-use App\Models\DonateLog;
+use App\Models\Donate;
 use App\Models\SRO\Portal\AphChangedSilk;
 use App\Models\SRO\Portal\MuUser;
 use App\Models\SRO\Shard\Char;
@@ -176,7 +176,7 @@ class TbUser extends Model
 
     public function donationLogs()
     {
-        return $this->hasMany(DonateLog::class, 'jid', 'JID');
+        return $this->hasMany(Donate::class, 'jid', 'JID');
     }
 
     public function blockAccount(string $reason, int $durationHours, ?string $customReason = null)

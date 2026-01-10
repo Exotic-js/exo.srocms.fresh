@@ -52,6 +52,23 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
+    public function updateGameEmail(): void
+    {
+        DB::transaction(function () {
+            if (config('global.server.version') === 'vSRO') {
+                $this->tbUser?->update(['Email' => $this->email,]);
+            } else {
+                $this->muUser?->muEmail?->update(['EmailAddr' => $this->email,]);
+
+                $this->muUser?->muAlteredInfo?->update([
+                    'EmailAddr' => $this->email,
+                    'EmailReceptionStatus' => config('settings.register_confirm') ? 'N' : 'Y',
+                    'EmailCertificationStatus' => config('settings.register_confirm') ? 'N' : 'Y',
+                ]);
+            }
+        });
+    }
+
     public function updateGamePassword(string $password): void
     {
         DB::transaction(function () use ($password) {

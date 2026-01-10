@@ -90,6 +90,11 @@ class MuUser extends Model
         return $this->hasOne(MuEmail::class, 'JID', 'JID');
     }
 
+    public function muAlteredInfo()
+    {
+        return $this->hasOne(MuhAlteredInfo::class, 'JID', 'JID');
+    }
+
     public function muVIPInfo()
     {
         return $this->hasOne(MuVIPInfo::class, 'JID', 'JID');
