@@ -35,20 +35,23 @@ class News extends Model
         });
     }
 
+    protected static function booted()
+    {
+        static::created(fn ($news) => self::clearCache($news));
+        static::updated(fn ($news) => self::clearCache($news));
+        static::deleted(fn ($news) => self::clearCache($news));
+    }
+
     public static function getPosts()
     {
-        $minutes = config('global.cache.news', 1440);
-
-        return Cache::remember("news", now()->addMinutes($minutes), function () {
+        return Cache::rememberForever("news", function () {
             return self::where('active', '=', 1)->where('published_at', '<=', now())->orderBy('created_at', 'DESC')->get();
         });
     }
 
     public static function getPost($slug)
     {
-        $minutes = config('global.cache.news', 1440);
-
-        return Cache::remember("news_view_{$slug}", now()->addMinutes($minutes), function () use ($slug) {
+        return Cache::rememberForever("news_view_{$slug}", function () use ($slug) {
             return self::where('slug', $slug)->first();
         });
     }
@@ -56,5 +59,11 @@ class News extends Model
     public function author()
     {
         return $this->belongsTo(User::class);
+    }
+
+    protected static function clearCache(self $news): void
+    {
+        Cache::forget('news');
+        Cache::forget("news_view_{$news->slug}");
     }
 }

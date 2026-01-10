@@ -3,22 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
-use App\Models\Donate;
 use App\Models\PasswordResetToken;
-use App\Models\Referral;
 use App\Models\Setting;
 use App\Models\SRO\Account\SecondaryPassword;
-use App\Models\SRO\Account\SkSilkBuyList;
 use App\Models\SRO\Account\TbUser;
-use App\Models\SRO\Portal\AphChangedSilk;
-use App\Models\SRO\Portal\MuEmail;
-use App\Models\SRO\Portal\MuhAlteredInfo;
-use App\Models\Voucher;
 use App\Notifications\SendVerifyCode;
-use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -114,14 +106,14 @@ class ProfileController extends Controller
             'password' => ['required', 'current_password'],
         ]);
 
-        //$user = $request->user();
+        $user = $request->user();
 
-        //Auth::logout();
+        Auth::logout();
 
         //$user->delete();
 
-        //$request->session()->invalidate();
-        //$request->session()->regenerateToken();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return Redirect::to('/');
     }
@@ -198,113 +190,5 @@ class ProfileController extends Controller
         }
 
         return back()->with('success', 'Settings updated!');
-    }
-
-    public function silkHistory(Request $request): View
-    {
-        $page = $request->get('page', 1);
-        if (config('global.server.version') === 'vSRO') {
-            $data = SkSilkBuyList::getSilkHistory($request->user()->jid, 25, $page);
-        }else {
-            $data = AphChangedSilk::getSilkHistory($request->user()->jid, 25, $page);
-        }
-
-        return view('profile.silk-history', [
-            'user' => $request->user(),
-            'data' => $data,
-        ]);
-    }
-
-    public function vouchers(Request $request)
-    {
-        $data = Voucher::where('jid', $request->user()->jid)->get();
-
-        return view('profile.voucher', [
-            'data' => $data,
-        ]);
-    }
-
-    public function redeemVoucher(Request $request)
-    {
-        $request->validate([
-            'voucher_code' => 'required|string',
-        ]);
-
-        $voucher = Voucher::where('code', $request->voucher_code)->first();
-
-        if (!$voucher || $voucher->status == 'Disabled') {
-            return redirect()->back()->with('error', 'Invalid voucher code.');
-        }
-
-        if ($voucher->status == 'Used') {
-            return redirect()->back()->with('error', 'This voucher has already been used.');
-        }
-
-        if ($voucher->valid_date && Carbon::now()->greaterThan($voucher->valid_date)) {
-            return redirect()->back()->with('error', 'This voucher has expired.');
-        }
-
-        $user = $request->user();
-
-        $user->tbUser->giveSilk($voucher->type, $voucher->amount);
-
-        Donate::setDonateLog([
-            'method' => 'Voucher',
-            'amount' => $voucher->amount,
-            'jid' => $user->jid,
-        ]);
-
-        $voucher->update(['jid' => $user->jid, 'status' => 'Used']);
-
-        return redirect()->back()->with('success', 'Voucher redeemed successfully!');
-    }
-
-    public function referral(Request $request): View
-    {
-        $user = $request->user();
-
-        $fingerprint = $request->query('fingerprint') ?? session('fingerprint');
-        if ($fingerprint && session('fingerprint') !== $fingerprint) {
-            session(['fingerprint' => $fingerprint]);
-        }
-
-        $invite = Referral::createReferral($user, session('fingerprint'));
-
-        $totalPoints = $user->invitesCreated()->whereNotNull('invited_jid')->sum('points');
-        $usedInvites = $user->invitesCreated()->whereNotNull('invited_jid')->with('invitedUser')->get();
-        $minimumRedeem = config('global.referral.minimum_redeem', 25);
-
-        return view('profile.referral', [
-            'invite' => $invite,
-            'usedInvites' => $usedInvites,
-            'totalPoints' => $totalPoints,
-            'minimumRedeem' => $minimumRedeem,
-        ]);
-    }
-
-    public function redeemReferral(Request $request)
-    {
-        $user = $request->user();
-        $minimumRedeem = config('global.referral.minimum_redeem', 25);
-        $invites = $user->invitesCreated()->whereNotNull('invited_jid')->get();
-
-        if(!config('global.referral.enabled', true)) {
-            return back()->with('error', "Redeemed invites disabled.");
-        }
-        if ($invites->sum('points') < $minimumRedeem) {
-            return back()->with('error', "You need at least {$minimumRedeem} points to redeem.");
-        }
-
-        $user->tbUser->giveSilk(3, $invites->sum('points'));
-
-        Donate::setDonateLog([
-            'method' => 'Voucher',
-            'amount' => $invites->sum('points'),
-            'jid' => $user->jid,
-        ]);
-
-        $user->invitesCreated()->whereNotNull('invited_jid')->update(['points' => 0]);
-
-        return back()->with('success', "{$invites->sum('points')} Silk has been added to your account!");
     }
 }

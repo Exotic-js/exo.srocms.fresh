@@ -69,14 +69,14 @@
                                 </thead>
                                 <tbody>
                                 @if ($usedInvites->isNotEmpty())
-                                    @foreach ($usedInvites as $index => $inviteLog)
+                                    @foreach ($usedInvites as $key => $row)
                                         <tr>
-                                            <td>{{ $index + 1 }}</td>
-                                            <td>{{ $inviteLog->invitedUser->username ?? 'Unknown' }}</td>
-                                            <td>{{ $inviteLog->invitedUser->created_at->format('Y-m-d H:i') ?? 'N/A' }}</td>
-                                            <td>{{ $inviteLog->points }}</td>
+                                            <td>{{ $key + 1 }}</td>
+                                            <td>{{ $row->invitedUser->username ?? 'Unknown' }}</td>
+                                            <td>{{ $row->invitedUser->created_at->format('Y-m-d H:i') ?? 'N/A' }}</td>
+                                            <td>{{ $row->points }}</td>
                                             <td>
-                                                @if($inviteLog->ip == 'CHEATING')
+                                                @if($row->ip == 'CHEATING')
                                                     <span class="text-danger">Cheating</span>
                                                 @else
                                                     <span class="text-success">Success<span>
@@ -110,11 +110,8 @@
             const result = await fp.get();
             const fingerprint = result.visitorId;
 
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('fingerprint') !== fingerprint) {
-                urlParams.set('fingerprint', fingerprint);
-                window.history.replaceState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
-
+            if (!document.cookie.includes(`fingerprint=${fingerprint}`)) {
+                document.cookie = `fingerprint=${fingerprint}; path=/; max-age=${60*60*24*30}`;
                 window.location.reload();
             }
         })();

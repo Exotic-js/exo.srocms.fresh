@@ -21,12 +21,12 @@
                     </div>
                 </div>
 
-                @foreach($data->replies as $reply)
-                    <div class="card mb-2 {{ $reply->type === 'admin' ? 'text-end' : '' }}">
+                @foreach($data->replies as $row)
+                    <div class="card mb-2 {{ $row->type === 'admin' ? 'text-end' : '' }}">
                         <div class="card-body">
-                            <strong>{{ $reply->type === 'admin' ? 'Admin' : 'You' }}</strong>
-                            <p>{!! $reply->message !!}</p>
-                            <small class="text-muted">{{ $reply->created_at }}</small>
+                            <strong>{{ $row->type === 'admin' ? 'Admin' : 'You' }}</strong>
+                            <p>{!! $row->message !!}</p>
+                            <small class="text-muted">{{ $row->created_at }}</small>
                         </div>
                     </div>
                 @endforeach

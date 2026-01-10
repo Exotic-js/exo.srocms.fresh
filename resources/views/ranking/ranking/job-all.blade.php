@@ -15,22 +15,27 @@
             <tr>
                 <td>
                     @if($key < 3)
-                        <img src="{{ asset($config->topImage[$key + 1]) }}" alt=""/>
+                        <img src="{{ asset(config('ranking.top_image')[$key + 1]) }}" alt=""/>
                     @else
                         {{ $key + 1 }}
                     @endif
                     </td>
                     <td>
                         @if($value->RefObjID > 2000)
-                            <img src="{{ asset($config->characterRace[1]['image']) }}" width="16" height="16" alt=""/>
+                            <img src="{{ asset(config('ranking.character_race')[1]['image']) }}" width="16" height="16" alt=""/>
                         @else
-                            <img src="{{ asset($config->characterRace[0]['image']) }}" width="16" height="16" alt=""/>
+                            <img src="{{ asset(config('ranking.character_race')[0]['image']) }}" width="16" height="16" alt=""/>
                         @endif
                         <a href="{{ route('ranking.character.view', ['name' => $value->CharName16]) }}" class="text-decoration-none">{{ $value->NickName16 }}</a>
                     </td>
                     <td>
-                        <img src="{{ asset($config->jobType[$value->JobType]['small_image']) }}" alt=""/>
-                        {{ $config->jobType[$value->JobType]['name'] }}
+                        @if(config('global.server.version') === 'vSRO')
+                            <img src="{{ asset(config('ranking.job_type_vsro')[$value->JobType]['small_image']) }}" alt=""/>
+                            {{ config('ranking.job_type_vsro')[$value->JobType]['name'] }}
+                        @else
+                            <img src="{{ asset(config('ranking.job_type')[$value->JobType]['small_image']) }}" alt=""/>
+                            {{ config('ranking.job_type')[$value->JobType]['name'] }}
+                        @endif
                     </td>
                     <td>{{ $value->JobLevel ?? $value->Level }}</td>
                     <td>{{ $value->KillCount ?? 0 }}</td>

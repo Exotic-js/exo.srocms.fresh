@@ -178,8 +178,8 @@
                     <select class="form-select" name="default_locale" aria-label="Default select example">
                         <option value="switch" {{ config('settings.default_locale') == 'switch' ? 'selected' : '' }}>Switch</option>
 
-                        @foreach(config('global.languages') as $key => $value)
-                            <option value="{{ $key }}" {{ config('settings.default_locale') == $key ? 'selected' : '' }}>{{ $value['name'] }}</option>
+                        @foreach(config('global.languages') as $key => $item)
+                            <option value="{{ $key }}" {{ config('settings.default_locale') == $key ? 'selected' : '' }}>{{ $item['name'] }}</option>
                         @endforeach
                     </select>
 

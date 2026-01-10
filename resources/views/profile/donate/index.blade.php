@@ -29,16 +29,14 @@
                     <div class="col-12 mb-4 text-center">
                         <p>Select Payment Method</p>
                         <div class="d-flex justify-content-center flex-wrap">
-                            @php $i = 1; @endphp
-                            @foreach($data as $key => $method)
-                                @if($method['enabled'])
-                                    <div class="card m-2 d-flex {{ $i == 1 ? 'selected' : '' }}" role="button" data-method="{{ $key }}" style="width: 120px;">
-                                        <img src="{{ asset($method['image']) }}" class="card-img-top object-fit-contain p-2" height="50" alt="{{ $method['name'] }}">
+                            @foreach($data as $key => $row)
+                                @if($row['enabled'])
+                                    <div class="card m-2 d-flex {{ $key == 0 ? 'selected' : '' }}" role="button" data-method="{{ $key }}" style="width: 120px;">
+                                        <img src="{{ asset($row['image']) }}" class="card-img-top object-fit-contain p-2" height="50" alt="{{ $row['name'] }}">
                                         <div class="card-body text-center p-2">
-                                            <strong>{{ $method['name'] }}</strong>
+                                            <strong>{{ $row['name'] }}</strong>
                                         </div>
                                     </div>
-                                    @php $i++; @endphp
                                 @endif
                             @endforeach
                         </div>

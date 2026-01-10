@@ -52,15 +52,15 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @forelse ($data as $i => $value)
+                                @forelse ($data as $key => $row)
                                     <tr>
-                                        <td>{{ $i + 1 }}</td>
-                                        <td>{{ $value->code }}</td>
-                                        <td>{{ $value->amount }}</td>
-                                        <td>{{ $value->type == 0 ? 'Normal' : 'Premium' }}</td>
-                                        <td>{{ $value->updated_at ? $value->updated_at->format('Y-m-d H:i:s') : 'N/N' }}</td>
+                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ $row->code }}</td>
+                                        <td>{{ $row->amount }}</td>
+                                        <td>{{ $row->type == 0 ? 'Normal' : 'Premium' }}</td>
+                                        <td>{{ $row->updated_at ? $row->updated_at->format('Y-m-d H:i:s') : 'N/N' }}</td>
                                         <td>
-                                            @if($value->status)
+                                            @if($row->status)
                                                 <span class="text-success">Success<span>
                                             @else
                                                 <span class="text-danger">Failed</span>

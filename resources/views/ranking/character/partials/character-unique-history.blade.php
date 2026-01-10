@@ -8,11 +8,11 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($data->unique_history as $value)
+            @forelse($data->uniqueHistory as $row)
                 <tr>
-                    <td>{{ $config->uniqueList[$value->Value]['name'] }}</td>
-                    <td>+{{ $config->uniqueList[$value->Value]['points'] }}</td>
-                    <td>{{ \Carbon\Carbon::make($value->EventTime)->diffForHumans() }}</td>
+                    <td>{{ config('ranking.uniques')[$row->Value]['name'] }}</td>
+                    <td>+{{ config('ranking.uniques')[$row->Value]['points'] }}</td>
+                    <td>{{ \Carbon\Carbon::make($row->EventTime)->diffForHumans() }}</td>
                 </tr>
             @empty
                 <tr>

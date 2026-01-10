@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\PasswordResetToken;
 use App\Models\Referral;
 use App\Models\SRO\Account\SkSilk;
 use App\Models\SRO\Account\TbUser;
@@ -13,80 +14,28 @@ use App\Models\SRO\Portal\MuJoiningInfo;
 use App\Models\SRO\Portal\MuUser;
 use App\Models\SRO\Portal\MuVIPInfo;
 use App\Models\User;
+use App\Notifications\SendVerifyCode;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $rules = [
-            'username' => ['required', 'regex:/^[A-Za-z0-9]*$/', 'min:6', 'max:16', 'unique:' . User::class],
-            'email' => ['required', 'string', 'email', 'max:70'],
-            'password' => ['required', 'min:6', 'max:32', 'confirmed'],
-            'g-recaptcha-response' => env('NOCAPTCHA_ENABLE', false) ? ['required', 'captcha'] : ['nullable'],
-            'terms' => config('settings.agree_terms', false) ? ['required', 'accepted'] : ['nullable'],
-            'invite' => ['nullable', 'string'],
-            'fingerprint' => ['nullable', 'string'],
-        ];
+        $request->validate($this->validationRules($request));
 
-        if (config('global.server.version') === 'vSRO') {
-            $rules['username'][] = 'unique:' . TbUser::class . ',StrUserID';
-        } elseif (config('global.server.version') !== 'vSRO') {
-            $rules['email'][] = 'unique:' . User::class . ',email';
-            $rules['username'][] = 'unique:' . MuUser::class . ',UserID';
-            $rules['username'][] = 'unique:' . TbUser::class . ',StrUserID';
-            $rules['email'][] = 'unique:' . MuEmail::class . ',EmailAddr';
-        }
+        $ip = filter_var($request->ip(), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ?: '0.0.0.0';
 
-        $request->validate($rules);
-
-        DB::beginTransaction();
         try {
-            if (config('global.server.version') === 'vSRO') {
-                $tbUser = TbUser::setGameAccount($jid = null, $request->username, $request->password, $request->email, $request->ip());
-                $jid = $tbUser->JID;
+            DB::beginTransaction();
 
-                SkSilk::setSkSilk($jid, 0, 0);
-            } else {
-                $userBinIP = ($request->ip() == "::1") ? ip2long('127.0.0.1') : ip2long($request->ip());
-
-                $portalUser = MuUser::setPortalAccount($request->username, $request->password);
-                $jid = $portalUser->JID;
-
-                MuEmail::setEmail($jid, $request->email);
-                MuhAlteredInfo::setAlteredInfo($jid, $request->username, $request->email, $userBinIP);
-                AuhAgreedService::setAgreedService($jid, $userBinIP);
-                MuJoiningInfo::setJoiningInfo($jid, $userBinIP);
-                MuVIPInfo::setVIPInfo($jid);
-
-                TbUser::setGameAccount($jid, $request->username, $request->password, $request->email, $request->ip());
-            }
-
-            if (config('global.referral.enabled', true) && $request->filled('invite')) {
-                $invite = Referral::where('code', $request->invite)->first();
-
-                if ($invite) {
-                    Referral::create([
-                        'code' => $invite->code,
-                        'name' => $invite->name,
-                        'jid' => $invite->jid,
-                        'invited_jid' => $jid,
-                        'points' => ($invite->ip !== $request->ip() && $invite->fingerprint !== $request->fingerprint)
-                            ? config('global.referral.reward_points', 0)
-                            : 0,
-                        'ip' => ($invite->ip === $request->ip() || $invite->fingerprint === $request->fingerprint)
-                            ? 'CHEATING'
-                            : $request->ip(),
-                    ]);
-                }
-            }
+            $jid = config('global.server.version') === 'vSRO'
+                ? $this->createVSROAccount($request, $ip)
+                : $this->createISROAccount($request, $ip);
 
             $user = User::create([
                 'jid' => $jid,
@@ -95,6 +44,8 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
+            $this->handleReferral($user, $request);
+
             DB::commit();
 
             if (config('settings.register_confirm')) {
@@ -102,7 +53,6 @@ class AuthController extends Controller
             }
 
             Auth::login($user);
-            $request->session()->regenerate();
             $token = $user->createToken('api-token')->plainTextToken;
 
             return response()->json([
@@ -121,29 +71,87 @@ class AuthController extends Controller
         }
     }
 
+    private function validationRules(Request $request): array
+    {
+        $rules = [
+            'username' => ['required', 'regex:/^[A-Za-z0-9]*$/', 'min:6', 'max:16', 'unique:' . User::class],
+            'email' => ['required', 'email', 'max:70', 'unique:' . User::class],
+            'password' => ['required', 'min:6', 'max:32', 'confirmed'],
+            'g-recaptcha-response' => env('NOCAPTCHA_ENABLE', false) ? ['required', 'captcha'] : ['nullable'],
+            'terms' => config('settings.agree_terms', false) ? ['required', 'accepted'] : ['nullable'],
+            'invite' => ['nullable', 'string'],
+            'fingerprint' => ['nullable', 'string'],
+        ];
+
+        if (config('global.server.version') === 'vSRO') {
+            $rules['username'][] = 'unique:' . TbUser::class . ',StrUserID';
+        } else {
+            $rules['username'][] = 'unique:' . MuUser::class . ',UserID';
+            $rules['username'][] = 'unique:' . TbUser::class . ',StrUserID';
+            $rules['email'][] = 'unique:' . MuEmail::class . ',EmailAddr';
+        }
+
+        return $rules;
+    }
+
+    private function createVSROAccount(Request $request, string $ip): int
+    {
+        return DB::transaction(function () use ($request, $ip) {
+            $tbUser = TbUser::setGameAccount(null, $request->username, $request->password, $request->email, $ip);
+            SkSilk::setSkSilk($tbUser->JID, 0, 0);
+            return $tbUser->JID;
+        });
+    }
+
+    private function createISROAccount(Request $request, string $ip): int
+    {
+        return DB::transaction(function () use ($request, $ip) {
+            $userBinIP = ip2long($ip);
+
+            $portalUser = MuUser::setPortalAccount($request->username, $request->password);
+
+            MuEmail::setEmail($portalUser->JID, $request->email);
+            MuhAlteredInfo::setAlteredInfo($portalUser->JID, $request->username, $request->email, $userBinIP);
+            AuhAgreedService::setAgreedService($portalUser->JID, $userBinIP);
+            MuJoiningInfo::setJoiningInfo($portalUser->JID, $userBinIP);
+            MuVIPInfo::setVIPInfo($portalUser->JID);
+
+            TbUser::setGameAccount($portalUser->JID, $request->username, $request->password, $request->email, $ip);
+
+            return $portalUser->JID;
+        });
+    }
+
+    private function handleReferral(User $user, Request $request): void
+    {
+        if (!config('global.referral.enabled', true)) return;
+
+        if ($request->filled('invite') && $request->filled('fingerprint')) {
+            Referral::inviteReferral($user, $request->invite, $request->fingerprint, $request->ip());
+        }
+    }
+
     public function login(Request $request)
     {
         $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string',
+            'username' => ['required', 'string'],
+            'password' => ['required', 'string'],
+            'fingerprint' => ['nullable', 'string'],
         ]);
 
-        if (!Auth::attempt($request->only('username', 'password'))) {
+        $user = User::where('username', $request->username)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
             $tbUser = TbUser::where('StrUserID', $request->username)->where('password', md5($request->password))->first();
 
             if (!$tbUser) {
-                throw ValidationException::withMessages([
-                    'username' => ['Invalid credentials.'],
-                ]);
+                return response()->json([
+                    'message' => 'Invalid credentials',
+                ], 401);
             }
 
-            if (config('global.server.version') === 'vSRO') {
-                $jid = $tbUser->JID;
-                $email = $tbUser->Email ?? "{$jid}@mail.com";
-            } else {
-                $jid = $tbUser->PortalJID;
-                $email = $tbUser->muUser->muEmail->EmailAddr ?? "{$jid}@mail.com";
-            }
+            $jid = $tbUser->JID;
+            $email = $tbUser->Email ?? "{$jid}@mail.com";
 
             $user = User::firstOrCreate(
                 ['username' => $request->username],
@@ -153,19 +161,42 @@ class AuthController extends Controller
                     'password' => Hash::make($request->password),
                 ]
             );
-
-            Auth::login($user);
         }
 
-        $request->session()->regenerate();
-        $token = $request->user()->createToken('api-token')->plainTextToken;
+        Auth::login($user);
+
+        $token = $user->createToken('api-token')->plainTextToken;
+
+        $result = $this->sendVerifyCode($user);
+
+        if ($result) {
+            return response()->json($result);
+        }
 
         return response()->json([
             'message' => 'Login successful',
-            'user' => $request->user(),
             'token' => $token,
-            'redirect' => url('/profile'),
+            'user' => $user,
         ]);
+    }
+
+    protected function sendVerifyCode(User $user): array
+    {
+        if (! config("settings.verify_jid_{$user->jid}")) {
+            return [];
+        }
+
+        $code = random_int(100000, 999999);
+
+        PasswordResetToken::setToken($user->email, $code);
+
+        $user->notify(new SendVerifyCode($code));
+
+        return [
+            'message' => 'Verify code sent',
+            'verify_required' => true,
+            'user' => $user,
+        ];
     }
 
     public function forgot_password(Request $request)

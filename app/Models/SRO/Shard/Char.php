@@ -64,16 +64,6 @@ class Char extends Model
 
     protected $dateFormat = 'Y-m-d H:i:s';
 
-    protected $appends = [
-        'jid',
-        'Item_points',
-        'char_job',
-        'unique_history',
-        'globals_history',
-        'pvp_kill',
-        'job_kill'
-    ];
-
     public static function getPlayerRanking($limit = 25, $CharID = 0, $CharName = '')
     {
         return Cache::remember("ranking_player_fast_{$limit}_{$CharID}_{$CharName}", now()->addMinutes(config('global.cache.ranking_player', 60)), function () use ($limit, $CharID, $CharName) {
@@ -188,7 +178,7 @@ class Char extends Model
         });
     }
 
-    public function getCharJob()
+    public function getCharJobISRO()
     {
         return cache()->remember("char_job_{$this->CharID}", now()->addMinutes(30), function () {
             return DB::connection($this->getConnectionName())
@@ -221,7 +211,7 @@ class Char extends Model
             return $this->getCharJobVSRO();
         }
 
-        return $this->getCharJob();
+        return $this->getCharJobISRO();
     }
 
     public function setCharUnstuckPosition()
@@ -256,18 +246,18 @@ class Char extends Model
         return app(InventoryService::class)->getInventorySet($this->CharID, $max, $min, $not);
     }
 
-    public function getCharInventoryAvatar()
+    public function getCharInventoryAvatarAttribute()
     {
         return app(InventoryService::class)->getInventoryAvatar($this->CharID);
     }
 
-    public function getCharInventoryJob()
+    public function getCharInventoryJobAttribute()
     {
         if (config('global.server.version') === 'vSRO') return collect();
         return app(InventoryService::class)->getInventoryJob($this->CharID);
     }
 
-    public function getCharStorageItems()
+    public function getCharStorageItemsAttribute()
     {
         return app(InventoryService::class)->getStorageItems($this->user?->UserJID ?? 0, 180, 0);
     }
@@ -279,47 +269,27 @@ class Char extends Model
 
     public function getUniqueHistoryAttribute()
     {
-        if (!config('widgets.unique_history.enabled')) {
-            return collect();
-        }
-
         return LogInstanceWorldInfo::getUniquesKill(5, $this->CharID) ?? collect();
     }
 
-    public function getGlobalsHistoryAttribute()
+    public function getGlobalHistoryAttribute()
     {
-        if (!config('widgets.globals_history.enabled')) {
-            return collect();
-        }
-
         return LogChatMessage::getGlobalsHistory(5, $this->CharName16) ?? collect();
     }
 
     public function getPvpKillAttribute()
     {
-        if (!config('ranking.extra.kill_logs.pvp')) {
-            return null;
-        }
-
         return LogEventChar::getKillDeathRanking('pvp', 1, $this->CharID)->first();
     }
 
     public function getJobKillAttribute()
     {
-        if (!config('ranking.extra.kill_logs.job')) {
-            return null;
-        }
-
         return LogEventChar::getKillDeathRanking('job', 1, $this->CharID)->first();
     }
 
     public function getJIDAttribute(): ?int
     {
-        return cache()->remember("char_jid_{$this->CharID}", now()->addMinutes(60),
-            function () {
-                return $this->user?->UserJID;
-            }
-        );
+        return cache()->remember("char_jid_{$this->CharID}", 3600, fn() => $this->user?->UserJID);
     }
 
     public function getCharStatus()
@@ -329,19 +299,19 @@ class Char extends Model
             ->orderByDesc('EventTime');
     }
 
-    public function isOnline(): bool
+    public function getIsOnlineAttribute(): bool
     {
         return cache()->remember("char_online_{$this->CharID}", now()->addSeconds(30),
             fn () => optional($this->getCharStatus()->first())->EventID === 4
         );
     }
 
-    public function isOffline(): bool
+    public function getIsOfflineAttribute(): bool
     {
         return optional($this->getCharStatus()->first())->EventID == 6;
     }
 
-    public function hasJobSuit(): bool
+    public function getHasJobSuitAttribute(): bool
     {
         return (bool) Inventory::getInventorySlot($this->CharID, 8);
     }
@@ -351,12 +321,12 @@ class Char extends Model
         return InvCOS::getPetNames($this->CharID);
     }
 
-    public function getBuildInfo()
+    public function getBuildInfoAttribute()
     {
         return CharSkillMastery::getCharBuildInfo($this->CharID);
     }
 
-    public function getBuffInfo()
+    public function getBuffInfoAttribute()
     {
         return TimedJob::getCharBuffInfo($this->CharID);
     }

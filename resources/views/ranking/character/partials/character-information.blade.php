@@ -31,11 +31,11 @@
             <td>{{ __('Race:') }}</td>
             <td>
                 @if($data->RefObjID > 2000)
-                    <img src="{{ asset($config->characterRace[1]['image']) }}" width="16" height="16" alt=""/>
-                    <span>{{ $config->characterRace[1]['name'] }}</span>
+                    <img src="{{ asset(config('ranking.character_race')[1]['image']) }}" width="16" height="16" alt=""/>
+                    <span>{{ config('ranking.character_race')[1]['name'] }}</span>
                 @else
-                    <img src="{{ asset($config->characterRace[0]['image']) }}" width="16" height="16" alt=""/>
-                    <span>{{ $config->characterRace[0]['name'] }}</span>
+                    <img src="{{ asset(config('ranking.character_race')[0]['image']) }}" width="16" height="16" alt=""/>
+                    <span>{{ config('ranking.character_race')[0]['name'] }}</span>
                 @endif
             </td>
         </tr>
@@ -47,41 +47,36 @@
             <td>{{ __('Item Points:') }}</td>
             <td>{{ $data->ItemPoints }}</td>
         </tr>
-        @if(config("ranking.extra.kill_logs.pvp"))
-            @if($data->pvp_kill)
-                <tr>
-                    <td>{{ __('Pvp K/D:') }}</td>
-                    <td>{{ $data->pvp_kill->KillCount ?? 0 }} / {{ $data->pvp_kill->DeathCount ?? 0 }}</td>
-                </tr>
-            @endif
-        @endif
-        @if(config("ranking.extra.kill_logs.job"))
-            @if($char->job_kill)
+        @if($data->pvpKill)
             <tr>
-                <td>{{ __('Job K/D:') }}</td>
-                <td>{{ $data->job_kill->KillCount ?? 0 }} / {{ $data->job_kill->DeathCount ?? 0 }}</td>
+                <td>{{ __('Pvp K/D:') }}</td>
+                <td>{{ $data->pvpKill->KillCount ?? 0 }} / {{ $data->pvpKill->DeathCount ?? 0 }}</td>
             </tr>
-            @endif
+        @endif
+        @if($data->jobKill)
+        <tr>
+            <td>{{ __('Job K/D:') }}</td>
+            <td>{{ $data->jobKill->KillCount ?? 0 }} / {{ $data->jobKill->DeathCount ?? 0 }}</td>
+        </tr>
         @endif
         <tr>
             <td>{{ __('Title:') }}</td>
             <td style="color: #ffc345">
                 @if($data->HwanLevel > 0)
                     @if($data->RefObjID > 2000)
-                        [{{ $hwanLevel[1][$data->HwanLevel] ?? '' }}]
+                        [{{ config('ranking.hwan_level')[1][$data->HwanLevel] ?? '' }}]
                     @else
-                        [{{ $hwanLevel[2][$data->HwanLevel] ?? '' }}]
+                        [{{ config('ranking.hwan_level')[2][$data->HwanLevel] ?? '' }}]
                     @endif
                 @else
                     []
                 @endif
             </td>
         </tr>
-        @if(config("ranking.extra.character_status"))
         <tr>
             <td>{{ __('Status:') }}</td>
             <td>
-                @if($data->isOnline())
+                @if($data->isOnline)
                     <img src="{{ asset('images/login_window_eu_located_green.png') }}" width="16" height="16" alt=""/>
                     <span class="text-muted">{{ __('Online') }}</span>
                 @else
@@ -90,7 +85,6 @@
                 @endif
             </td>
         </tr>
-        @endif
         </tbody>
     </table>
 </div>

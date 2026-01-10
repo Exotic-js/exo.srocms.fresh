@@ -8,7 +8,7 @@ return [
         'theme' => 'dark', //dark, light
     ],
     'globals_history' => [
-        'enabled' => false,
+        'enabled' => true,
         'limit' => 5,
     ],
     'unique_history' => [
@@ -16,7 +16,7 @@ return [
         'limit' => 5,
     ],
     'top_player' => [
-        'enabled' => false,
+        'enabled' => true,
         'limit' => 5,
     ],
     'top_guild' => [
@@ -113,7 +113,7 @@ return [
                 'duration' => 3600,
             ],
             102 => [
-                'enabled' => false,
+                'enabled' => true,
                 'name' => 'Custom Event #2',
                 'days' => ['Friday'],
                 'hour' => 21,

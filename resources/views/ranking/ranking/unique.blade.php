@@ -14,16 +14,16 @@
             <tr>
                 <td>
                     @if($key < 3)
-                        <img src="{{ asset($config->topImage[$key + 1]) }}" alt=""/>
+                        <img src="{{ asset(config('ranking.top_image')[$key + 1]) }}" alt=""/>
                     @else
                         {{ $key + 1 }}
                     @endif
                     </td>
                     <td>
                         @if($value->RefObjID > 2000)
-                            <img src="{{ asset($config->characterRace[1]['image']) }}" width="16" height="16" alt=""/>
+                            <img src="{{ asset(config('ranking.character_race')[1]['image']) }}" width="16" height="16" alt=""/>
                         @else
-                            <img src="{{ asset($config->characterRace[0]['image']) }}" width="16" height="16" alt=""/>
+                            <img src="{{ asset(config('ranking.character_race')[0]['image']) }}" width="16" height="16" alt=""/>
                         @endif
                         <a href="{{ route('ranking.character.view', ['name' => $value->CharName16]) }}" class="text-decoration-none">{{ $value->CharName16 }}</a>
                     </td>
@@ -47,7 +47,7 @@
 </div>
 
 <p class="mb-2 text-center">
-    @forelse($config->uniqueList as $value)
+    @forelse(config('ranking.uniques') as $value)
         <span>{{ $value['name'] }} [{{ $value['points'] }} {{ __('points') }}]</span>,
     @empty
     @endforelse

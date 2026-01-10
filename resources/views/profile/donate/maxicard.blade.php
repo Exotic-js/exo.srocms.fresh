@@ -35,19 +35,19 @@
             </div>
 
             <div class="row mb-0">
-                <div class="col-md-8 offset-md-4">
-                    <button type="submit" class="btn btn-primary">{{ __('Submit') }}</button>
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary w-100">{{ __('Submit') }}</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
 
-@forelse($data['package'] as $value)
-    <div class="card mb-2" data-name="{{ $value['name'] }}" data-price="{{ $value['price'] }}" data-currency="{{ $data['currency'] }}">
+@forelse($data['package'] as $row)
+    <div class="card mb-2" data-name="{{ $row['name'] }}" data-price="{{ $row['price'] }}" data-currency="{{ $data['currency'] }}">
         <div class="card-body d-flex justify-content-between align-items-center">
-            <strong>{{ $value['name'] }}</strong>
-            <span>{{ $data['currency'] }} {{ $value['price'] }}</span>
+            <strong>{{ $row['name'] }}</strong>
+            <span>{{ $data['currency'] }} {{ $row['price'] }}</span>
         </div>
     </div>
 @empty

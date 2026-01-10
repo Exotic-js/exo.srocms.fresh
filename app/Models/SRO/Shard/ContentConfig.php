@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models\SRO\Account;
+namespace App\Models\SRO\Shard;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
-class ShardCurrentUser extends Model
+class ContentConfig extends Model
 {
     use HasFactory;
 
@@ -15,7 +15,7 @@ class ShardCurrentUser extends Model
      *
      * @var string
      */
-    protected $connection = 'account';
+    protected $connection = 'shard';
 
     /**
      * Indicates if the model should be timestamped.
@@ -29,19 +29,12 @@ class ShardCurrentUser extends Model
      *
      * @var string
      */
-    protected $table = 'dbo._ShardCurrentUser';
+    protected $table = 'dbo._ContentConfig';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [];
-
-    public static function getOnlineCounter()
+    public static function getContentConfig()
     {
-        return Cache::remember('online_counter', 60, fn () =>
-            self::orderByDesc('nID')->value('nUserCount') ?? 0
-        );
+        return Cache::remember("content_config", 3600, function () {
+            return self::all();
+        });
     }
 }

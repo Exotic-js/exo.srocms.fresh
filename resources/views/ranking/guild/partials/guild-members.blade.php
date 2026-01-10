@@ -11,28 +11,28 @@
         </thead>
         <tbody>
             @php $i = 1; @endphp
-            @forelse($data->members as $value)
+            @forelse($data->members as $row)
                 <tr>
                     <td>{{ $i }}</td>
                     <td>
-                        @if($value->RefObjID > 2000)
-                            <img src="{{ asset($config->characterRace[1]['image']) }}" width="16" height="16" alt=""/>
+                        @if($row->RefObjID > 2000)
+                            <img src="{{ asset(config('ranking.character_race')[1]['image']) }}" width="16" height="16" alt=""/>
                         @else
-                            <img src="{{ asset($config->characterRace[0]['image']) }}" width="16" height="16" alt=""/>
+                            <img src="{{ asset(config('ranking.character_race')[0]['image']) }}" width="16" height="16" alt=""/>
                         @endif
-                        <a href="{{ route('ranking.character.view', ['name' => $value->CharName]) }}" class="text-decoration-none">{{ $value->CharName }}</a>
+                        <a href="{{ route('ranking.character.view', ['name' => $row->CharName]) }}" class="text-decoration-none">{{ $row->CharName }}</a>
                     </td>
-                    <td>{{ date('d-m-Y', strtotime($value->JoinDate)) }}</td>
+                    <td>{{ date('d-m-Y', strtotime($row->JoinDate)) }}</td>
                     <td>
-                        @if($value->SiegeAuthority > 0)
-                            @if (array_key_exists($value->SiegeAuthority, $config->guildAuthority))
-                                {{ $config->guildAuthority[$value->SiegeAuthority] }}
+                        @if($row->SiegeAuthority > 0)
+                            @if (array_key_exists($row->SiegeAuthority, config('ranking.guild_authority')))
+                                {{ config('ranking.guild_authority')[$row->SiegeAuthority] }}
                             @endif
                         @else
                             {{ __('Member') }}
                         @endif
                     </td>
-                    <td>{{ $value->GP_Donation }}</td>
+                    <td>{{ $row->GP_Donation }}</td>
                 </tr>
                 @php $i++ @endphp
             @empty

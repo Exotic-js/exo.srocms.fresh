@@ -8,22 +8,21 @@ return [
         //'WebMallAddr' => "http://webmall.luxor-online.com/gateway.asp"
     ],
     'cache' => [
-        'account_info' => 5, //5 seconds
-        'online_counter' => 1, //1 minute
-        'event_schedule' => 10080, //1 weeek
-        'fortress_history' => 10080, //1 weeek
-        'unique_history' => 10, //10 minutes
-        'globals_history' => 10, //10 minutes
-        'character_info' => 1440, //1 day
-        'guild_info' => 1440, //1 day
-        'ranking_player' => 60, //1 Hours
-        'ranking_guild' => 60, //1 Hours
-        'ranking_unique' => 60, //1 Hours
-        'ranking_unique_monthly' => 60, //1 Hours
-        'ranking_job' => 60, //1 Hours
-        'ranking_honor' => 60, //1 Hours
-        'ranking_fortress_player' => 60, //1 Hours
-        'ranking_fortress_guild' => 60, //1 Hours
+        'account_info' => 5, // 5 seconds
+        'event_schedule' => 604800, // 1 week
+        'fortress_history' => 604800, // 1 week
+        'unique_history' => 600, // 10 minutes
+        'globals_history' => 600, // 10 minutes
+        'character_info' => 86400, // 1 day
+        'guild_info' => 86400, // 1 day
+        'ranking_player' => 3600, // 1 hour
+        'ranking_guild' => 3600, // 1 hour
+        'ranking_unique' => 3600, // 1 hour
+        'ranking_unique_monthly' => 3600, // 1 hour
+        'ranking_job' => 3600, // 1 hour
+        'ranking_honor' => 3600, // 1 hour
+        'ranking_fortress_player' => 3600, // 1 hour
+        'ranking_fortress_guild' => 3600, // 1 hour
     ],
     'languages' => [
         'en' => [

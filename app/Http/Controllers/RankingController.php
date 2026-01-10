@@ -33,11 +33,7 @@ class RankingController extends Controller
             $data = Guild::getGuildRanking(25, 0, $search);
         }
 
-        $config = (object) [
-            'menu' => collect(config('ranking.menu'))->merge(config('ranking.custom'))->map(fn ($item) => (object) $item)->values(),
-            'topImage' => config('ranking.top_image'),
-            'characterRace' => config('ranking.character_race'),
-        ];
+        $config = (object) collect(config('ranking.menu'))->merge(config('ranking.custom'))->map(fn ($item) => (object) $item)->values();
 
         return view('ranking.index', [
             'data' => $data,
@@ -50,105 +46,49 @@ class RankingController extends Controller
     {
         $data = Char::getPlayerRanking();
 
-        $config = (object) [
-            'topImage' => config('ranking.top_image'),
-            'characterRace' => config('ranking.character_race'),
-        ];
-
-        return view('ranking.ranking.player', [
-            'data' => $data,
-            'config' => $config,
-        ]);
+        return view('ranking.ranking.player', compact('data'));
     }
 
     public function guildRanking()
     {
         $data = Guild::getGuildRanking();
 
-        $config = (object) [
-            'topImage' => config('ranking.top_image'),
-        ];
-
-        return view('ranking.ranking.guild', [
-            'data' => $data,
-            'config' => $config,
-        ]);
+        return view('ranking.ranking.guild', compact('data'));
     }
 
     public function uniqueRanking()
     {
         $data = LogInstanceWorldInfo::getUniqueRanking();
 
-        $config = (object) [
-            'uniqueList' => config('ranking.uniques'),
-            'topImage' => config('ranking.top_image'),
-            'characterRace' => config('ranking.character_race'),
-        ];
-
-        return view('ranking.ranking.unique', [
-            'data' => $data,
-            'config' => $config,
-        ]);
+        return view('ranking.ranking.unique', compact('data'));
     }
 
     public function uniqueMonthlyRanking()
     {
         $data = LogInstanceWorldInfo::getUniqueRanking(25, 1);
 
-        $config = (object) [
-            'uniqueList' => config('ranking.uniques'),
-            'topImage' => config('ranking.top_image'),
-            'characterRace' => config('ranking.character_race'),
-        ];
-
-        return view('ranking.ranking.unique-monthly', [
-            'data' => $data,
-            'config' => $config,
-        ]);
+        return view('ranking.ranking.unique-monthly', compact('data'));
     }
 
     public function fortressPlayerRanking()
     {
         $data = GuildMember::getFortressPlayerRanking();
 
-        $config = (object) [
-            'topImage' => config('ranking.top_image'),
-            'characterRace' => config('ranking.character_race'),
-        ];
-
-        return view('ranking.ranking.fortress-player', [
-            'data' => $data,
-            'config' => $config,
-        ]);
+        return view('ranking.ranking.fortress-player', compact('data'));
     }
 
     public function fortressGuildRanking()
     {
         $data = Guild::getFortressGuildRanking();
 
-        $config = (object) [
-            'topImage' => config('ranking.top_image'),
-        ];
-
-        return view('ranking.ranking.fortress-guild', [
-            'data' => $data,
-            'config' => $config,
-        ]);
+        return view('ranking.ranking.fortress-guild', compact('data'));
     }
 
     public function honorRanking()
     {
         $data = TrainingCampHonorRank::getHonorRanking();
 
-        $config = (object) [
-            'honorLevel' => config('ranking.honor_level'),
-            'characterRace' => config('ranking.character_race'),
-        ];
-
-        return view('ranking.ranking.honor', [
-            'data' => $data,
-            'config' => $config,
-        ]);
+        return view('ranking.ranking.honor', compact('data'));
     }
 
     public function jobRanking()
@@ -159,12 +99,7 @@ class RankingController extends Controller
             $data = CharTradeConflictJob::getJobRanking();
         }
 
-        $config = (object) [
-            'menu' => collect(config('ranking.job_menu'))->map(fn($item) => (object)$item)->values(),
-            'topImage' => config('ranking.top_image'),
-            'characterRace' => config('ranking.character_race'),
-            'jobType' => config('ranking.job_type'),
-        ];
+        $config = (object) collect(config('ranking.job_menu'))->map(fn($item) => (object)$item)->values();
 
         return view('ranking.ranking.job', [
             'data' => $data,
@@ -180,17 +115,7 @@ class RankingController extends Controller
             $data = CharTradeConflictJob::getJobRanking();
         }
 
-        $config = (object) [
-            'topImage' => config('ranking.top_image'),
-            'characterRace' => config('ranking.character_race'),
-            'jobType' => config('ranking.job_type'),
-            'jobTypeVSRO' => config('ranking.job_type_vsro'),
-        ];
-
-        return view('ranking.ranking.job-all', [
-            'data' => $data,
-            'config' => $config,
-        ]);
+        return view('ranking.ranking.job-all', compact('data'));
     }
 
     public function jobHunterRanking()
@@ -201,15 +126,7 @@ class RankingController extends Controller
             $data = CharTradeConflictJob::getJobRanking(25, 1);
         }
 
-        $config = (object) [
-            'topImage' => config('ranking.top_image'),
-            'characterRace' => config('ranking.character_race'),
-        ];
-
-        return view('ranking.ranking.job-hunter', [
-            'data' => $data,
-            'config' => $config,
-        ]);
+        return view('ranking.ranking.job-hunter', compact('data'));
     }
 
     public function jobThieveRanking()
@@ -220,15 +137,7 @@ class RankingController extends Controller
             $data = CharTradeConflictJob::getJobRanking(25, 2);
         }
 
-        $config = (object) [
-            'topImage' => config('ranking.top_image'),
-            'characterRace' => config('ranking.character_race'),
-        ];
-
-        return view('ranking.ranking.job-thieve', [
-            'data' => $data,
-            'config' => $config,
-        ]);
+        return view('ranking.ranking.job-thieve', compact('data'));
     }
 
     public function jobTraderRanking()
@@ -239,51 +148,21 @@ class RankingController extends Controller
             $data = CharTradeConflictJob::getJobRanking(25, 3);
         }
 
-        $config = (object) [
-            'topImage' => config('ranking.top_image'),
-            'characterRace' => config('ranking.character_race'),
-        ];
-
-        return view('ranking.ranking.job-trader', [
-            'data' => $data,
-            'config' => $config,
-        ]);
+        return view('ranking.ranking.job-trader', compact('data'));
     }
 
     public function pvpKDRanking()
     {
-        if (config('ranking.extra.kill_logs.pvp')) {
-            $data = LogEventChar::getKillDeathRanking('pvp', 25);
-        } else {
-            $data = [];
-        }
+        $data = LogEventChar::getKillDeathRanking('pvp', 25);
 
-        $config = (object) [
-            'topImage' => config('ranking.top_image'),
-        ];
-
-        return view('ranking.ranking.pvp-kd', [
-            'data' => $data,
-            'config' => $config,
-        ]);
+        return view('ranking.ranking.pvp-kd', compact('data'));
     }
 
     public function jobKDRanking()
     {
-        if (config('ranking.extra.kill_logs.job')) {
-            $data = LogEventChar::getKillDeathRanking('job', 25);
-        } else {
-            $data = [];
-        }
+        $data = LogEventChar::getKillDeathRanking('job', 25);
 
-        $config = (object) [
-            'topImage' => config('ranking.top_image'),
-        ];
-
-        return view('ranking.ranking.job-kd', [
-            'data' => $data,
-            'config' => $config,
-        ]);
+        return view('ranking.ranking.job-kd', compact('data'));
     }
 
     public function customRanking(string $type)
@@ -338,15 +217,7 @@ class RankingController extends Controller
     {
         $data = Guild::getGuildByName($name);
 
-        $config = (object) [
-            'guildAuthority' => config('ranking.guild_authority'),
-            'characterRace' => config('ranking.character_race'),
-        ];
-
-        return view('ranking.guild.index', [
-            'data' => $data,
-            'config' => $config,
-        ]);
+        return view('ranking.guild.index', compact('data'));
     }
 
     public function guildCrest(string $bin)

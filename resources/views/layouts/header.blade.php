@@ -39,8 +39,8 @@
                 <li class="dropdown">
                     <a href="#" class="nav-link px-2 text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{{ __('Pages') }}</a>
                     <ul class="dropdown-menu" style="">
-                        @forelse ($pages as $page)
-                            <li><a class="dropdown-item" href="{{ route('pages.page.show', ['slug' => $page->slug]) }}">{{ $page->title }}</a></li>
+                        @forelse ($pageNames as $row)
+                            <li><a class="dropdown-item" href="{{ route('pages.page.show', ['slug' => $row->slug]) }}">{{ $row->title }}</a></li>
                         @empty
                             <li><a class="dropdown-item" href="#">{{ __('No Pages') }}</a></li>
                         @endforelse
@@ -100,14 +100,14 @@
                 @if(config('settings.default_locale') == 'switch')
                 <div class="dropdown">
                     <a href="#" class="nav-link px-3 py-2 text-white dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="fi fi-{{ $languages[App::getLocale()]['flag'] }}"></span>
+                        <span class="fi fi-{{ config('global.languages')[App::getLocale()]['flag'] }}"></span>
                     </a>
                     <ul class="dropdown-menu" style="">
-                        @foreach($languages as $key => $value)
+                        @foreach(config('global.languages') as $key => $item)
                             <li>
                                 <a class="dropdown-item" href="{{ route('locale', $key) }}">
-                                    <span class="fi fi-{{ $value['flag'] }}"></span>
-                                    {{ $value['name'] }}
+                                    <span class="fi fi-{{ $item['flag'] }}"></span>
+                                    {{ $item['name'] }}
                                 </a>
                             </li>
                         @endforeach
@@ -119,7 +119,7 @@
                     @auth
                         <div class="dropdown">
                             <a href="{{ route('profile') }}" class="d-block text-decoration-none dropdown-toggle px-3 py-1 text-white" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa-solid fa-user"></i> {{ Auth::user()->username }}
+                                <i class="fa-solid fa-user"></i> {{ auth()->user()->username }}
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ route('profile') }}">{{ __('Account Panel') }}</a></li>

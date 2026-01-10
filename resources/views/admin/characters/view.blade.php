@@ -138,7 +138,7 @@
                                 <div class="card">
                                     <div id="display-storage" class="card-body p-3 d-flex flex-column justify-content-center align-items-center">
                                         <h2 class="text-center">Storage</h2>
-                                        @include('ranking.character.partials.inventory.inventory-view', ['inventorySetList' => $data->getCharStorageItems(), 'min' => 0, 'max' => 179])
+                                        @include('ranking.character.partials.inventory.inventory-view', ['inventorySetList' => $data->charStorageItems, 'min' => 0, 'max' => 179])
                                     </div>
                                 </div>
                             </div>
@@ -167,7 +167,6 @@
                     </div>
                 </div>
 
-                @if(config("ranking.extra.character_status"))
                 <div class="card p-0 mt-4">
                     <div class="card-header">
                         <h4 class="text-center">Logged in history</h4>
@@ -201,7 +200,6 @@
                         </div>
                     </div>
                 </div>
-                @endif
             </div>
 
             <div class="col-md-4">

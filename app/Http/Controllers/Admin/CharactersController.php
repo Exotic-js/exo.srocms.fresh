@@ -31,15 +31,15 @@ class CharactersController extends Controller
 
     public function unstuck(Char $char)
     {
-        if ($char->isOnline()) {
+        if ($char->isOnline) {
             return back()->with('error', 'This char is still logged in.');
         }
 
-        if (!$char->isOffline()) {
+        if (!$char->isOffline) {
             return back()->with('error', 'Cannot unstuck this char at the moment.');
         }
 
-        if ($char->hasJobSuit()) {
+        if ($char->hasJobSuit) {
             return back()->with('error', 'This char is wearing a Job Suit.');
         }
 

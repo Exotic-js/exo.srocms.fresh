@@ -25,7 +25,7 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Title</th>
-                        <th scope="col">Slug</th>
+                        <th scope="col">Url</th>
                         <th scope="col">Category</th>
                         <th scope="col">Status</th>
                         <th scope="col">Options</th>
@@ -36,7 +36,7 @@
                         <tr>
                             <td>{{ $row->id }}</td>
                             <td style="white-space: nowrap;max-width: 150px;overflow: hidden;text-overflow: ellipsis;">{{ $row->title }}</td>
-                            <td style="white-space: nowrap;max-width: 150px;overflow: hidden;text-overflow: ellipsis;">{{ $row->slug }}</td>
+                            <td><a href="{{ route('pages.post.show', ['slug' => $row->slug]) }}" target="_blank">{{ route('pages.post.show', ['slug' => $row->slug]) }}</a></td>
                             <td>{{ $row->category }}</td>
                             <td>
                                 @if($row->active == 1)

@@ -29,11 +29,16 @@ class AppServiceProvider extends ServiceProvider
             return;
         }
 
-        Config::set('settings', Setting::pluck('value', 'key')->toArray());
-        Config::set('app.name', config('settings.site_title', 'iSRO CMS v2'));
-        Config::set('app.url', config('settings.site_url', 'http://localhost'));
+        try {
+            Config::set('settings', Setting::pluck('value', 'key')->toArray());
+            Config::set('app.name', config('settings.site_title', 'iSRO CMS v2'));
+            Config::set('app.url', config('settings.site_url', 'http://localhost'));
 
-        date_default_timezone_set(config('settings.timezone', config('app.timezone')));
-        View::getFinder()->prependLocation(resource_path("themes/".config('settings.theme').'/views'));
+            date_default_timezone_set(config('settings.timezone', config('app.timezone')));
+            View::getFinder()->prependLocation(resource_path("themes/".config('settings.theme', 'default').'/views'));
+
+        } catch (\Exception $e) {
+            // DB not ready, ignore
+        }
     }
 }

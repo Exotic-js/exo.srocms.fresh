@@ -36,7 +36,9 @@ class AuthenticatedSessionController extends Controller
 
         $request->authenticate();
 
-        if ($response = $this->sendVerify()) {
+        $response = $this->sendVerify();
+
+        if ($response) {
             return $response;
         }
 

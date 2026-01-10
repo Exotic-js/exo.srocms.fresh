@@ -1,18 +1,6 @@
 @extends('layouts.full')
 @section('title', __('Landing'))
 
-@php
-    $onlinePlayer = App\Models\SRO\Account\ShardCurrentUser::getOnlineCounter();
-    $maxPlayer = config('settings.max_player', 1000);
-    $fakePlayer = config('settings.fake_player', 0);
-
-    $discord = config('widgets.discord');
-    if (config('global.server.version') !== 'vSRO') {
-        $contentConfig = Illuminate\Support\Facades\DB::connection('shard')->select("SELECT * FROM _contentconfig");
-        $contentConfig = collect($contentConfig)->pluck('Value', 'CodeName128')->toArray();
-    }
-@endphp
-
 @section('hero')
     <!-- Hero Section -->
     <section id="home" class="position-relative d-flex align-items-center bg-hero-pattern" style="background-image: url({{ config('global.hero.background', 'images/bg.jpg') }}) !important; background-repeat: no-repeat; background-size: cover; background-position: center;min-height: 70vh;">
@@ -52,10 +40,10 @@
                     <div class="d-flex flex-wrap align-items-center gap-4 mt-4">
                         <div class="d-flex align-items-center">
                             <div class="bg-success rounded-circle me-2 animate-pulse" style="height: 10px; width: 10px;"></div>
-                            <span class="text-light font-cinzel"><span class="text-warning">{{ $onlinePlayer+$fakePlayer }}</span> Players Online</span>
+                            <span class="text-light font-cinzel"><span class="text-warning">{{ $onlineCounter->onlinePlayer+$onlineCounter->fakePlayer }}</span> Players Online</span>
                         </div>
                         <div class="vr bg-warning opacity-25 d-none d-sm-block" style="height: 24px;"></div>
-                        <div class="text-light font-cinzel"><span class="text-warning">{{ $contentConfig['EXP_RATIO'] ?? 1 }}x</span> EXP Rate</div>
+                        <div class="text-light font-cinzel"><span class="text-warning"><span id="idTimerClock">{{ date('H:i:s') }}</span></span> Server Time</div>
                     </div>
                 </div>
             </div>
@@ -68,6 +56,12 @@
     <section class="py-5 bg-silk-red position-relative overflow-hidden">
         <div class="position-absolute top-0 start-0 w-100 h-100 bg-texture opacity-10"></div>
         <div class="position-absolute top-0 start-0 w-100 h-100 bg-black bg-opacity-25"></div>
+
+        @php
+            if (config('global.server.version') !== 'vSRO') {
+                $contentConfig = collect(App\Models\SRO\Shard\ContentConfig::getContentConfig())->pluck('Value', 'CodeName128')->toArray();
+            }
+        @endphp
 
         <div class="container position-relative py-4">
             <div class="row g-4 text-center">
@@ -125,7 +119,7 @@
         </section>
     @endif
 
-    @if($discord['enabled'])
+    @if(config('widgets.discord.enabled'))
         <!-- Call to Action -->
         <section class="py-5 bg-black position-relative">
             <div class="position-absolute top-0 start-0 w-100 h-100 bg-texture opacity-5"></div>
@@ -143,8 +137,8 @@
 
                 <div class="row justify-content-center">
                     <widgetbot
-                        server="{{ $discord['server_id'] }}"
-                        channel="{{ $discord['channel_id'] }}"
+                        server="{{ config('widgets.discord')['server_id'] }}"
+                        channel="{{ config('widgets.discord')['channel_id'] }}"
                         width="100%"
                         height="600"
                     ></widgetbot>
@@ -233,7 +227,7 @@
             <div class="row justify-content-center">
                 <div class="col-lg-8 text-center">
                     <h2 class="display-5 fw-bold font-cinzel text-white mb-4">
-                        Begin Your <span class="text-warning">Adventure</span> on the Legendary Silk Road
+                        Begin Your <span class="text-warning">Adventure</span> on the Legendary Silkroad
                     </h2>
 
                     <p class="text-light mb-5">

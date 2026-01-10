@@ -92,7 +92,7 @@ return [
         ],
     ],
     'paymentwall' => [
-        'enabled' => false,
+        'enabled' => true,
         'name' => 'Paymentwall',
         'route' => 'paymentwall',
         'currency' => 'USD',
@@ -106,7 +106,7 @@ return [
         ],
     ],
     'coinpayments' => [
-        'enabled' => false,
+        'enabled' => true,
         'name' => 'CoinPayments',
         'route' => 'coinpayments',
         'currency' => 'USD',
@@ -207,7 +207,7 @@ return [
         ],
     ],
     'maxicard' => [
-        'enabled' => false,
+        'enabled' => true,
         'name' => 'MaxiCard',
         'route' => 'maxicard',
         'currency' => 'TL',
@@ -259,7 +259,7 @@ return [
         ],
     ],
     'hipocard' => [
-        'enabled' => false,
+        'enabled' => true,
         'name' => 'HipoCard',
         'route' => 'hipocard',
         'currency' => 'TL',

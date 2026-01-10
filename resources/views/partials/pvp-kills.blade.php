@@ -1,21 +1,21 @@
-@isset ($pvpKillsConfig['enabled'])
+@if(config('widgets.pvp_kills.enabled'))
     <div class="card mb-4">
         <div class="card-header">
             {{ __('Pvp Kills') }}
         </div>
         <div class="card-body">
             <ul class="list-unstyled">
-                @forelse($pvpKills as $value)
+                @forelse($pvpKills as $row)
                     <li>
                         <p>
-                            @if($value->KillerCharName)
-                                <a href="{{ route('ranking.character.view', ['name' => $value->KillerCharName]) }}" class="text-decoration-none">{{ $value->KillerCharName }}</a>
+                            @if($row->KillerCharName)
+                                <a href="{{ route('ranking.character.view', ['name' => $row->KillerCharName]) }}" class="text-decoration-none">{{ $row->KillerCharName }}</a>
                             @endif
                             {{ __('Has killed:') }}
-                            @if($value->DeadCharName)
-                                <a href="{{ route('ranking.character.view', ['name' => $value->DeadCharName]) }}" class="text-decoration-none">{{ $value->DeadCharName }}</a>
+                            @if($row->DeadCharName)
+                                <a href="{{ route('ranking.character.view', ['name' => $row->DeadCharName]) }}" class="text-decoration-none">{{ $row->DeadCharName }}</a>
                             @endif
-                            {{ \Carbon\Carbon::make($value->EventTime)->diffForHumans() }}
+                            {{ \Carbon\Carbon::make($row->EventTime)->diffForHumans() }}
                         </p>
                         <hr>
                     </li>
@@ -25,4 +25,4 @@
             </ul>
         </div>
     </div>
-@endisset
+@endif

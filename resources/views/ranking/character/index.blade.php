@@ -9,7 +9,11 @@
                     <div class="col-md-6">
                         <div class="d-flex">
                             <div class="d-flex me-3 overflow-hidden align-items-center">
-                                <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.$config->characterImage[$data->RefObjID]) }}" width="100" height="100" alt=""/>
+                                @if(config('global.server.version') === 'vSRO')
+                                    <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.config('ranking.character_image_vsro')[$data->RefObjID]) }}" width="100" height="100" alt=""/>
+                                @else
+                                    <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.config('ranking.character_image')[$data->RefObjID]) }}" width="100" height="100" alt=""/>
+                                @endif
                             </div>
 
                             <div class="mt-3">
@@ -17,16 +21,16 @@
                                 <p class="m-0">{{ __('Item Points:') }} <span class="">{{ $data->ItemPoints }}</span></p>
 
                                 <p class="mb-0">
-                                    @foreach($data->getBuildInfo() as $key => $value)
-                                        @if(isset($config->skillMastery[$value->MasteryID]))
-                                            <span>{{ $config->skillMastery[$value->MasteryID]['name'] }}</span> @if($key < count($data->getBuildInfo()) - 1) / @endif
+                                    @foreach($data->buildInfo as $key => $value)
+                                        @if(isset(config('ranking.skill_mastery')[$value->MasteryID]))
+                                            <span>{{ config('ranking.skill_mastery')[$value->MasteryID]['name'] }}</span> @if($key < count($data->buildInfo) - 1) / @endif
                                         @endif
                                     @endforeach
                                 </p>
                                 <ul class="list-unstyled d-flex">
-                                    @foreach($data->getBuffInfo() as $value)
+                                    @foreach($data->buffInfo as $value)
                                         <li class="me-1">
-                                            <img src="{{ asset('images/sro/' . $value->UI_IconFile_PNG) }}" title="{{ $value->UI_SkillName }}" alt="" width="24" height="24">
+                                            <img src="{{ asset('images/sro/'.$value->UI_IconFile_PNG) }}" title="{{ $value->UI_SkillName }}" alt="" width="24" height="24">
                                         </li>
                                     @endforeach
                                 </ul>
@@ -39,12 +43,20 @@
                                 <div class="col-md-4">
                                     <div class="d-flex">
                                         <div class="d-flex align-items-center">
-                                            <img src="{{ asset($config->jobType[$data->charJob->JobType]['image']) }}" width="50" height="" alt=""/>
+                                            @if(config('global.server.version') === 'vSRO')
+                                                <img src="{{ asset(config('ranking.job_type_vsro')[$data->charJob->JobType]['image']) }}" width="50" height="" alt=""/>
+                                            @else
+                                                <img src="{{ asset(config('ranking.job_type')[$data->charJob->JobType]['image']) }}" width="50" height="" alt=""/>
+                                            @endif
                                         </div>
 
                                         <ul class="list-unstyled mt-3">
                                             <li class="mb-0">
-                                                <span>{{ $config->jobType[$data->charJob->JobType]['name'] }}</span>
+                                                @if(config('global.server.version') === 'vSRO')
+                                                    <span>{{ config('ranking.job_type_vsro')[$data->charJob->JobType]['name'] }}</span>
+                                                @else
+                                                    <span>{{ config('ranking.job_type')[$data->charJob->JobType]['name'] }}</span>
+                                                @endif
                                             </li>
                                             <li class="mb-0">{{ __('Job Level:') }} <span class="">{{ $data->charJob->JobLevel ?? $data->charJob->Level }}</span></li>
                                         </ul>
@@ -114,15 +126,15 @@
                         <div class="card" style="height: 345px">
                             <div class="card-body d-flex flex-column position-relative h-100" id="display-inventory">
                                 <div class="position-absolute top-0 start-0 w-100 h-100 p-4 d-block" id="display-inventory-set">
-                                    @include('ranking.character.partials.inventory.inventory-view', ['inventorySetList' => $data->getCharInventorySet()])
+                                    @include('ranking.character.partials.inventory.inventory-view', ['inventorySetList' => $data->getCharInventorySet(12, 0, 8)])
                                 </div>
                                 @if(config('global.server.version') !== 'vSRO')
                                     <div class="position-absolute top-0 start-0 w-100 h-100 p-4 d-none" id="display-inventory-job">
-                                        @include('ranking.character.partials.inventory.inventory-job-view', ['inventoryJobList' => $data->getCharInventoryJob()])
+                                        @include('ranking.character.partials.inventory.inventory-job-view', ['inventoryJobList' => $data->charInventoryJob])
                                     </div>
                                 @endif
                                 <div class="position-absolute top-0 start-0 w-100 h-100 p-4 d-none" id="display-inventory-avatar">
-                                    @include('ranking.character.partials.inventory.inventory-avatar-view', ['inventoryAvatarList' => $data->getCharInventoryAvatar()])
+                                    @include('ranking.character.partials.inventory.inventory-avatar-view', ['inventoryAvatarList' => $data->charInventoryAvatar])
                                 </div>
 
                                 <img class="position-absolute top-50 start-50 translate-middle h-100 w-auto object-fit-cover z-0 pt-4" src="{{ asset('images/character_full/'.$config->characterImage[$data->RefObjID]) }}" alt=""/>

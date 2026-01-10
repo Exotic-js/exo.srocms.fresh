@@ -25,6 +25,7 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Title</th>
+                        <th scope="col">Url</th>
                         <th scope="col">Status</th>
                         <th scope="col">Options</th>
                     </tr>
@@ -34,6 +35,7 @@
                         <tr>
                             <td>{{ $row->id }}</td>
                             <td>{{ $row->title }}</td>
+                            <td><a href="{{ route('pages.page.show', ['slug' => $row->slug]) }}" target="_blank">{{ route('pages.page.show', ['slug' => $row->slug]) }}</a></td>
                             <td>
                                 @if($row->active == 1)
                                     <span class="text-success">Active</span>

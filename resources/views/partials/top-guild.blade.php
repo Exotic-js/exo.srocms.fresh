@@ -1,4 +1,4 @@
-@isset ($topGuildConfig['enabled'])
+@if(config('widgets.top_guild.enabled'))
     <div class="card mb-4">
         <div class="card-header">
             {{ __('Top Guild') }}
@@ -14,24 +14,22 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php $i = 1; @endphp
-                        @forelse($topGuild as $value)
+                        @forelse($topGuild as $key => $row)
                             <tr>
                                 <td>
-                                    @if($i <= 3)
-                                        <img src="{{ asset($topImage[$i]) }}" alt=""/>
+                                    @if($key < 3)
+                                        <img src="{{ asset(config('ranking.top_image')[$key + 1]) }}" alt=""/>
                                     @else
-                                        {{ $i }}
+                                        {{ $key + 1 }}
                                     @endif
                                 </td>
                                 <td>
-                                    @if($value->Name)
-                                    <a href="{{ route('ranking.guild.view', ['name' => $value->Name]) }}" class="text-decoration-none">{{ $value->Name }}</a>
+                                    @if($row->Name)
+                                    <a href="{{ route('ranking.guild.view', ['name' => $row->Name]) }}" class="text-decoration-none">{{ $row->Name }}</a>
                                     @endif
                                 </td>
-                                <td>{{ $value->ItemPoints }}</td>
+                                <td>{{ $row->ItemPoints }}</td>
                             </tr>
-                            @php $i++ @endphp
                         @empty
                             <tr>
                                 <td colspan="3" class="text-center">{{ __('No Records Found!') }}</td>
@@ -42,4 +40,4 @@
             </div>
         </div>
     </div>
-@endisset
+@endif

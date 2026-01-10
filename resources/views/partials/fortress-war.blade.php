@@ -1,19 +1,19 @@
-@isset($fortressWarConfig['enabled'])
+@if(config('widgets.fortress_war.enabled'))
     <div class="card mb-4">
         <div class="card-header">
             {{ __('Fortress War') }}
         </div>
         <div class="card-body">
             <ul class="list-unstyled">
-                @forelse($fortressWar as $value)
+                @forelse($fortressWar as $row)
                     <li>
                         <span>
-                            <img src="{{ asset($fortressWarConfig['names'][$value->FortressID]['image']) }}" alt="">
-                            {{ $fortressWarConfig['names'][$value->FortressID]['name'] }}
+                            <img src="{{ asset(config('widgets.fortress_war')['names'][$row->FortressID]['image']) }}" alt="">
+                            {{ config('widgets.fortress_war')['names'][$row->FortressID]['name'] }}
                         </span>
                         <span class="float-end">
-                            @if($value->Name !== 'DummyGuild')
-                                <a href="{{ route('ranking.guild.view', ['name' => $value->Name]) }}" class="text-decoration-none">{{ $value->Name }}</a>
+                            @if($row->Name !== 'DummyGuild')
+                                <a href="{{ route('ranking.guild.view', ['name' => $row->Name]) }}" class="text-decoration-none">{{ $row->Name }}</a>
                             @else
                                 <span>{{ __('None') }}</span>
                             @endif
@@ -25,4 +25,4 @@
             </ul>
         </div>
     </div>
-@endisset
+@endif

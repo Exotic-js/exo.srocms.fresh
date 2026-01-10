@@ -13,82 +13,95 @@ class RankingController extends Controller
     public function player()
     {
         $data = Char::getPlayerRanking();
-        $topImage = config('ranking.top_image');
-        $characterRace = config('ranking.character_race');
+
+        $config = (object) [
+            'topImage' => config('ranking.top_image'),
+            'characterRace' => config('ranking.character_race'),
+        ];
 
         return response()->json([
             'status' => 'success',
             'data' => $data,
-            'topImage' => $topImage,
-            'characterRace' => $characterRace,
+            'config' => $config,
         ]);
     }
 
     public function guild()
     {
         $data = Guild::getGuildRanking();
-        $topImage = config('ranking.top_image');
+
+        $config = (object) [
+            'topImage' => config('ranking.top_image'),
+        ];
 
         return response()->json([
             'status' => 'success',
             'data' => $data,
-            'topImage' => $topImage,
+            'config' => $config,
         ]);
     }
 
     public function unique()
     {
         $data = LogInstanceWorldInfo::getUniqueRanking();
-        $uniqueList = config('ranking.uniques');
-        $topImage = config('ranking.top_image');
-        $characterRace = config('ranking.character_race');
+
+        $config = (object) [
+            'uniqueList' => config('ranking.uniques'),
+            'topImage' => config('ranking.top_image'),
+            'characterRace' => config('ranking.character_race'),
+        ];
 
         return response()->json([
             'status' => 'success',
             'data' => $data,
-            'uniqueList' => $uniqueList,
-            'topImage' => $topImage,
-            'characterRace' => $characterRace,
+            'config' => $config,
         ]);
     }
 
     public function level()
     {
         $data = Char::getLevelRanking();
-        $topImage = config('ranking.top_image');
-        $characterRace = config('ranking.character_race');
+
+        $config = (object) [
+            'topImage' => config('ranking.top_image'),
+            'characterRace' => config('ranking.character_race'),
+        ];
 
         return response()->json([
             'status' => 'success',
             'data' => $data,
-            'topImage' => $topImage,
-            'characterRace' => $characterRace,
+            'config' => $config,
         ]);
     }
 
     public function fortress_player()
     {
         $data = GuildMember::getFortressPlayerRanking();
-        $topImage = config('ranking.top_image');
-        $characterRace = config('ranking.character_race');
+
+        $config = (object) [
+            'topImage' => config('ranking.top_image'),
+            'characterRace' => config('ranking.character_race'),
+        ];
 
         return response()->json([
             'status' => 'success',
             'data' => $data,
-            'topImage' => $topImage,
-            'characterRace' => $characterRace,
+            'config' => $config,
         ]);
     }
 
     public function fortress_guild()
     {
         $data = Guild::getFortressGuildRanking();
-        $topImage = config('ranking.top_image');
+
+        $config = (object) [
+            'topImage' => config('ranking.top_image'),
+        ];
 
         return response()->json([
             'status' => 'success',
             'data' => $data,
-            'topImage' => $topImage,
+            'config' => $config,
         ]);
     }
 }

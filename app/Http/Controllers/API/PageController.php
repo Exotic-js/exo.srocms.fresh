@@ -44,18 +44,20 @@ class PageController extends Controller
     public function uniques()
     {
         $data = LogInstanceWorldInfo::getUniquesKill();
-        $config = config('ranking.uniques');
-        $characterRace = config('ranking.character_race');
+
+        $config = (object) [
+            'uniqueList' => config('ranking.uniques'),
+            'characterRace' => config('ranking.character_race'),
+        ];
 
         return response()->json([
             'status' => 'success',
             'data' => $data,
             'config' => $config,
-            'characterRace' => $characterRace,
         ]);
     }
 
-    public function online_counter()
+    public function onlineCounter()
     {
         $onlinePlayer = ShardCurrentUser::getOnlineCounter();
         $maxPlayer = (int)config('settings.max_player', 1000);

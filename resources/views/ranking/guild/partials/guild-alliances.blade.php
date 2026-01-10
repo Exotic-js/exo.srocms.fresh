@@ -6,10 +6,10 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($data->alliance as $value)
+            @forelse($data->alliance as $row)
                 <tr class="text-center">
                     <td>
-                        <a href="{{ route('ranking.guild.view', ['name' => $value->Name]) }}" class="text-decoration-none">{{ $value->Name }}</a>
+                        <a href="{{ route('ranking.guild.view', ['name' => $row->Name]) }}" class="text-decoration-none">{{ $row->Name }}</a>
                     </td>
                 </tr>
             @empty

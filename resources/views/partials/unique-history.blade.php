@@ -1,21 +1,21 @@
-@isset($uniqueHistoryConfig['enabled'])
+@if(config('widgets.unique_history.enabled'))
     <div class="card mb-4">
         <div class="card-header">
             {{ __('Unique History') }}
         </div>
         <div class="card-body">
             <ul class="list-unstyled">
-                @forelse($uniqueHistory as $value)
+                @forelse($uniqueHistory as $row)
                     <li class="mb-3">
-                        <p class="mb-0">{{ $uniquesList[$value->Value]['name'] }}</p>
+                        <p class="mb-0">{{ config('ranking.uniques')[$row->Value]['name'] }}</p>
                         <small>
                             {{ __('Killed by:') }}
-                            @if(!empty($value->CharName16))
-                                <a href="{{ route('ranking.character.view', ['name' => $value->CharName16]) }}" class="text-decoration-none">{{ $value->CharName16 }}</a>
+                            @if(!empty($row->CharName16))
+                                <a href="{{ route('ranking.character.view', ['name' => $row->CharName16]) }}" class="text-decoration-none">{{ $row->CharName16 }}</a>
                             @else
                                 <span>{{ __('None') }}</span>
                             @endif
-                            {{ \Carbon\Carbon::make($value->EventTime)->diffForHumans() }}
+                            {{ \Carbon\Carbon::make($row->EventTime)->diffForHumans() }}
                         </small>
                     </li>
                 @empty
@@ -24,4 +24,4 @@
             </ul>
         </div>
     </div>
-@endisset
+@endif

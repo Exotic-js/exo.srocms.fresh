@@ -8,11 +8,8 @@
                 <h2 class="mt-5">{{ __('Register') }}</h2>
 
                 @if (!config('settings.disable_register'))
-                    <form method="POST" action="{{ route('register') }}">
+                    <form id="register-form" method="POST" action="{{ route('register') }}">
                     @csrf
-
-                    <input type="hidden" name="invite" value="{{ request()->query('invite') }}">
-                    <input type="hidden" name="fingerprint" id="fingerprint">
 
                     <div class="form-group row mb-3">
                         <label for="username" class="col-md-12 col-form-label text-md-left">{{ __('Username') }}</label>
@@ -120,7 +117,23 @@
     <script>
         FingerprintJS.load().then(fp => {
             fp.get().then(result => {
-                document.getElementById('fingerprint').value = result.visitorId;
+                const form = document.getElementById('register-form');
+
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'fingerprint';
+                input.value = result.visitorId;
+
+                form.appendChild(input);
+
+                const invite = new URLSearchParams(window.location.search).get('invite');
+                if (invite) {
+                    const inviteInput = document.createElement('input');
+                    inviteInput.type = 'hidden';
+                    inviteInput.name = 'invite';
+                    inviteInput.value = invite;
+                    form.appendChild(inviteInput);
+                }
             });
         });
     </script>

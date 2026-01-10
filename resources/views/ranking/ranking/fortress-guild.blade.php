@@ -12,7 +12,7 @@
             <tr>
                 <td>
                     @if($key < 3)
-                        <img src="{{ asset($config->topImage[$key + 1]) }}" alt=""/>
+                        <img src="{{ asset(config('ranking.top_image')[$key + 1]) }}" alt=""/>
                     @else
                         {{ $key + 1 }}
                     @endif

@@ -24,148 +24,95 @@ class ViewServiceProvider extends ServiceProvider
     {
         try {
             View::composer(['layouts.header', 'layouts.navigation'], function ($view) {
-                $view->with('pages', Pages::getPageNames());
+                $view->with('pageNames', Pages::getPageNames());
             });
 
-            $languages = config('global.languages');
-            View::composer(['layouts.header', 'layouts.navigation'], function ($view) use ($languages) {
-                $view->with('languages', $languages);
-            });
-
-            $sliders = config('global.sliders');
-            View::composer(['partials.carousel'], function ($view) use ($sliders) {
-                $view->with('sliders', $sliders);
-            });
-
-            $footer = config('global.footer');
-            View::composer(['layouts.footer'], function ($view) use ($footer) {
-                $view->with('footer', $footer);
-            });
-
-            View::composer(['partials.online-counter'], function ($view) {
+            View::composer(['*'], function ($view) {
                 $view->with([
-                    'onlinePlayer' => ShardCurrentUser::getOnlineCounter(),
-                    'maxPlayer' => config('settings.max_player', 1000),
-                    'fakePlayer' => config('settings.fake_player', 0)
+                    'onlineCounter' => (object) [
+                        'onlinePlayer' => ShardCurrentUser::getOnlineCounter(),
+                        'maxPlayer' => config('settings.max_player', 1000),
+                        'fakePlayer' => config('settings.fake_player', 0)
+                    ]
                 ]);
             });
 
-            $discord = config('widgets.discord');
-            if($discord['enabled']) {
-                View::composer(['partials.discord'], function ($view) use ($discord) {
-                    $view->with('discord', $discord);
-                });
-            }
-
-            $serverInfo = config('widgets.server_info');
-            if($serverInfo['enabled']) {
-                View::composer(['partials.server-info'], function ($view) use ($serverInfo) {
-                    $view->with('serverInfo', $serverInfo);
-                });
-            }
-
-            $eventScheduleConfig = config('widgets.event_schedule');
-            if($eventScheduleConfig['enabled']) {
-                View::composer(['partials.event-schedule'], function ($view) use ($eventScheduleConfig) {
+            if(config('widgets.event_schedule.enabled')) {
+                View::composer(['partials.event-schedule'], function ($view) {
                     $view->with([
                         'eventSchedule' => ScheduleService::getEventSchedules(),
-                        'eventScheduleConfig' => $eventScheduleConfig
                     ]);
                 });
             }
 
-            $fortressWarConfig = config('widgets.fortress_war');
-            if($fortressWarConfig['enabled']) {
-                View::composer(['partials.fortress-war'], function ($view) use ($fortressWarConfig) {
+            if(config('widgets.fortress_war.enabled')) {
+                View::composer(['partials.fortress-war'], function ($view) {
                     $view->with([
                         'fortressWar' => SiegeFortress::getFortressWar(),
-                        'fortressWarConfig' => $fortressWarConfig
                     ]);
                 });
             }
 
-            $globalsHistoryConfig = config('widgets.globals_history');
-            if($globalsHistoryConfig['enabled']) {
-                View::composer(['partials.globals-history'], function ($view) use ($globalsHistoryConfig) {
+            if(config('widgets.globals_history.enabled')) {
+                View::composer(['partials.globals-history'], function ($view) {
                     $view->with([
-                        'globalsHistory' => LogChatMessage::getGlobalsHistory($globalsHistoryConfig['limit']),
-                        'globalsHistoryConfig' => $globalsHistoryConfig
+                        'globalsHistory' => LogChatMessage::getGlobalsHistory(5),
                     ]);
                 });
             }
 
-            $uniqueHistoryConfig = config('widgets.unique_history');
-            $uniquesList = config('ranking.uniques');
-            if($uniqueHistoryConfig['enabled']) {
-                View::composer(['partials.unique-history'], function ($view) use ($uniqueHistoryConfig, $uniquesList) {
+            if(config('widgets.unique_history.enabled')) {
+                View::composer(['partials.unique-history'], function ($view) {
                     $view->with([
-                        'uniqueHistory' => LogInstanceWorldInfo::getUniquesKill($uniqueHistoryConfig['limit']),
-                        'uniqueHistoryConfig' => $uniqueHistoryConfig,
-                        'uniquesList' => $uniquesList
+                        'uniqueHistory' => LogInstanceWorldInfo::getUniquesKill(5),
                     ]);
                 });
             }
 
-            $topPlayerConfig = config('widgets.top_player');
-            $topImage = config('ranking.top_image');
-            if($topPlayerConfig['enabled']) {
-                View::composer(['partials.top-player'], function ($view) use ($topPlayerConfig, $topImage) {
+            if(config('widgets.top_player.enabled')) {
+                View::composer(['partials.top-player'], function ($view) {
                     $view->with([
-                        'topPlayer' => Char::getPlayerRanking($topPlayerConfig['limit']),
-                        'topPlayerConfig' => $topPlayerConfig,
-                        'topImage' => $topImage
+                        'topPlayer' => Char::getPlayerRanking(5),
                     ]);
                 });
             }
 
-            $topGuildConfig = config('widgets.top_guild');
-            $topImage = config('ranking.top_image');
-            if($topGuildConfig['enabled']) {
-                View::composer(['partials.top-guild'], function ($view) use ($topGuildConfig, $topImage) {
+            if(config('widgets.top_guild.enabled')) {
+                View::composer(['partials.top-guild'], function ($view) {
                     $view->with([
-                        'topGuild' => Guild::getGuildRanking($topGuildConfig['limit']),
-                        'topGuildConfig' => $topGuildConfig,
-                        'topImage' => $topImage
+                        'topGuild' => Guild::getGuildRanking(5),
                     ]);
                 });
             }
 
-            $soxPlusConfig = config('widgets.sox_plus');
-            if($soxPlusConfig['enabled']) {
-                View::composer(['partials.sox-plus'], function ($view) use ($soxPlusConfig) {
+            if(config('widgets.sox_plus.enabled')) {
+                View::composer(['partials.sox-plus'], function ($view) {
                     $view->with([
-                        'soxPlus' => LogEventItem::getLogEventItem('plus', 8, 8, 'Seal of Sun', null, $soxPlusConfig['limit']),
-                        'soxPlusConfig' => $soxPlusConfig
+                        'soxPlus' => LogEventItem::getLogEventItem('plus', 8, 8, 'Seal of Sun', null, 5),
                     ]);
                 });
             }
 
-            $soxDropConfig = config('widgets.sox_drop');
-            if($soxDropConfig['enabled']) {
-                View::composer(['partials.sox-drop'], function ($view) use ($soxDropConfig) {
+            if(config('widgets.sox_drop.enabled')) {
+                View::composer(['partials.sox-drop'], function ($view) {
                     $view->with([
-                        'soxDrop' => LogEventItem::getLogEventItem('drop', null, 8, 'Seal of Sun', null, $soxDropConfig['limit']),
-                        'soxDropConfig' => $soxDropConfig
+                        'soxDrop' => LogEventItem::getLogEventItem('drop', null, 8, 'Seal of Sun', null, 5),
                     ]);
                 });
             }
 
-            $pvpKillsConfig = config('widgets.pvp_kills');
-            if($pvpKillsConfig['enabled']) {
-                View::composer(['partials.pvp-kills'], function ($view) use ($pvpKillsConfig) {
+            if(config('widgets.pvp_kills.enabled')) {
+                View::composer(['partials.pvp-kills'], function ($view) {
                     $view->with([
-                        'pvpKills' => LogEventChar::getKillLogs('pvp', $pvpKillsConfig['limit']),
-                        'pvpKillsConfig' => $pvpKillsConfig
+                        'pvpKills' => LogEventChar::getKillLogs('pvp', 5),
                     ]);
                 });
             }
 
-            $jobKillsConfig = config('widgets.job_kills');
-            if($jobKillsConfig['enabled']) {
-                View::composer(['partials.job-kills'], function ($view) use ($jobKillsConfig) {
+            if(config('widgets.job_kills.enabled')) {
+                View::composer(['partials.job-kills'], function ($view) {
                     $view->with([
-                        'jobKills' => LogEventChar::getKillLogs('job', $jobKillsConfig['limit']),
-                        'jobKillsConfig' => $jobKillsConfig
+                        'jobKills' => LogEventChar::getKillLogs('job', 5),
                     ]);
                 });
             }
@@ -197,10 +144,10 @@ class ViewServiceProvider extends ServiceProvider
                     });
 
                     $view->with([
-                        'key'    => $key,
+                        'key' => $key,
                         'config' => $widget,
-                        'data'   => $data,
-                        'params'   => $params,
+                        'data' => $data,
+                        'params' => $params,
                     ]);
                 });
             }
