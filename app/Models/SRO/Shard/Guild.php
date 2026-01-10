@@ -4,7 +4,6 @@ namespace App\Models\SRO\Shard;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -12,14 +11,39 @@ class Guild extends Model
 {
     use HasFactory;
 
+    /**
+     * The Database connection name for the model.
+     *
+     * @var string
+     */
     protected $connection = 'shard';
 
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
     public $timestamps = false;
 
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'dbo._Guild';
 
+    /**
+     * The table primary Key
+     *
+     * @var string
+     */
     protected $primaryKey = 'ID';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [];
 
     protected $dates = [
@@ -30,7 +54,9 @@ class Guild extends Model
 
     public static function getGuildRanking(int $limit = 25, int $GuildID = 0, string $Name = '')
     {
-        return Cache::remember("ranking_guild_{$limit}_{$GuildID}_{$Name}", now()->addMinutes(config('global.cache.ranking_guild', 60)), function () use ($limit, $GuildID, $Name) {
+        $Name = substr(preg_replace('/[^a-zA-Z0-9_]/', '', $Name), 0, 50);
+
+        return Cache::remember("ranking_guild_{$limit}_{$GuildID}_{$Name}", config('global.cache.ranking_guild', 3600), function () use ($limit, $GuildID, $Name) {
             $query = self::from(DB::raw('_Guild WITH (NOLOCK)'))
             ->select(
                 '_Guild.ID',
@@ -84,9 +110,7 @@ class Guild extends Model
 
     public static function getFortressGuildRanking($limit = 25)
     {
-        $minutes = config('global.cache.ranking_fortress_guild', 60);
-
-        return Cache::remember("ranking_fortress_guild_{$limit}", now()->addMinutes($minutes), function () use ($limit) {
+        return Cache::remember("ranking_fortress_guild_{$limit}", config('global.cache.ranking_fortress_guild', 3600), function () use ($limit) {
             return self::select(
                 '_Guild.ID',
                 '_Guild.Name',
@@ -104,14 +128,14 @@ class Guild extends Model
 
     public static function getGuildByName($name)
     {
-        return Cache::remember("guild_info_name_{$name}", config('global.cache.guild_info', 1440), function () use ($name) {
+        return Cache::remember("guild_info_name_{$name}", config('global.cache.guild_info', 86400), function () use ($name) {
             return self::where('Name', $name)->firstOrFail();
         });
     }
 
     public function getAllianceAttribute()
     {
-        return Cache::remember("guild_info_alliance_{$this->ID}", config('global.cache.guild_info', 1440), function () {
+        return Cache::remember("guild_info_alliance_{$this->ID}", config('global.cache.guild_info', 86400), function () {
             return self::select('Name')
                 ->where('Alliance', function ($query) {
                     $query->select('Alliance')
@@ -126,16 +150,14 @@ class Guild extends Model
 
     public static function getGuildCount()
     {
-        $minutes = config('global.cache.guild_info', 1440);
-
-        return Cache::remember('guild_info_count', now()->addMinutes($minutes), function () {
+        return Cache::remember('guild_count', 86400, function () {
             return self::count();
         });
     }
 
     public function getLeaderNameAttribute()
     {
-        return Cache::remember("guild_leader_{$this->ID}", now()->addMinutes(30), function () {
+        return Cache::remember("guild_leader_{$this->ID}", config('global.cache.guild_info', 86400), function () {
             return DB::connection($this->getConnectionName())
                 ->table('_GuildMember')
                 ->where('GuildID', $this->ID)
@@ -146,7 +168,7 @@ class Guild extends Model
 
     public function getTotalMemberAttribute()
     {
-        return Cache::remember("guild_total_member_{$this->ID}", now()->addMinutes(30), function () {
+        return Cache::remember("guild_total_member_{$this->ID}", config('global.cache.guild_info', 86400), function () {
             return DB::connection($this->getConnectionName())
                 ->table('_GuildMember')
                 ->where('GuildID', $this->ID)
@@ -156,7 +178,7 @@ class Guild extends Model
 
     public function getItemPointsAttribute()
     {
-        return Cache::remember("guild_item_points_{$this->ID}", now()->addMinutes(30), function () {
+        return Cache::remember("guild_item_points_{$this->ID}", config('global.cache.guild_info', 86400), function () {
             return DB::connection($this->getConnectionName())
                 ->table('_GuildMember as gm')
                 ->join('_Inventory as inv', 'inv.CharID', '=', 'gm.CharID')
@@ -186,7 +208,7 @@ class Guild extends Model
     public function getCrestAttribute()
     {
         if (config('global.server.version') !== 'vSRO') {
-            return Cache::remember("guild_crest_{$this->ID}", now()->addMinutes(30), function () {
+            return Cache::remember("guild_crest_{$this->ID}", config('global.cache.guild_info', 86400), function () {
                 return DB::connection($this->getConnectionName())
                     ->table('_GuildCrest')
                     ->where('GuildID', $this->ID)
@@ -198,7 +220,7 @@ class Guild extends Model
 
     public function getMembersAttribute()
     {
-        return Cache::remember("guild_members_{$this->ID}", 3600, function () {
+        return Cache::remember("guild_members_{$this->ID}", config('global.cache.guild_info', 86400), function () {
             return $this->members()->get();
         });
     }

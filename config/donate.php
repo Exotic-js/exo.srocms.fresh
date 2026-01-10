@@ -50,7 +50,7 @@ return [
         ],
     ],
     'stripe' => [
-        'enabled' => true,
+        'enabled' => false,
         'name' => 'Stripe',
         'route' => 'stripe',
         'currency' => 'USD',
@@ -92,7 +92,7 @@ return [
         ],
     ],
     'paymentwall' => [
-        'enabled' => true,
+        'enabled' => false,
         'name' => 'Paymentwall',
         'route' => 'paymentwall',
         'currency' => 'USD',
@@ -259,7 +259,7 @@ return [
         ],
     ],
     'hipocard' => [
-        'enabled' => true,
+        'enabled' => false,
         'name' => 'HipoCard',
         'route' => 'hipocard',
         'currency' => 'TL',

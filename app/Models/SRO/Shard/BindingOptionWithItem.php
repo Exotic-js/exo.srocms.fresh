@@ -42,9 +42,7 @@ class BindingOptionWithItem extends Model
 
     public static function getBindingOption($ItemDBID)
     {
-        $minutes = config('global.cache.character_info', 1440);
-
-        return Cache::remember("character_info_binding_{$ItemDBID}", now()->addMinutes($minutes), static function () use ($ItemDBID) {
+        return Cache::remember("character_info_binding_{$ItemDBID}", config('global.cache.character_info', 86400), static function () use ($ItemDBID) {
             return self::where('nItemDBID', $ItemDBID)->get()->toArray();
         });
     }

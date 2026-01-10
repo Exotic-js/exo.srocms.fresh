@@ -44,47 +44,29 @@ class SkSilkBuyList extends Model
     protected $fillable = [
         'BuyNo',
         'UserJID',
-        'Silk_Type', // tinyint
-        'Silk_Reason', // tinyint
-        'Silk_Offset', // int
-        'Silk_Remain', // int
-        'ID', // int
-        'BuyQuantity', // int
-        'OrderNumber', // varchar(30)
-        'PGCompany', // tinyint
-        'PayMethod', // tinyint
-        'PGUniqueNo', // varchar(20)
-        'AuthNumber', // varchar(14)
-        'AuthDate', // datetime
-        'SubJID', // int
-        'srID', // varchar(25)
-        'SlipPaper', // varchar(128)
-        'MngID', // int
-        'IP', // varchar(16)
-        'RegDate' // datetime
+        'Silk_Type',
+        'Silk_Reason',
+        'Silk_Offset',
+        'Silk_Remain',
+        'ID',
+        'BuyQuantity',
+        'OrderNumber',
+        'PGCompany',
+        'PayMethod',
+        'PGUniqueNo',
+        'AuthNumber',
+        'AuthDate',
+        'SubJID',
+        'srID',
+        'SlipPaper',
+        'MngID',
+        'IP',
+        'RegDate'
     ];
-
-    /**
-     * Type 3 is for Web
-     */
-    public const SILKTYPEWEB = 3;
-
-    /**
-     * Type 2 is for Web
-     */
-    public const SILKTYPEVOUCHER = 2;
-
-    /**
-     * Reason 3 is for Web
-     */
-    public const SILKREASONWEB = 3;
-
 
     public static function getSilkHistory($jid, $paginate = 10, $page = 1): LengthAwarePaginator
     {
-        $minutes = config('global.cache.account_info', 5);
-
-        $data = Cache::remember("account_info_vsro_donate_history_{$jid}_{$paginate}_{$page}", now()->addMinutes($minutes), function () use ($paginate, $page, $jid) {
+        $data = Cache::remember("account_info_vsro_donate_history_{$jid}_{$paginate}_{$page}", config('global.cache.account_info', 600), function () use ($paginate, $page, $jid) {
             return self::select(
                 'SK_SilkBuyList.BuyNo',
                 'SK_SilkBuyList.OrderNumber',
@@ -109,5 +91,4 @@ class SkSilkBuyList extends Model
             ]
         );
     }
-
 }

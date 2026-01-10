@@ -17,7 +17,11 @@ class PasswordResetToken extends Model
 
     protected $keyType = 'string';
 
-    protected $fillable = ['email', 'token', 'created_at'];
+    protected $fillable = [
+        'email',
+        'token',
+        'created_at'
+    ];
 
     public static function setToken(string $email, string|int $token): self
     {

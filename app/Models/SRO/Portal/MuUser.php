@@ -85,6 +85,16 @@ class MuUser extends Model
         });
     }
 
+    public function getMuVIPInfoAttribute()
+    {
+        return cache()->remember( "user_muVIPInfo_{$this->jid}", 600, fn () => $this->muVIPInfo()->first());
+    }
+
+    public function getMuEmailAttribute()
+    {
+        return cache()->remember( "user_muEmail_{$this->jid}", 600, fn () => $this->muEmail()->first());
+    }
+
     public function muEmail()
     {
         return $this->hasOne(MuEmail::class, 'JID', 'JID');

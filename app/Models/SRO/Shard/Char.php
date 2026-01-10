@@ -66,7 +66,9 @@ class Char extends Model
 
     public static function getPlayerRanking($limit = 25, $CharID = 0, $CharName = '')
     {
-        return Cache::remember("ranking_player_fast_{$limit}_{$CharID}_{$CharName}", now()->addMinutes(config('global.cache.ranking_player', 60)), function () use ($limit, $CharID, $CharName) {
+        $CharName = substr(preg_replace('/[^a-zA-Z0-9_]/', '', $CharName), 0, 50);
+
+        return Cache::remember("ranking_player_fast_{$limit}_{$CharID}_{$CharName}", config('global.cache.ranking_player', 3600), function () use ($limit, $CharID, $CharName) {
             $query = self::from(DB::raw('_Char WITH (NOLOCK)'))
             ->select(
                 '_Char.CharID',
@@ -129,7 +131,7 @@ class Char extends Model
 
     public static function getLevelRanking($limit = 25)
     {
-        return Cache::remember("ranking_level_{$limit}", now()->addMinutes(config('global.cache.ranking_player', 60)), function () use ($limit) {
+        return Cache::remember("ranking_level_{$limit}", config('global.cache.ranking_player', 3600), function () use ($limit) {
             return self::from(DB::raw('_Char WITH (NOLOCK)'))
                 ->select(
                     '_Char.CharID',
@@ -152,7 +154,7 @@ class Char extends Model
 
     public function getItemPointsAttribute()
     {
-        return cache()->remember("char_item_points_{$this->CharID}", now()->addMinutes(30), function () {
+        return cache()->remember("char_item_points_{$this->CharID}", config('global.cache.character_info', 86400), function () {
             return DB::connection($this->getConnectionName())
                 ->table(DB::raw('_Inventory AS inv WITH (NOLOCK)'))
                 ->join(DB::raw('_Items AS i WITH (NOLOCK)'), 'i.ID64', '=', 'inv.ItemID')
@@ -180,7 +182,7 @@ class Char extends Model
 
     public function getCharJobISRO()
     {
-        return cache()->remember("char_job_{$this->CharID}", now()->addMinutes(30), function () {
+        return cache()->remember("char_job_isro_{$this->CharID}", config('global.cache.character_info', 86400), function () {
             return DB::connection($this->getConnectionName())
                 ->table(DB::raw('_User as u WITH (NOLOCK)'))
                 ->join(DB::raw('_UserTradeConflictJob as j WITH (NOLOCK)'), 'j.UserJID', '=', 'u.UserJID')
@@ -196,7 +198,7 @@ class Char extends Model
 
     public function getCharJobVSRO()
     {
-        return cache()->remember("char_job_vsro_{$this->CharID}", now()->addMinutes(30), function () {
+        return cache()->remember("char_job_vsro_{$this->CharID}", config('global.cache.character_info', 86400), function () {
             return DB::connection($this->getConnectionName())
                 ->table(DB::raw('_CharTrijob WITH (NOLOCK)'))
                 ->where('CharID', $this->CharID)
@@ -214,7 +216,7 @@ class Char extends Model
         return $this->getCharJobISRO();
     }
 
-    public function setCharUnstuckPosition()
+    public function setCharUnstuckPosition(): bool
     {
         return $this->update([
             'LatestRegion' => 25000,
@@ -236,8 +238,43 @@ class Char extends Model
 
     public static function getCharByName($name)
     {
-        return Cache::remember("character_info_name_{$name}", config('global.cache.character_info', 1440), function () use ($name) {
+        return Cache::remember("character_info_name_{$name}", config('global.cache.character_info', 86400), function () use ($name) {
             return self::where('CharName16', $name)->firstOrFail();
+        });
+    }
+
+    public function getCharStatus()
+    {
+        return $this->hasMany(LogEventChar::class, 'CharID', 'CharID')
+            ->whereIn('EventID', [4, 6])
+            ->orderByDesc('EventTime');
+    }
+
+    public function getIsOnlineAttribute(): bool
+    {
+        return Cache::remember("char_online_{$this->CharID}", 600, function () {
+            return optional($this->getCharStatus()->first())->EventID == 4;
+        });
+    }
+
+    public function getIsOfflineAttribute(): bool
+    {
+        return Cache::remember("char_offline_{$this->CharID}", 600, function () {
+            return optional($this->getCharStatus()->first())->EventID == 6;
+        });
+    }
+
+    public static function getCharCount()
+    {
+        return Cache::remember('char_count', 86400, function () {
+            return self::count();
+        });
+    }
+
+    public static function getGoldSum()
+    {
+        return Cache::remember('gold_sum', 86400, function () {
+            return self::all()->sum('RemainGold');
         });
     }
 
@@ -289,26 +326,7 @@ class Char extends Model
 
     public function getJIDAttribute(): ?int
     {
-        return cache()->remember("char_jid_{$this->CharID}", 3600, fn() => $this->user?->UserJID);
-    }
-
-    public function getCharStatus()
-    {
-        return $this->hasMany(LogEventChar::class, 'CharID', 'CharID')
-            ->whereIn('EventID', [4, 6])
-            ->orderByDesc('EventTime');
-    }
-
-    public function getIsOnlineAttribute(): bool
-    {
-        return cache()->remember("char_online_{$this->CharID}", now()->addSeconds(30),
-            fn () => optional($this->getCharStatus()->first())->EventID === 4
-        );
-    }
-
-    public function getIsOfflineAttribute(): bool
-    {
-        return optional($this->getCharStatus()->first())->EventID == 6;
+        return cache()->remember("char_jid_{$this->CharID}", 86400, fn() => $this->user?->UserJID);
     }
 
     public function getHasJobSuitAttribute(): bool
@@ -331,24 +349,6 @@ class Char extends Model
         return TimedJob::getCharBuffInfo($this->CharID);
     }
 
-    public static function getCharCount()
-    {
-        $minutes = config('global.cache.character_info', 1440);
-
-        return Cache::remember('character_info_count', now()->addMinutes($minutes), function () {
-            return self::count();
-        });
-    }
-
-    public static function getGoldSum()
-    {
-        $minutes = config('global.cache.character_info', 1440);
-
-        return Cache::remember('character_info_gold', now()->addMinutes($minutes), function () {
-            return self::all()->sum('RemainGold');
-        });
-    }
-
     public function getGuildMemberUser()
     {
         return $this->hasOne(GuildMember::class, 'CharID', 'CharID');
@@ -356,9 +356,7 @@ class Char extends Model
 
     public function getGuildUser()
     {
-        $query = $this->hasOne(Guild::class, 'ID', 'GuildID');
-        $query->where('ID', '!=', 0);
-        return $query;
+        return $this->hasOne(Guild::class, 'ID', 'GuildID')->where('ID', '!=', 0);
     }
 
     public function User()

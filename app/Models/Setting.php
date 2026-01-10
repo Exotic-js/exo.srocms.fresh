@@ -16,7 +16,10 @@ class Setting extends Model
 
     protected $keyType = 'string';
 
-    protected $fillable = ['key', 'value'];
+    protected $fillable = [
+        'key',
+        'value'
+    ];
 
     public static function get($key, $default = null)
     {

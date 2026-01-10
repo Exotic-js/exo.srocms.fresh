@@ -55,19 +55,20 @@ class ItemNameDesc extends Model
 
     public function getTable()
     {
-        return config('global.server.version') === 'vSRO'
-            ? 'dbo._ItemNameDesc'
-            : 'dbo._Rigid_ItemNameDesc';
+        if (config('global.server.version') === 'vSRO') {
+            return 'dbo._ItemNameDesc';
+        }
+
+        return 'dbo._Rigid_ItemNameDesc';
     }
 
-    public static function getItemRealName($CodeName128): string
+    public static function getItemName($CodeName128): string
     {
-        $minutes = config('global.cache.character_info', 5);
-
-        return Cache::remember("character_info_ItemNameDesc_{$CodeName128}", now()->addMinutes($minutes), static function () use ($CodeName128) {
+        return Cache::remember("character_info_ItemNameDesc_{$CodeName128}", config('global.cache.character_info', 86400), static function () use ($CodeName128) {
             if (config('global.server.version') === 'vSRO') {
                 return self::select('RealName')->where('NameStrID', $CodeName128)->first()->RealName ?? $CodeName128;
             }
+
             return self::select('ENG')->where('StrID', $CodeName128)->first()->ENG ?? $CodeName128;
         });
     }
@@ -79,19 +80,12 @@ class ItemNameDesc extends Model
             return [];
         }
 
-        $minutes = config('global.cache.character_info', 5);
-        $cacheKey = 'item_names:' . md5(implode('|', $ids));
-
-        return cache()->remember($cacheKey, now()->addMinutes($minutes), function () use ($ids) {
+        return cache()->remember('item_names:' . md5(implode('|', $ids)), config('global.cache.character_info', 86400), function () use ($ids) {
             if (config('global.server.version') === 'vSRO') {
-                return self::whereIn('NameStrID', $ids)
-                    ->pluck('RealName', 'NameStrID')
-                    ->toArray();
+                return self::whereIn('NameStrID', $ids)->pluck('RealName', 'NameStrID')->toArray();
             }
 
-            return self::whereIn('StrID', $ids)
-                ->pluck('ENG', 'StrID')
-                ->toArray();
+            return self::whereIn('StrID', $ids)->pluck('ENG', 'StrID')->toArray();
         });
     }
 }

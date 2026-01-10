@@ -11,15 +11,30 @@ class LogEventChar extends Model
 {
     use HasFactory;
 
+    /**
+     * The Database connection name for the model.
+     *
+     * @var string
+     */
     protected $connection = 'log';
+
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
     public $timestamps = false;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'dbo._LogEventChar';
 
     public static function getKillLogs($type = 'pvp', $limit = 100)
     {
-        $cacheKey = 'kill_logs_' . $type . '_limit' . $limit;
-
-        return Cache::remember($cacheKey, 600, function () use ($type, $limit) {
+        return Cache::remember("kill_logs_{$type}_{$limit}", 3600, function () use ($type, $limit) {
             $logTable = DB::connection('log')->getDatabaseName() . '.dbo._LogEventChar';
 
             $rawSub = DB::raw("(
@@ -80,7 +95,7 @@ class LogEventChar extends Model
     {
         $cacheKey = 'log_event_kill_death_ranking_' . ($type ?? 'all') . '_limit_' . $limit . '_char_' . ($charID ?? 'all');
 
-        return Cache::remember($cacheKey, 600, function () use ($type, $limit, $charID) {
+        return Cache::remember($cacheKey, 3600, function () use ($type, $limit, $charID) {
             $kills = DB::connection('log')->table('_LogEventChar')
                 ->selectRaw("
                 SUBSTRING(strDesc, CHARINDEX('(', strDesc) + 1, CHARINDEX(')', strDesc) - CHARINDEX('(', strDesc) - 1) AS CharName,
@@ -150,7 +165,7 @@ class LogEventChar extends Model
 
     public static function getCharStatus($charID)
     {
-        return Cache::remember('char_status_' . $charID, 600, function () use ($charID) {
+        return Cache::remember('char_status_' . $charID, config('global.cache.character_info', 60), function () use ($charID) {
             return self::select('EventID', 'EventTime')
                 ->where('CharID', $charID)
                 ->whereIn('EventID', [4, 6])

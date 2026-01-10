@@ -11,7 +11,10 @@ class Download extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'desc', 'url', 'image',
+        'name',
+        'desc',
+        'url',
+        'image',
     ];
 
     protected static function booted()

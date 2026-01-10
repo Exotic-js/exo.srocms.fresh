@@ -2,45 +2,45 @@
 
 return [
     'discord' => [
-        'enabled' => true,
+        'enabled' => false,
         'server_id' => '1004443821570019338',
         'channel_id' => '1374482240427528254',
         'theme' => 'dark', //dark, light
     ],
     'globals_history' => [
-        'enabled' => true,
+        'enabled' => false,
         'limit' => 5,
     ],
     'unique_history' => [
-        'enabled' => true,
+        'enabled' => false,
         'limit' => 5,
     ],
     'top_player' => [
-        'enabled' => true,
+        'enabled' => false,
         'limit' => 5,
     ],
     'top_guild' => [
-        'enabled' => true,
+        'enabled' => false,
         'limit' => 5,
     ],
     'sox_plus' => [
-        'enabled' => true,
+        'enabled' => false,
         'limit' => 5,
     ],
     'sox_drop' => [
-        'enabled' => true,
+        'enabled' => false,
         'limit' => 5,
     ],
     'pvp_kills' => [
-        'enabled' => true,
+        'enabled' => false,
         'limit' => 5,
     ],
     'job_kills' => [
-        'enabled' => true,
+        'enabled' => false,
         'limit' => 5,
     ],
     'server_info' => [
-        'enabled' => true,
+        'enabled' => false,
         'data' => [
             0 => [
                 //To changing icon https://fontawesome.com/icons
@@ -86,7 +86,7 @@ return [
         ],
     ],
     'event_schedule' => [
-        'enabled' => true,
+        'enabled' => false,
         'names' => [
             10 => 'Roc',
             9 => 'Medusa',
@@ -105,7 +105,7 @@ return [
         ],
         'custom' => [
             101 => [
-                'enabled' => true,
+                'enabled' => false,
                 'name' => 'Custom Event #1',
                 'days' => ['Sunday', 'Monday'],
                 'hour' => 8,
@@ -113,7 +113,7 @@ return [
                 'duration' => 3600,
             ],
             102 => [
-                'enabled' => true,
+                'enabled' => false,
                 'name' => 'Custom Event #2',
                 'days' => ['Friday'],
                 'hour' => 21,
@@ -123,7 +123,7 @@ return [
         ],
     ],
     'fortress_war' => [
-        'enabled' => true,
+        'enabled' => false,
         'names' => [
             1 => [
                 'name' => 'Jangan',
@@ -145,7 +145,7 @@ return [
     ],
     'custom' => [
         'owned_titles' => [
-            'enabled' => true,
+            'enabled' => false,
             'template' => 'partials.character-owned-titles',
             'query' => 'SELECT TOP(:Limit)
                             _CharTitle.TitleID,

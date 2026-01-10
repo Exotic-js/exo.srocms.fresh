@@ -25,7 +25,7 @@ class RankingController extends Controller
         ]);
 
         $type = $validated['type'] ?? 'player';
-        $search = $validated['search'] ?? null;
+        $search = $validated['search'] ?? '';
 
         $data = Char::getPlayerRanking(25, 0, $search);
 

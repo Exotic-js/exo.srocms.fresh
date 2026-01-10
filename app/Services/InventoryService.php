@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\SRO\Account\ItemNameDesc;
-use App\Models\SRO\Shard\BindingOptionWithItem;
 use App\Models\SRO\Shard\Chest;
 use App\Models\SRO\Shard\InvCOS;
 use App\Models\SRO\Shard\Inventory;

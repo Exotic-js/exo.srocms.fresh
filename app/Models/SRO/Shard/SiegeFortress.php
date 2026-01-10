@@ -51,9 +51,7 @@ class SiegeFortress extends Model
 
     public static function getFortressWar()
     {
-        $minutes = config('global.cache.fortress_war', 10080);
-
-        return Cache::remember('fortress_war', now()->addMinutes($minutes), function () {
+        return Cache::remember('fortress_war', config('global.cache.fortress_war', 604800), function () {
             return self::select([
                 "FortressID",
                 "GuildID",
@@ -67,8 +65,6 @@ class SiegeFortress extends Model
 
     public function getGuildName()
     {
-        $query = $this->hasOne(Guild::class, 'ID', 'GuildID');
-        $query->where('ID', '!=', 0);
-        return $query;
+        return $this->hasOne(Guild::class, 'ID', 'GuildID')->where('ID', '!=', 0);
     }
 }

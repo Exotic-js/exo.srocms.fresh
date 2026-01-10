@@ -81,20 +81,6 @@ class User extends Authenticatable implements MustVerifyEmail
         });
     }
 
-    public static function getUserCount()
-    {
-        $minutes = config('global.cache.account_info', 5);
-
-        return Cache::remember('account_count', now()->addMinutes($minutes), function () {
-            return self::count();
-        });
-    }
-
-    public function muUser()
-    {
-        return $this->hasOne(MuUser::class, 'JID', 'jid');
-    }
-
     public function tbUser()
     {
         if (config('global.server.version') === 'vSRO') {
@@ -104,16 +90,36 @@ class User extends Authenticatable implements MustVerifyEmail
         }
     }
 
-    public function tickets()
+    public function role()
     {
-        return $this->hasMany(Ticket::class, 'user_id', 'id')
-            ->whereNull('parent_id')
-            ->latest();
+        return $this->hasOne(UserRole::class);
     }
 
-    public function getVerifyToken()
+    public function muUser()
     {
-        return PasswordResetToken::forEmail($this->email);
+        return $this->hasOne(MuUser::class, 'JID', 'jid');
+    }
+
+    public function getTbUserAttribute()
+    {
+        return cache()->remember( "user_tbUser_{$this->jid}", 600, fn () => $this->tbUser()->first());
+    }
+
+    public function getMuUserAttribute()
+    {
+        return cache()->remember( "user_muUser_{$this->jid}", 600, fn () => $this->muUser()->first());
+    }
+
+    public function getRoleAttribute()
+    {
+        return cache()->remember( "user_role_{$this->jid}", 600, fn () => $this->role()->first());
+    }
+
+    public static function getUserCount()
+    {
+        return Cache::remember('user_count', 600, function () {
+            return self::count();
+        });
     }
 
     public function news()
@@ -121,9 +127,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(News::class);
     }
 
-    public function role()
+    public function tickets()
     {
-        return $this->hasOne(UserRole::class);
+        return $this->hasMany(Ticket::class, 'user_id', 'id')
+            ->whereNull('parent_id')
+            ->latest();
+    }
+
+    public function getInvitesCreated()
+    {
+        return cache()->remember( "user_invites_created_{$this->jid}", 600, fn () => $this->invitesCreated()->get());
     }
 
     public function invitesCreated()

@@ -2,14 +2,10 @@
 
 namespace App\Models\SRO\Portal;
 
-use App\Models\SRO\Account\TbUser;
-use App\Models\User;
-use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 
 class AphChangedSilk extends Model
 {
@@ -78,9 +74,7 @@ class AphChangedSilk extends Model
 
     public static function getSilkHistory($jid, $paginate = 10, $page = 1): LengthAwarePaginator
     {
-        $minutes = config('global.cache.account_info', 5);
-
-        $data = Cache::remember("account_info_donate_history_{$jid}_{$paginate}_{$page}", now()->addMinutes($minutes), function () use ($paginate, $page, $jid) {
+        $data = Cache::remember("account_info_donate_history_{$jid}_{$paginate}_{$page}", config('global.cache.account_info', 600), function () use ($paginate, $page, $jid) {
             return self::select(
                 'M_CPItem.CPItemCode',
                 'M_CPItem.CPItemName',
@@ -112,9 +106,7 @@ class AphChangedSilk extends Model
 
     public static function getSilkSum()
     {
-        $minutes = config('global.cache.account_info', 5);
-
-        return Cache::remember('account_info_silk_sum', now()->addMinutes($minutes), function () {
+        return Cache::remember('isro_silk_sum', 86400, function () {
             try {
                 return self::selectRaw('SUM(CAST(RemainedSilk AS BIGINT)) as total')->where('SilkType', 3)->where('AvailableStatus', 'Y')->value('total');
             } catch (\Exception $e) {

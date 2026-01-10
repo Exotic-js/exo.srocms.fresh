@@ -49,9 +49,7 @@ class InvCOS extends Model
 
     public static function getPetNames($CharID)
     {
-        $minutes = config('global.cache.character_info', 1440);
-
-        return Cache::remember("character_info_pet_names_{$CharID}", now()->addMinutes($minutes), static function () use ($CharID) {
+        return Cache::remember("character_info_pet_names_{$CharID}", config('global.cache.character_info', 86400), static function () use ($CharID) {
             return self::join('_Items', '_Items.ID64', '=', '_InvCOS.ItemID')
                 ->join('_RefObjCommon', '_RefObjCommon.ID', '=', '_Items.RefItemID')
                 ->join('_CharCOS', '_CharCOS.ID', '=', '_InvCOS.COSID')
@@ -82,9 +80,7 @@ class InvCOS extends Model
 
     public static function getPetItems($CharID, $PetID, $max, $min)
     {
-        $minutes = config('global.cache.character_info', 1440);
-
-        return Cache::remember("character_info_pet_items_{$CharID}_{$PetID}_{$min}_{$max}", now()->addMinutes($minutes), static function () use ($CharID, $PetID, $max, $min) {
+        return Cache::remember("character_info_pet_items_{$CharID}_{$PetID}_{$min}_{$max}", config('global.cache.character_info', 86400), static function () use ($CharID, $PetID, $max, $min) {
             return self::join('_Items', '_Items.ID64', '=', '_InvCOS.ItemID')
                 ->join('_RefObjCommon', '_RefObjCommon.ID', '=', '_Items.RefItemID')
                 ->join('_RefObjItem', '_RefObjItem.ID', '=', '_RefObjCommon.Link')

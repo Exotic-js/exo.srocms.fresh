@@ -51,21 +51,10 @@ class SkSilk extends Model
     public static function setSkSilk($jid, $type, $amount)
     {
         $types = [
-            '0' => 'silk_own',
-            '1' => 'silk_gift',
-            '2' => 'silk_point'
+            '3' => 'silk_own',
+            '2' => 'silk_gift',
+            '1' => 'silk_point'
         ];
-
-        /*
-        if ((int)$type === 0) {
-            $username = TbUser::where('JID', $jid)->value('StrUserID');
-            if (!$username) {
-                return false;
-            }
-
-            return self::setSkSilkLive($username, $amount);
-        }
-        */
 
         self::firstOrCreate(
             ['JID' => $jid],
@@ -99,9 +88,7 @@ class SkSilk extends Model
 
     public static function getSilkSum()
     {
-        $minutes = config('global.cache.account_info', 5);
-
-        return Cache::remember('account_info_vsro_silk_sum', now()->addMinutes($minutes), function () {
+        return Cache::remember('vsro_silk_sum', 86400, function () {
             try {
                 return self::selectRaw('SUM(CAST(silk_own AS BIGINT)) as total')->value('total');
             } catch (\Exception $e) {

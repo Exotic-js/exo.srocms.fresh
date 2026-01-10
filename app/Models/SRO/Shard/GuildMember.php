@@ -59,9 +59,7 @@ class GuildMember extends Model
 
     public static function getFortressPlayerRanking($limit = 25)
     {
-        $minutes = config('global.cache.ranking_fortress_player', 60);
-
-        return Cache::remember("ranking_fortress_player_{$limit}", now()->addMinutes($minutes), function () use ($limit) {
+        return Cache::remember("ranking_fortress_player_{$limit}", config('global.cache.ranking_fortress_player', 3600), function () use ($limit) {
             return self::select(
                 '_Char.CharID',
                 '_Char.CharName16',
@@ -87,9 +85,7 @@ class GuildMember extends Model
 
     public static function getGuildInfoMembers($GuildID)
     {
-        $minutes = config('global.cache.guild_info', 1440);
-
-        return Cache::remember("guild_info_members_{$GuildID}", now()->addMinutes($minutes), function () use ($GuildID) {
+        return Cache::remember("guild_info_members_{$GuildID}", config('global.cache.guild_info', 86400), function () use ($GuildID) {
             return self::where('GuildID', $GuildID)
             ->orderBy('MemberClass', 'asc')
             ->orderBy('Contribution', 'desc')

@@ -34,7 +34,7 @@ class PanelController extends Controller
 
     public function vouchers(Request $request)
     {
-        $data = Voucher::where('jid', $request->user()->jid)->get();
+        $data = Voucher::getUserVoucher($request->user()->id);
 
         return view('profile.panel.voucher', [
             'data' => $data,
@@ -87,8 +87,8 @@ class PanelController extends Controller
 
         $invite = Referral::createReferral($user, session('fingerprint'));
 
-        $totalPoints = $user->invitesCreated()->whereNotNull('invited_jid')->sum('points');
-        $usedInvites = $user->invitesCreated()->whereNotNull('invited_jid')->with('invitedUser')->get();
+        $totalPoints = $user->getInvitesCreated()->whereNotNull('invited_jid')->sum('points');
+        $usedInvites = $user->getInvitesCreated()->whereNotNull('invited_jid')->load('invitedUser');
         $minimumRedeem = config('global.referral.minimum_redeem', 25);
 
         return view('profile.panel.referral', [
@@ -103,7 +103,7 @@ class PanelController extends Controller
     {
         $user = $request->user();
         $minimumRedeem = config('global.referral.minimum_redeem', 25);
-        $invites = $user->invitesCreated()->whereNotNull('invited_jid')->get();
+        $invites = $user->getInvitesCreated()->whereNotNull('invited_jid')->get();
 
         if(!config('global.referral.enabled', true)) {
             return back()->with('error', "Redeemed invites disabled.");

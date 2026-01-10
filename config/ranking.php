@@ -33,31 +33,31 @@ return [
             'route' => 'ranking.unique',
         ],
         'ranking_unique-monthly' => [
-            'enabled' => true,
+            'enabled' => false,
             'name' => 'Unique Ranking (Monthly)',
             'image' => 'fa fa-users',
             'route' => 'ranking.unique-monthly',
         ],
         'ranking-fortress-player' => [
-            'enabled' => true,
+            'enabled' => false,
             'name' => 'Fortress War (Player)',
             'image' => 'fa fa-users',
             'route' => 'ranking.fortress-player',
         ],
         'ranking-fortress-guild' => [
-            'enabled' => true,
+            'enabled' => false,
             'name' => 'Fortress War (Guild)',
             'image' => 'fa fa-users',
             'route' => 'ranking.fortress-guild',
         ],
         'ranking-pvp-kd' => [
-            'enabled' => true,
+            'enabled' => false,
             'name' => 'Pvp K/D Ranking',
             'image' => 'fa fa-users',
             'route' => 'ranking.pvp-kd',
         ],
         'ranking-job-kd' => [
-            'enabled' => true,
+            'enabled' => false,
             'name' => 'Job K/D Ranking',
             'image' => 'fa fa-users',
             'route' => 'ranking.job-kd',
@@ -128,11 +128,11 @@ return [
     ],
     'extra' => [
         'character_status' => true,
-        'advanced_unique_tracker' => true,
-        'pvp_kill_logs' => true,
-        'job_kill_logs' => true,
-        'item_plus_logs' => true,
-        'item_drop_logs' => true,
+        'advanced_unique_tracker' => false,
+        'pvp_kill_logs' => false,
+        'job_kill_logs' => false,
+        'item_plus_logs' => false,
+        'item_drop_logs' => false,
     ],
     'uniques' => [
         'MOB_CH_TIGERWOMAN' => [

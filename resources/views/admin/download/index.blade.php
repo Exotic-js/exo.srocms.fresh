@@ -34,7 +34,7 @@
                         <tr>
                             <td>{{ $row->id }}</td>
                             <td>{{ $row->name }}</td>
-                            <td>{{ $row->url }}</td>
+                            <td><a href="{{ $row->url }}" target="_blank">{{ $row->url }}</a></td>
                             <td>
                                 <a href="{{ route('admin.download.edit', $row->id) }}" class="btn btn-secondary btn-sm">Edit</a>
                                 <a href="{{ route('admin.download.delete', $row->id) }}" class="btn btn-danger btn-sm">Delete</a>

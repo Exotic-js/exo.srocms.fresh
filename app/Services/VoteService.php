@@ -44,13 +44,14 @@ class VoteService
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
 
-        if (config('global.server.version') === 'vSRO') {
-            SkSilk::setSkSilk($user->jid, 0, $rewardAmount);
-        } else {
-            AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
-        }
+        $user->tbUser->giveSilk(3, $rewardAmount);
 
-        //DonateLog::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
+        Donate::DonateLog([
+            'method' => 'Vote',
+            'amount' => $rewardAmount,
+            'jid' => $user->jid,
+        ]);
+
         Vote::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
 
         return response("OK", 200);
@@ -90,13 +91,14 @@ class VoteService
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
 
-        if (config('global.server.version') === 'vSRO') {
-            SkSilk::setSkSilk($user->jid, 0, $rewardAmount);
-        } else {
-            AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
-        }
+        $user->tbUser->giveSilk(3, $rewardAmount);
 
-        Donate::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
+        Donate::DonateLog([
+            'method' => 'Vote',
+            'amount' => $rewardAmount,
+            'jid' => $user->jid,
+        ]);
+
         Vote::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
 
         return response("OK", 200);
@@ -132,13 +134,14 @@ class VoteService
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
 
-        if (config('global.server.version') === 'vSRO') {
-            SkSilk::setSkSilk($user->jid, 0, $rewardAmount);
-        } else {
-            AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
-        }
+        $user->tbUser->giveSilk(3, $rewardAmount);
 
-        Donate::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
+        Donate::DonateLog([
+            'method' => 'Vote',
+            'amount' => $rewardAmount,
+            'jid' => $user->jid,
+        ]);
+
         Vote::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
 
         return response("OK", 200);
@@ -174,13 +177,14 @@ class VoteService
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
 
-        if (config('global.server.version') === 'vSRO') {
-            SkSilk::setSkSilk($user->jid, 0, $rewardAmount);
-        } else {
-            AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
-        }
+        $user->tbUser->giveSilk(3, $rewardAmount);
 
-        Donate::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
+        Donate::DonateLog([
+            'method' => 'Vote',
+            'amount' => $rewardAmount,
+            'jid' => $user->jid,
+        ]);
+
         Vote::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
 
         return response("OK", 200);
@@ -220,13 +224,14 @@ class VoteService
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
 
-        if (config('global.server.version') === 'vSRO') {
-            SkSilk::setSkSilk($user->jid, 0, $rewardAmount);
-        } else {
-            AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
-        }
+        $user->tbUser->giveSilk(3, $rewardAmount);
 
-        Donate::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
+        Donate::DonateLog([
+            'method' => 'Vote',
+            'amount' => $rewardAmount,
+            'jid' => $user->jid,
+        ]);
+
         Vote::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
 
         return response("OK", 200);
@@ -262,13 +267,14 @@ class VoteService
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
 
-        if (config('global.server.version') === 'vSRO') {
-            SkSilk::setSkSilk($user->jid, 0, $rewardAmount);
-        } else {
-            AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
-        }
+        $user->tbUser->giveSilk(3, $rewardAmount);
 
-        Donate::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
+        Donate::DonateLog([
+            'method' => 'Vote',
+            'amount' => $rewardAmount,
+            'jid' => $user->jid,
+        ]);
+
         Vote::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
 
         return response("OK", 200);
@@ -304,13 +310,14 @@ class VoteService
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
 
-        if (config('global.server.version') === 'vSRO') {
-            SkSilk::setSkSilk($user->jid, 0, $rewardAmount);
-        } else {
-            AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
-        }
+        $user->tbUser->giveSilk(3, $rewardAmount);
 
-        Donate::setDonateLog('Vote', (string) Str::uuid(), 'true', 0, $rewardAmount, "[{$config['name']}] User {$user->username} earned {$rewardAmount} silk.", $user->jid, $remoteIp);
+        Donate::DonateLog([
+            'method' => 'Vote',
+            'amount' => $rewardAmount,
+            'jid' => $user->jid,
+        ]);
+
         Vote::updateOrCreate(['jid' => $jid, 'site' => $config['route']], ['ip' => $remoteIp, 'expire' => $now->addHours($timeout)]);
 
         return response("OK", 200);

@@ -33,9 +33,7 @@ class CharTrijob extends Model
 
     public static function getJobRanking($limit = 25, $type = 0)
     {
-        $minutes = config('global.cache.ranking_job', 60);
-
-        return Cache::remember("ranking_job_vsro_{$limit}_{$type}", now()->addMinutes($minutes), function () use ($type, $limit) {
+        return Cache::remember("ranking_job_vsro_{$limit}_{$type}", config('global.cache.ranking_job', 3600), function () use ($type, $limit) {
             return self::select(
                 '_Char.CharID',
                 '_Char.CharName16',

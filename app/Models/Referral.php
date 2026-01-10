@@ -49,7 +49,7 @@ class Referral extends Model
 
     public static function createReferral(User $user, ?string $fingerprint = null, ?string $ip = null): self
     {
-        $invite = $user->invitesCreated()->first();
+        $invite = $user->getInvitesCreated()->first();
         if ($invite) {
             return $invite;
         }
@@ -58,7 +58,7 @@ class Referral extends Model
             $code = strtoupper(Str::random(8));
         } while (self::where('code', $code)->exists());
 
-        return $user->invitesCreated()->create([
+        return $user->getInvitesCreated()->create([
             'code' => $code,
             'name' => $user->username,
             'jid' => $user->jid,

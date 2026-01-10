@@ -11,8 +11,25 @@ class LogEventItem extends Model
 {
     use HasFactory;
 
+    /**
+     * The Database connection name for the model.
+     *
+     * @var string
+     */
     protected $connection = 'log';
+
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
     public $timestamps = false;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'dbo._LogEventItem';
 
     public static function getLogEventItem($mode = 'plus', $plus = null, $degree = null, $type = null, $CharID = null, $limit = null)

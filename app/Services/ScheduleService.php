@@ -10,10 +10,6 @@ class ScheduleService
 {
     public static function getEventSchedules(): Collection
     {
-        if (!config('widgets.event_schedule.enabled')) {
-            return collect();
-        }
-
         $now = Carbon::now();
         $names = config('widgets.event_schedule.names', []);
         $customEvents = config('widgets.event_schedule.custom', []);
