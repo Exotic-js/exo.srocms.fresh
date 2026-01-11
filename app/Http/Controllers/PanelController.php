@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Donate;
 use App\Models\Referral;
+use App\Models\SRO\Account\SkSilk;
 use App\Models\SRO\Account\SkSilkBuyList;
 use App\Models\SRO\Portal\AphChangedSilk;
 use App\Models\Ticket;
@@ -35,7 +36,7 @@ class PanelController extends Controller
 
     public function vouchers(Request $request)
     {
-        $data = Voucher::getUserVoucher($request->user()->id);
+        $data = Voucher::getUserVoucher($request->user()->jid);
 
         return view('profile.panel.voucher', [
             'data' => $data,
@@ -64,11 +65,15 @@ class PanelController extends Controller
 
         $user = $request->user();
 
-        $user->tbUser->giveSilk($voucher->type, $voucher->amount);
+        if (config('global.server.version') === 'vSRO') {
+            SkSilk::setSkSilk($user->jid, $voucher->type, $voucher->amount);
+        } else {
+            AphChangedSilk::setChangedSilk($user->jid, $voucher->type, $voucher->amount);
+        }
 
         Donate::DonateLog([
             'method' => 'Voucher',
-            'amount' => $voucher->amount,
+            'value' => $voucher->amount,
             'jid' => $user->jid,
         ]);
 
@@ -81,7 +86,7 @@ class PanelController extends Controller
     {
         $user = $request->user();
 
-        $fingerprint = $request->query('fp');
+        $fingerprint = $request->query('fingerprint');
 
         $invite = Referral::createReferral($user, $fingerprint);
 
@@ -106,7 +111,7 @@ class PanelController extends Controller
     {
         $user = $request->user();
         $minimumRedeem = config('global.referral.minimum_redeem', 25);
-        $invites = $user->getInvitesCreated()->whereNotNull('invited_jid')->get();
+        $invites = $user->InvitesCreated()->whereNotNull('invited_jid')->get();
 
         if(!config('global.referral.enabled', true)) {
             return back()->with('error', "Redeemed invites disabled.");
@@ -115,11 +120,15 @@ class PanelController extends Controller
             return back()->with('error', "You need at least {$minimumRedeem} points to redeem.");
         }
 
-        $user->tbUser->giveSilk(3, $invites->sum('points'));
+        if (config('global.server.version') === 'vSRO') {
+            SkSilk::setSkSilk($user->jid, 0, $invites->sum('points'));
+        } else {
+            AphChangedSilk::setChangedSilk($user->jid, 3, $invites->sum('points'));
+        }
 
         Donate::DonateLog([
             'method' => 'Voucher',
-            'amount' => $invites->sum('points'),
+            'value' => $invites->sum('points'),
             'jid' => $user->jid,
         ]);
 

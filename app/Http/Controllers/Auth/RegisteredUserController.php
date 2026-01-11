@@ -98,7 +98,7 @@ class RegisteredUserController extends Controller
     {
         return DB::transaction(function () use ($request, $ip) {
             $tbUser = TbUser::setVSROAccount(null, $request->username, $request->password, $request->email, $ip);
-            SkSilk::setSkSilk($tbUser->JID, 3, 0);
+            SkSilk::setSkSilk($tbUser->JID, 0, 0);
 
             return $tbUser->JID;
         });

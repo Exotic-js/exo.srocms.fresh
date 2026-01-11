@@ -170,15 +170,6 @@ class TbUser extends Model
             ->latest('timeEnd');
     }
 
-    public function giveSilk(string $type, float $amount)
-    {
-        if (config('global.server.version') === 'vSRO') {
-            SkSilk::setSkSilk($this->JID, $type, $amount);
-        } else {
-            AphChangedSilk::setChangedSilk($this->PortalJID, $type, $amount);
-        }
-    }
-
     public function user()
     {
         if (config('global.server.version') === 'vSRO') {
@@ -200,7 +191,12 @@ class TbUser extends Model
 
     public function getShardUserAttribute()
     {
-        return cache()->remember( "shard_user_{$this->jid}", 600, fn () => $this->shardUser()->get() ?? collect());
+        return cache()->remember( "shard_user_{$this->jid}", config('global.cache.account_info', 600), fn () => $this->shardUser()->get() ?? collect());
+    }
+
+    public function getGetSkSilkAttribute()
+    {
+        return cache()->remember( "user_silk_{$this->jid}", config('global.cache.account_info', 600), fn () => $this->getSkSilk()->first());
     }
 
     public function shardUser()
@@ -210,7 +206,7 @@ class TbUser extends Model
 
     public function getSkSilk()
     {
-        return $this->belongsTo(SkSilk::class, 'JID', 'JID');
+        return $this->hasOne(SkSilk::class, 'JID', 'JID');
     }
 
     public function donationLogs()

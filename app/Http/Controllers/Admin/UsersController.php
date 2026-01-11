@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Donate;
+use App\Models\SRO\Account\SkSilk;
 use App\Models\SRO\Account\TbUser;
+use App\Models\SRO\Portal\AphChangedSilk;
 use Illuminate\Http\Request;
 
 class UsersController extends Controller
@@ -37,11 +39,15 @@ class UsersController extends Controller
             'amount' => 'required|numeric',
         ]);
 
-        $user->giveSilk($validated['type'], $validated['amount']);
+        if (config('global.server.version') === 'vSRO') {
+            SkSilk::setSkSilk($user->JID, $validated['type'], $validated['amount']);
+        } else {
+            AphChangedSilk::setChangedSilk($user->PortalJID, $validated['type'], $validated['amount']);
+        }
 
-        Donate::setDonateLog([
+        Donate::DonateLog([
             'method' => 'AdminPanel',
-            'amount' => $validated['amount'],
+            'value' => $validated['amount'],
             'jid' => $user->JID,
         ]);
 

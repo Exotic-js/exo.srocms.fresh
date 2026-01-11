@@ -143,11 +143,16 @@ class DonateService
 
         $user = Auth::user();
 
-        $user->tbUser->giveSilk(3, $package['value']);
+        if (config('global.server.version') === 'vSRO') {
+            SkSilk::setSkSilk($user->jid, 0, $package['value']);
+        } else {
+            AphChangedSilk::setChangedSilk($user->jid, 3, $package['value']);
+        }
 
         Donate::DonateLog([
             'method' => 'Paypal',
-            'amount' => $package['value'],
+            'amount' => $package['price'],
+            'value' => $package['value'],
             'jid' => $user->jid,
         ]);
 
@@ -192,12 +197,17 @@ class DonateService
             return response('Invalid package amount', 400);
         }
 
-        $user->tbUser->giveSilk(3, $package['value']);
+        if (config('global.server.version') === 'vSRO') {
+            SkSilk::setSkSilk($user->jid, 0, $package['value']);
+        } else {
+            AphChangedSilk::setChangedSilk($user->jid, 3, $package['value']);
+        }
 
         Donate::DonateLog([
-            'method' => 'Paypal',
+            'method' => 'Paypal-IPN',
             'transaction_id' => $data['txn_id'],
-            'amount' => $package['value'],
+            'amount' => $package['price'],
+            'value' => $package['value'],
             'jid' => $user->jid,
         ]);
 
@@ -291,12 +301,18 @@ class DonateService
                 }
 
                 $user = Auth::user();
-                $user->tbUser->giveSilk(3, $package['value']);
+
+                if (config('global.server.version') === 'vSRO') {
+                    SkSilk::setSkSilk($user->jid, 0, $package['value']);
+                } else {
+                    AphChangedSilk::setChangedSilk($user->jid, 3, $package['value']);
+                }
 
                 Donate::DonateLog([
                     'method' => 'Stripe',
-                    'transaction_id' => $sessionId,
-                    'amount' => $package['value'],
+                    'transaction_id' => $session['id'],
+                    'amount' => $package['price'],
+                    'value' => $package['value'],
                     'jid' => $user->jid,
                 ]);
 
@@ -340,7 +356,7 @@ class DonateService
             }
         }
         if (!$ipValid) {
-            return response('Invalid IP address', 403);
+            return response("Invalid IP address: {$clientIp}", 403);
         }
 
         $apiType = $config['api_type'] ?? 'vc';
@@ -382,12 +398,16 @@ class DonateService
 
         if (($pingback['type'] ?? '') == '0' || ($pingback['type'] ?? '') == '201') {
 
-            $user->tbUser->giveSilk(3, $pingback['currency']);
+            if (config('global.server.version') === 'vSRO') {
+                SkSilk::setSkSilk($user->jid, 0, $pingback['currency']);
+            } else {
+                AphChangedSilk::setChangedSilk($user->jid, 3, $pingback['currency']);
+            }
 
             Donate::DonateLog([
                 'method' => 'Paymentwall',
                 'transaction_id' => $pingback['ref'],
-                'amount' => $pingback['currency'],
+                'value' => $pingback['currency'],
                 'jid' => $user->jid,
             ]);
 
@@ -474,12 +494,17 @@ class DonateService
                 return response('Invalid user or package', 400);
             }
 
-            $user->tbUser->giveSilk(3, $package['value']);
+            if (config('global.server.version') === 'vSRO') {
+                SkSilk::setSkSilk($user->jid, 0, $package['value']);
+            } else {
+                AphChangedSilk::setChangedSilk($user->jid, 3, $package['value']);
+            }
 
             Donate::DonateLog([
                 'method' => 'CoinPayments',
                 'transaction_id' => $data['txn_id'],
-                'amount' => $package['value'],
+                'amount' => $data['amount1'],
+                'value' => $package['value'],
                 'jid' => $user->jid,
             ]);
 
@@ -571,7 +596,11 @@ class DonateService
                 return response('User not found', 400);
             }
 
-            $user->tbUser->giveSilk(3, $package['value']);
+            if (config('global.server.version') === 'vSRO') {
+                SkSilk::setSkSilk($user->jid, 0, $package['value']);
+            } else {
+                AphChangedSilk::setChangedSilk($user->jid, 3, $package['value']);
+            }
 
             $transaction_id->update(['status' => 'success']);
 
@@ -630,12 +659,17 @@ class DonateService
 
                 $user = Auth::user();
 
-                $user->tbUser->giveSilk(3, $package['value']);
+                if (config('global.server.version') === 'vSRO') {
+                    SkSilk::setSkSilk($user->jid, 0, $package['value']);
+                } else {
+                    AphChangedSilk::setChangedSilk($user->jid, 3, $package['value']);
+                }
 
                 Donate::DonateLog([
                     'method' => 'MaxiCard',
                     'transaction_id' => $orderNumber,
-                    'amount' => $package['value'],
+                    'amount' => $package['price'],
+                    'value' => $package['value'],
                     'jid' => $user->jid,
                 ]);
 
@@ -679,11 +713,17 @@ class DonateService
 
                 $user = Auth::user();
 
-                $user->tbUser->giveSilk(3, $package['value']);
+                if (config('global.server.version') === 'vSRO') {
+                    SkSilk::setSkSilk($user->jid, 0, $package['value']);
+                } else {
+                    AphChangedSilk::setChangedSilk($user->jid, 3, $package['value']);
+                }
 
                 Donate::DonateLog([
                     'method' => 'HipoCard',
-                    'amount' => $package['value'],
+                    'transaction_id' => uniqid().rand(100,999),
+                    'amount' => $package['price'],
+                    'value' => $package['value'],
                     'jid' => $user->jid,
                 ]);
 
@@ -775,12 +815,17 @@ class DonateService
                 return response('Invalid package price', 422);
             }
 
-            $user->tbUser->giveSilk(3, $package['value']);
+            if (config('global.server.version') === 'vSRO') {
+                SkSilk::setSkSilk($user->jid, 0, $package['value']);
+            } else {
+                AphChangedSilk::setChangedSilk($user->jid, 3, $package['value']);
+            }
 
             Donate::DonateLog([
                 'method' => 'HipoPay',
                 'transaction_id' => $data['transaction_id'],
-                'amount' => $package['value'],
+                'amount' => $package['price'],
+                'value' => $package['value'],
                 'jid' => $user->jid,
             ]);
 

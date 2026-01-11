@@ -8,7 +8,7 @@ return [
         //'WebMallAddr' => "http://webmall.luxor-online.com/gateway.asp"
     ],
     'cache' => [
-        'account_info' => 600, // 5 seconds
+        'account_info' => 60, // 1 minutes
         'event_schedule' => 604800, // 1 week
         'fortress_history' => 604800, // 1 week
         'unique_history' => 600, // 10 minutes

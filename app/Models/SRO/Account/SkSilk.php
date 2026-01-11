@@ -51,9 +51,9 @@ class SkSilk extends Model
     public static function setSkSilk($jid, $type, $amount)
     {
         $types = [
-            '3' => 'silk_own',
-            '2' => 'silk_gift',
-            '1' => 'silk_point'
+            '0' => 'silk_own',
+            '1' => 'silk_gift',
+            '2' => 'silk_point'
         ];
 
         self::firstOrCreate(

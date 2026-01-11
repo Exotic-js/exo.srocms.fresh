@@ -44,11 +44,15 @@ class VoteService
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
 
-        $user->tbUser->giveSilk(3, $rewardAmount);
+        if (config('global.server.version') === 'vSRO') {
+            SkSilk::setSkSilk($user->jid, 0, $rewardAmount);
+        } else {
+            AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
+        }
 
         Donate::DonateLog([
-            'method' => 'Vote',
-            'amount' => $rewardAmount,
+            'method' => "Vote [{$config['name']}]",
+            'value' => $rewardAmount,
             'jid' => $user->jid,
         ]);
 
@@ -91,11 +95,15 @@ class VoteService
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
 
-        $user->tbUser->giveSilk(3, $rewardAmount);
+        if (config('global.server.version') === 'vSRO') {
+            SkSilk::setSkSilk($user->jid, 0, $rewardAmount);
+        } else {
+            AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
+        }
 
         Donate::DonateLog([
-            'method' => 'Vote',
-            'amount' => $rewardAmount,
+            'method' => "Vote [{$config['name']}]",
+            'value' => $rewardAmount,
             'jid' => $user->jid,
         ]);
 
@@ -134,11 +142,15 @@ class VoteService
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
 
-        $user->tbUser->giveSilk(3, $rewardAmount);
+        if (config('global.server.version') === 'vSRO') {
+            SkSilk::setSkSilk($user->jid, 0, $rewardAmount);
+        } else {
+            AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
+        }
 
         Donate::DonateLog([
-            'method' => 'Vote',
-            'amount' => $rewardAmount,
+            'method' => "Vote [{$config['name']}]",
+            'value' => $rewardAmount,
             'jid' => $user->jid,
         ]);
 
@@ -177,11 +189,15 @@ class VoteService
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
 
-        $user->tbUser->giveSilk(3, $rewardAmount);
+        if (config('global.server.version') === 'vSRO') {
+            SkSilk::setSkSilk($user->jid, 0, $rewardAmount);
+        } else {
+            AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
+        }
 
         Donate::DonateLog([
-            'method' => 'Vote',
-            'amount' => $rewardAmount,
+            'method' => "Vote [{$config['name']}]",
+            'value' => $rewardAmount,
             'jid' => $user->jid,
         ]);
 
@@ -224,11 +240,15 @@ class VoteService
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
 
-        $user->tbUser->giveSilk(3, $rewardAmount);
+        if (config('global.server.version') === 'vSRO') {
+            SkSilk::setSkSilk($user->jid, 0, $rewardAmount);
+        } else {
+            AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
+        }
 
         Donate::DonateLog([
-            'method' => 'Vote',
-            'amount' => $rewardAmount,
+            'method' => "Vote [{$config['name']}]",
+            'value' => $rewardAmount,
             'jid' => $user->jid,
         ]);
 
@@ -267,11 +287,15 @@ class VoteService
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
 
-        $user->tbUser->giveSilk(3, $rewardAmount);
+        if (config('global.server.version') === 'vSRO') {
+            SkSilk::setSkSilk($user->jid, 0, $rewardAmount);
+        } else {
+            AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
+        }
 
         Donate::DonateLog([
-            'method' => 'Vote',
-            'amount' => $rewardAmount,
+            'method' => "Vote [{$config['name']}]",
+            'value' => $rewardAmount,
             'jid' => $user->jid,
         ]);
 
@@ -310,11 +334,15 @@ class VoteService
             return response("Cooldown active until {$voteLog->expire}", 200);
         }
 
-        $user->tbUser->giveSilk(3, $rewardAmount);
+        if (config('global.server.version') === 'vSRO') {
+            SkSilk::setSkSilk($user->jid, 0, $rewardAmount);
+        } else {
+            AphChangedSilk::setChangedSilk($user->jid, 3, $rewardAmount);
+        }
 
         Donate::DonateLog([
-            'method' => 'Vote',
-            'amount' => $rewardAmount,
+            'method' => "Vote [{$config['name']}]",
+            'value' => $rewardAmount,
             'jid' => $user->jid,
         ]);
 

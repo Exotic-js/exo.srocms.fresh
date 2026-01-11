@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\SRO\Account\SkSilk;
 use App\Models\SRO\Account\TbUser;
+use App\Models\SRO\Portal\AphChangedSilk;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\SRO\Portal\MuUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -79,6 +81,15 @@ class User extends Authenticatable implements MustVerifyEmail
                 $this->tbUser?->update(['password' => md5($password)]);
             }
         });
+    }
+
+    public function giveSilk(string $type, float $amount)
+    {
+        if (config('global.server.version') === 'vSRO') {
+            SkSilk::setSkSilk($this->jid, $type, $amount);
+        } else {
+            AphChangedSilk::setChangedSilk($this->tbUser?->PortalJID, $type, $amount);
+        }
     }
 
     public function tbUser()

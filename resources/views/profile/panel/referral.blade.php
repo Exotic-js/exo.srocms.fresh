@@ -112,16 +112,14 @@
 
             const url = new URL(window.location.href);
 
-            // reload مرة واحدة فقط مع fingerprint
-            if (!url.searchParams.has('fp')) {
-                url.searchParams.set('fp', fingerprint);
+            if (!url.searchParams.has('fingerprint')) {
+                url.searchParams.set('fingerprint', fingerprint);
                 window.location.href = url.toString();
                 return;
             }
 
-            // امسح fingerprint من URL بعد تسجيله
-            url.searchParams.delete('fp');
-            window.history.replaceState({}, document.title, url.pathname + url.search);
+            //url.searchParams.delete('fingerprint');
+            //window.history.replaceState({}, document.title, url.pathname + url.search);
         })();
     </script>
 @endpush

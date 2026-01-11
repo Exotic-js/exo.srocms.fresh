@@ -8,7 +8,7 @@
                 <h2 class="mt-5">{{ __('Register') }}</h2>
 
                 @if (!config('settings.disable_register'))
-                    <form id="register-form" method="POST" action="{{ route('register') }}">
+                    <form method="POST" action="{{ route('register') }}">
                     @csrf
 
                     <div class="form-group row mb-3">
@@ -117,13 +117,12 @@
     <script>
         FingerprintJS.load().then(fp => {
             fp.get().then(result => {
-                const form = document.getElementById('register-form');
+                const form = document.querySelector('form[action*="register"]');
 
                 const input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = 'fingerprint';
                 input.value = result.visitorId;
-
                 form.appendChild(input);
 
                 const invite = new URLSearchParams(window.location.search).get('invite');
