@@ -191,12 +191,12 @@ class TbUser extends Model
 
     public function getShardUserAttribute()
     {
-        return cache()->remember( "shard_user_{$this->jid}", config('global.cache.account_info', 600), fn () => $this->shardUser()->get() ?? collect());
+        return cache()->remember( "shard_user_{$this->JID}", config('global.cache.account_info', 600), fn () => $this->shardUser()->get() ?? collect());
     }
 
     public function getGetSkSilkAttribute()
     {
-        return cache()->remember( "user_silk_{$this->jid}", config('global.cache.account_info', 600), fn () => $this->getSkSilk()->first());
+        return cache()->remember( "user_silk_{$this->JID}", config('global.cache.account_info', 600), fn () => $this->getSkSilk()->first());
     }
 
     public function shardUser()
