@@ -103,14 +103,14 @@
                 </div>
 
                 <div class="row g-4">
-                    @foreach(collect(config('widgets.server_info.data'))->take(6) as $value)
+                    @foreach(collect(config('widgets.server_info.data'))->take(6) as $row)
                         <div class="col-md-6 col-lg-4">
                             <div class="card h-100 p-4">
                                 <div class="bg-warning rounded mb-4 d-flex align-items-center justify-content-center" style="height: 48px; width: 48px;">
-                                    <span class="font-cinzel fw-bold">{!! $value['icon'] !!}</span>
+                                    <span class="font-cinzel fw-bold">{!! $row['icon'] !!}</span>
                                 </div>
-                                <h3 class="font-cinzel fw-bold text-silk-gold fs-5 mb-3">{{ $value['name'] }}</h3>
-                                <p class="mb-0">{{ $value['value'] }}</p>
+                                <h3 class="font-cinzel fw-bold text-silk-gold fs-5 mb-3">{{ $row['name'] }}</h3>
+                                <p class="mb-0">{{ $row['value'] }}</p>
                             </div>
                         </div>
                     @endforeach
@@ -164,11 +164,11 @@
             </div>
 
             <div class="row g-4">
-                @forelse($data->take(3) as $value)
+                @forelse($data->take(3) as $row)
                     <div class="col-lg-4">
                         <div class="card h-100">
-                            @if ($value->image)
-                                <img src="{{ $value->image }}" class="card-img-top" alt="..." style="height: 200px;">
+                            @if ($row->image)
+                                <img src="{{ $row->image }}" class="card-img-top" alt="..." style="height: 200px;">
                             @else
                                 <div class="bg-secondary" style="height: 200px;">
                                     <div class="h-100 d-flex align-items-center justify-content-center text-white">
@@ -178,7 +178,7 @@
                             @endif
                             <div class="card-body">
                                 <div class="small mb-2 font-cinzel">
-                                    @switch($value->category)
+                                    @switch($row->category)
                                         @case('news')
                                             <span class="badge text-bg-warning">News</span>
                                             @break
@@ -191,14 +191,14 @@
                                         @default
                                             <span class="badge text-bg-warning">News</span>
                                     @endswitch
-                                    {{ $value->published_at->format("M j, Y") }}</div>
-                                <a href="{{ route('pages.post.show', ['slug' => $value->slug]) }}" class="text-decoration-none">
-                                    <h3 class="card-title fw-bold font-cinzel h5">{{ \Illuminate\Support\Str::words(strip_tags($value->title), 3, '...') }}</h3>
+                                    {{ $row->published_at->format("M j, Y") }}</div>
+                                <a href="{{ route('pages.post.show', ['slug' => $row->slug]) }}" class="text-decoration-none">
+                                    <h3 class="card-title fw-bold font-cinzel h5">{{ \Illuminate\Support\Str::words(strip_tags($row->title), 3, '...') }}</h3>
                                 </a>
                                 <div class="card-text">
-                                    {{ \Illuminate\Support\Str::words(strip_tags($value->content), 20, '...') }}
+                                    {{ \Illuminate\Support\Str::words(strip_tags($row->content), 20, '...') }}
                                 </div>
-                                <a href="{{ route('pages.post.show', ['slug' => $value->slug]) }}" class="text-decoration-none font-cinzel mt-4">
+                                <a href="{{ route('pages.post.show', ['slug' => $row->slug]) }}" class="text-decoration-none font-cinzel mt-4">
                                     Read More →
                                 </a>
                             </div>

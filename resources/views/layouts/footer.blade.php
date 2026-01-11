@@ -20,10 +20,10 @@
         <div class="col-md-2 mb-3">
             <h5>{{ __('General') }}</h5>
             <ul class="nav flex-column">
-                @foreach(config('global.footer')['general'] as $value)
+                @foreach(config('global.footer')['general'] as $row)
                 <li class="nav-item mb-2">
-                    <a href="{{ $value['url'] }}" target="_blank" class="nav-link p-0 text-body-secondary">
-                        {{ __($value['name']) }}
+                    <a href="{{ $row['url'] }}" target="_blank" class="nav-link p-0 text-body-secondary">
+                        {{ __($row['name']) }}
                     </a>
                 </li>
                 @endforeach
@@ -33,11 +33,11 @@
         <div class="col-md-2 mb-3">
             <h5>{{ __('Social Media') }}</h5>
             <ul class="nav flex-column">
-                @foreach(config('global.footer')['social'] as $value)
+                @foreach(config('global.footer')['social'] as $row)
                     <li class="nav-item mb-2">
-                        <a href="{{ $value['url'] }}" target="_blank" class="nav-link p-0 text-body-secondary">
-                            {!! $value['image'] !!}
-                            {{ $value['name'] }}
+                        <a href="{{ $row['url'] }}" target="_blank" class="nav-link p-0 text-body-secondary">
+                            {!! $row['image'] !!}
+                            {{ $row['name'] }}
                         </a>
                     </li>
                 @endforeach
@@ -47,11 +47,11 @@
         <div class="col-md-2 mb-3">
             <h5>{{ __('Backlink') }}</h5>
             <ul class="nav flex-column">
-                @foreach(config('global.footer')['backlink'] as $value)
+                @foreach(config('global.footer')['backlink'] as $row)
                     <li class="nav-item mb-2">
-                        <a href="{{ $value['url'] }}" target="_blank" class="nav-link p-0 text-body-secondary">
-                            <img src="{{ $value['image'] }}" alt="" width="50">
-                            {{ $value['name'] }}
+                        <a href="{{ $row['url'] }}" target="_blank" class="nav-link p-0 text-body-secondary">
+                            <img src="{{ $row['image'] }}" alt="" width="50">
+                            {{ $row['name'] }}
                         </a>
                     </li>
                 @endforeach

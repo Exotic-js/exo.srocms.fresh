@@ -10,7 +10,7 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($data as $key => $value)
+            @forelse($data as $key => $row)
             <tr>
                 <td>
                     @if($key < 3)
@@ -20,16 +20,16 @@
                     @endif
                     </td>
                     <td>
-                        @if($value->RefObjID > 2000)
+                        @if($row->RefObjID > 2000)
                             <img src="{{ asset(config('ranking.character_race')[1]['image']) }}" width="16" height="16" alt=""/>
                         @else
                             <img src="{{ asset(config('ranking.character_race')[0]['image']) }}" width="16" height="16" alt=""/>
                         @endif
-                        <a href="{{ route('ranking.character.view', ['name' => $value->CharName16]) }}" class="text-decoration-none">{{ $value->NickName16 }}</a>
+                        <a href="{{ route('ranking.character.view', ['name' => $row->CharName16]) }}" class="text-decoration-none">{{ $row->NickName16 }}</a>
                     </td>
-                    <td>{{ $value->JobLevel ?? $value->Level }}</td>
-                    <td>{{ $value->KillCount ?? 0 }}</td>
-                    <td>{{ $value->ReputationPoint ?? $value->Exp }}</td>
+                    <td>{{ $row->JobLevel ?? $row->Level }}</td>
+                    <td>{{ $row->KillCount ?? 0 }}</td>
+                    <td>{{ $row->ReputationPoint ?? $row->Exp }}</td>
                 </tr>
             @empty
                 <tr>

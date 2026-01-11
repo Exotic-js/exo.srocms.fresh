@@ -8,7 +8,7 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($data as $key => $value)
+            @forelse($data as $key => $row)
             <tr>
                 <td>
                     @if($key < 3)
@@ -18,9 +18,9 @@
                     @endif
                 </td>
                 <td>
-                    <a href="{{ route('ranking.character.view', ['name' => $value->CharName]) }}" class="text-decoration-none">{{ $value->CharName }}</a>
+                    <a href="{{ route('ranking.character.view', ['name' => $row->CharName]) }}" class="text-decoration-none">{{ $row->CharName }}</a>
                 </td>
-                <td>{{ $value->KillCount }} / {{ $value->DeathCount }}</td>
+                <td>{{ $row->KillCount }} / {{ $row->DeathCount }}</td>
             </tr>
         @empty
             <tr>

@@ -158,12 +158,12 @@
 
     @if($item->BlueInfo)
         <br />
-        @foreach($item->BlueInfo as $value)
-            <b style="color:#{{ ($value->code === 'MATTR_DEC_MAXDUR' || ($value->code === 'MATTR_DUR' && $value->value == 400)) ? 'ff2f51' : '50cecd' }}">
-                {{ $value->name }}
+        @foreach($item->BlueInfo as $row)
+            <b style="color:#{{ ($row->code === 'MATTR_DEC_MAXDUR' || ($row->code === 'MATTR_DUR' && $row->value == 400)) ? 'ff2f51' : '50cecd' }}">
+                {{ $row->name }}
 
-                @if($value->mValue > 0)
-                    (+{{ max(0, ceil((($value->value - 1) / ($value->mValue - 1)) * 100)) }}%)
+                @if($row->mValue > 0)
+                    (+{{ max(0, ceil((($row->value - 1) / ($row->mValue - 1)) * 100)) }}%)
                 @endif
             </b><br />
         @endforeach

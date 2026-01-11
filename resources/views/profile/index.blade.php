@@ -14,26 +14,26 @@
                     {{ __('No Characters Found!') }}
                 </div>
             @else
-                @foreach(auth()->user()->tbUser->shardUser as $value)
+                @foreach(auth()->user()->tbUser->shardUser as $row)
                     <div class="col-md-3">
                         <div class="card">
                             <div class="card-body text-center">
                                 <div class="d-flex overflow-hidden align-items-center justify-content-center mb-2">
                                     @if(config('global.server.version') === 'vSRO')
-                                        <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.config('ranking.character_image_vsro')[$value->RefObjID]) }}" width="100" height="100" alt=""/>
+                                        <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.config('ranking.character_image_vsro')[$row->RefObjID]) }}" width="100" height="100" alt=""/>
                                     @else
-                                        <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.config('ranking.character_image')[$value->RefObjID]) }}" width="100" height="100" alt=""/>
+                                        <img class="object-fit-cover rounded border" src="{{ asset('images/character/'.config('ranking.character_image')[$row->RefObjID]) }}" width="100" height="100" alt=""/>
                                     @endif
                                 </div>
 
-                                @if($value->RefObjID > 2000)
+                                @if($row->RefObjID > 2000)
                                     <img src="{{ asset(config('ranking.character_race')[1]['image']) }}" width="16" height="16" alt=""/>
                                 @else
                                     <img src="{{ asset(config('ranking.character_race')[0]['image']) }}" width="16" height="16" alt=""/>
                                 @endif
-                                <a href="{{ route('ranking.character.view', ['name' => $value->CharName16]) }}" class="text-decoration-none">{{ $value->CharName16 }}</a>
-                                <p>{{ __('Lv:') }} {{ $value->CurLevel }}</p>
-                                <p>{{ __('Gold:') }} {{ number_format($value->RemainGold , 0, ',')}}</p>
+                                <a href="{{ route('ranking.character.view', ['name' => $row->CharName16]) }}" class="text-decoration-none">{{ $row->CharName16 }}</a>
+                                <p>{{ __('Lv:') }} {{ $row->CurLevel }}</p>
+                                <p>{{ __('Gold:') }} {{ number_format($row->RemainGold , 0, ',')}}</p>
                             </div>
                         </div>
                     </div>

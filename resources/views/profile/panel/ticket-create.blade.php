@@ -22,8 +22,8 @@
                     <div class="mb-3">
                         <label class="form-label">Category</label>
                         <select name="category" class="form-control" required>
-                            @foreach($data as $key => $value)
-                                <option value="{{ $key }}">{{ $value }}</option>
+                            @foreach($data as $key => $row)
+                                <option value="{{ $key }}">{{ $row }}</option>
                             @endforeach
                         </select>
                     </div>

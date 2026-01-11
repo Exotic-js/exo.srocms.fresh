@@ -21,16 +21,16 @@
                                 <p class="m-0">{{ __('Item Points:') }} <span class="">{{ $data->ItemPoints }}</span></p>
 
                                 <p class="mb-0">
-                                    @foreach($data->buildInfo as $key => $value)
-                                        @if(isset(config('ranking.skill_mastery')[$value->MasteryID]))
-                                            <span>{{ config('ranking.skill_mastery')[$value->MasteryID]['name'] }}</span> @if($key < count($data->buildInfo) - 1) / @endif
+                                    @foreach($data->buildInfo as $key => $row)
+                                        @if(isset(config('ranking.skill_mastery')[$row->MasteryID]))
+                                            <span>{{ config('ranking.skill_mastery')[$row->MasteryID]['name'] }}</span> @if($key < count($data->buildInfo) - 1) / @endif
                                         @endif
                                     @endforeach
                                 </p>
                                 <ul class="list-unstyled d-flex">
-                                    @foreach($data->buffInfo as $value)
+                                    @foreach($data->buffInfo as $row)
                                         <li class="me-1">
-                                            <img src="{{ asset('images/sro/'.$value->UI_IconFile_PNG) }}" title="{{ $value->UI_SkillName }}" alt="" width="24" height="24">
+                                            <img src="{{ asset('images/sro/'.$row->UI_IconFile_PNG) }}" title="{{ $row->UI_SkillName }}" alt="" width="24" height="24">
                                         </li>
                                     @endforeach
                                 </ul>

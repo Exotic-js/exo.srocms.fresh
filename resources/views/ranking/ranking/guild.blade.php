@@ -18,7 +18,7 @@
         </tr>
         </thead>
         <tbody>
-            @forelse($data as $key => $value)
+            @forelse($data as $key => $row)
                 <tr>
                     <td>
                         @if($key < 3)
@@ -28,14 +28,14 @@
                         @endif
                     </td>
                     <td>
-                        @if(isset($value->CrestIcon))
-                            <img src="{{ route('ranking.guild.crest', ['bin' => $value->CrestIcon]) }}" alt="" width="16" height="16">
+                        @if(isset($row->CrestIcon))
+                            <img src="{{ route('ranking.guild.crest', ['bin' => $row->CrestIcon]) }}" alt="" width="16" height="16">
                         @endif
-                        <a href="{{ route('ranking.guild.view', ['name' => $value->Name]) }}" class="text-decoration-none">{{ $value->Name }}</a>
+                        <a href="{{ route('ranking.guild.view', ['name' => $row->Name]) }}" class="text-decoration-none">{{ $row->Name }}</a>
                     </td>
-                    <td>{{ $value->Lvl }}</td>
-                    <td>{{ $value->TotalMember }}</td>
-                    <td>{{ $value->ItemPoints }}</td>
+                    <td>{{ $row->Lvl }}</td>
+                    <td>{{ $row->TotalMember }}</td>
+                    <td>{{ $row->ItemPoints }}</td>
                 </tr>
             @empty
                 <tr>

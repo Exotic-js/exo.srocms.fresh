@@ -26,13 +26,13 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        @foreach($row as $i => $value)
+                                        @foreach($row as $i => $row)
                                             <tr>
                                                 <td>{{ $i + 1 }}</td>
                                                 <td>
-                                                    <a href="{{ route('ranking.character.view', ['name' => $value->CharName16]) }}" class="text-decoration-none">{{ $value->CharName16 }}</a>
+                                                    <a href="{{ route('ranking.character.view', ['name' => $row->CharName16]) }}" class="text-decoration-none">{{ $row->CharName16 }}</a>
                                                 </td>
-                                                <td>{{ $value->Points }}</td>
+                                                <td>{{ $row->Points }}</td>
                                             </tr>
                                         @endforeach
                                         </tbody>

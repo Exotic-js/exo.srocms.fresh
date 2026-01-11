@@ -8,23 +8,21 @@
         </tr>
         </thead>
         <tbody>
-            @php $i = 1; @endphp
-            @forelse($data as $value)
+            @forelse($data as $key => $row)
                 <tr>
                     <td>
-                        <img src="{{ asset(config('ranking.honor_level')[$value->Rank]) }}" alt=""/>
+                        <img src="{{ asset(config('ranking.honor_level')[$row->Rank]) }}" alt=""/>
                     </td>
                     <td>
-                        @if($value->RefObjID > 2000)
+                        @if($row->RefObjID > 2000)
                             <img src="{{ asset(config('ranking.character_race')[1]['image']) }}" width="16" height="16" alt=""/>
                         @else
                             <img src="{{ asset(config('ranking.character_race')[0]['image']) }}" width="16" height="16" alt=""/>
                         @endif
-                        <a href="{{ route('ranking.character.view', ['name' => $value->CharName16]) }}" class="text-decoration-none">{{ $value->CharName16 }}</a>
+                        <a href="{{ route('ranking.character.view', ['name' => $row->CharName16]) }}" class="text-decoration-none">{{ $row->CharName16 }}</a>
                     </td>
-                    <td>{{ $value->HonorPoint }}</td>
+                    <td>{{ $row->HonorPoint }}</td>
                 </tr>
-                @php $i++ @endphp
             @empty
                 <tr>
                     <td colspan="3" class="text-center">{{ __('No Records Found!') }}</td>
