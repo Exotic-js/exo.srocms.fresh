@@ -41,7 +41,7 @@
         </tr>
         <tr>
             <td>{{ __('Level:') }}</td>
-            <td>{{ $data->CurLevel }} / {{ config('settings.max_level') }}</td>
+            <td>{{ $data->CurLevel }} / {{ config('settings.max_level', 140) }}</td>
         </tr>
         <tr>
             <td>{{ __('Item Points:') }}</td>

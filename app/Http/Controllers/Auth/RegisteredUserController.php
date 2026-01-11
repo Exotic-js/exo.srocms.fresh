@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Referral;
 use App\Models\SRO\Account\SkSilk;
 use App\Models\SRO\Account\TbUser;
+use App\Models\SRO\Portal\AphChangedSilk;
 use App\Models\SRO\Portal\AuhAgreedService;
 use App\Models\SRO\Portal\MuEmail;
 use App\Models\SRO\Portal\MuhAlteredInfo;
@@ -97,7 +98,7 @@ class RegisteredUserController extends Controller
     {
         return DB::transaction(function () use ($request, $ip) {
             $tbUser = TbUser::setVSROAccount(null, $request->username, $request->password, $request->email, $ip);
-            SkSilk::setSkSilk($tbUser->JID, 0, 0);
+            SkSilk::setSkSilk($tbUser->JID, 3, 0);
 
             return $tbUser->JID;
         });
@@ -117,8 +118,8 @@ class RegisteredUserController extends Controller
             MuVIPInfo::setVIPInfo($portalUser->JID);
 
             //type 1 = silk, type 3 = premium silk
-            //AphChangedSilk::setChangedSilk($jid, 1, 0);
-            //AphChangedSilk::setChangedSilk($jid, 3, 0);
+            //AphChangedSilk::setChangedSilk($portalUser->JID, 1, 0);
+            //AphChangedSilk::setChangedSilk($portalUser->JID, 3, 0);
 
             TbUser::setISROAccount($portalUser->JID, $request->username, $request->password, $request->email, $ip);
 

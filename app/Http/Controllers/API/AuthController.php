@@ -98,7 +98,7 @@ class AuthController extends Controller
     {
         return DB::transaction(function () use ($request, $ip) {
             $tbUser = TbUser::setVSROAccount(null, $request->username, $request->password, $request->email, $ip);
-            SkSilk::setSkSilk($tbUser->JID, 0, 0);
+            SkSilk::setSkSilk($tbUser->JID, 3, 0);
             return $tbUser->JID;
         });
     }
@@ -115,6 +115,10 @@ class AuthController extends Controller
             AuhAgreedService::setAgreedService($portalUser->JID, $userBinIP);
             MuJoiningInfo::setJoiningInfo($portalUser->JID, $userBinIP);
             MuVIPInfo::setVIPInfo($portalUser->JID);
+
+            //type 1 = silk, type 3 = premium silk
+            //AphChangedSilk::setChangedSilk($portalUser->JID, 1, 0);
+            //AphChangedSilk::setChangedSilk($portalUser->JID, 3, 0);
 
             TbUser::setISROAccount($portalUser->JID, $request->username, $request->password, $request->email, $ip);
 

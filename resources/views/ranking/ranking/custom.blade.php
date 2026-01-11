@@ -1,39 +1,32 @@
-@php
-    $allColumns = array_keys((array) $data->first());
-    $excludedColumns = ['ID', 'CharID', 'GuildID', 'RefObjID'];
-    $hasRefObjID = in_array('RefObjID', $allColumns);
-    $columns = array_filter($allColumns, fn($col) => !in_array($col, $excludedColumns));
-@endphp
 <div class="table-responsive">
     <table class="table table-striped">
         <thead class="table-dark">
         <tr>
-            <th scope="col">{{ __('Rank') }}</th>
-            @foreach($columns as $col)
+            <th scope="col">{{ __('#') }}</th>
+            @foreach(array_filter(array_keys((array) $data->first()), fn($col) => !in_array($col, ['ID', 'CharID', 'GuildID', 'RefObjID'])) as $col)
                 <th>{{ ucfirst($col) }}</th>
             @endforeach
         </tr>
         </thead>
         <tbody>
-        @php $i = 1; @endphp
         @if($data->isNotEmpty())
-            @foreach($data as $entry)
+            @foreach($data as $key => $entry)
                 <tr>
                     <td>
-                        @if($i <= 3)
-                            <img src="{{ asset($topImage[$i]) }}" alt=""/>
+                        @if($key < 3)
+                            <img src="{{ asset(config('ranking.top_image')[$key + 1]) }}" alt=""/>
                         @else
-                            {{ $i }}
+                            {{ $key + 1 }}
                         @endif
                     </td>
-                    @foreach($columns as $col)
+                    @foreach(array_filter(array_keys((array) $data->first()), fn($col) => !in_array($col, ['ID', 'CharID', 'GuildID', 'RefObjID'])) as $col)
                         <td>
                             @if($col === 'CharName')
-                                @if($hasRefObjID)
+                                @if(in_array('RefObjID', array_keys((array) $data->first())))
                                     @if($entry->RefObjID > 2000)
-                                        <img src="{{ asset($characterRace[1]['image']) }}" width="16" height="16" alt=""/>
+                                        <img src="{{ asset(config('ranking.character_race')[1]['image']) }}" width="16" height="16" alt=""/>
                                     @else
-                                        <img src="{{ asset($characterRace[0]['image']) }}" width="16" height="16" alt=""/>
+                                        <img src="{{ asset(config('ranking.character_race')[0]['image']) }}" width="16" height="16" alt=""/>
                                     @endif
                                 @endif
                                 <a href="{{ route('ranking.character.view', ['name' => $entry->$col]) }}" class="text-decoration-none">{{ $entry->$col }}</a>
@@ -45,7 +38,6 @@
                         </td>
                     @endforeach
                 </tr>
-                @php $i++ @endphp
             @endforeach
         @else
             <tr>

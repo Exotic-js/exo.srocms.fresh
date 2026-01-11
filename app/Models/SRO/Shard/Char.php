@@ -238,7 +238,7 @@ class Char extends Model
 
     public static function getCharByName($name)
     {
-        return Cache::remember("character_info_name_{$name}", config('global.cache.character_info', 86400), function () use ($name) {
+        return Cache::remember("char_name_{$name}", config('global.cache.character_info', 86400), function () use ($name) {
             return self::where('CharName16', $name)->firstOrFail();
         });
     }

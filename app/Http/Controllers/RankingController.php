@@ -179,16 +179,8 @@ class RankingController extends Controller
             );
         });
 
-        $config = (object) [
-            'menu' => config('ranking.menu'),
-            'topImage' => config('ranking.top_image'),
-            'characterRace' => config('ranking.character_race'),
-        ];
-
         return view('ranking.ranking.custom', [
             'data' => $data,
-            'config' => $config,
-            'type' => $type,
         ]);
     }
 
@@ -196,21 +188,7 @@ class RankingController extends Controller
     {
         $data = Char::getCharByName($name);
 
-        $config = (object) [
-            'uniqueList' => config('ranking.uniques'),
-            'skillMastery' => config('ranking.skill_mastery'),
-            'characterRace' => config('ranking.character_race'),
-            'hwanLevel' => config('ranking.hwan_level'),
-            'characterImage' => config('ranking.character_image'),
-            'characterImageVSRO' => config('ranking.character_image_vsro'),
-            'jobType' => config('ranking.job_type'),
-            'jobTypeVSRO' => config('ranking.job_type_vsro'),
-        ];
-
-        return view('ranking.character.index', [
-            'data' => $data,
-            'config' => $config,
-        ]);
+        return view('ranking.character.index', compact('data'));
     }
 
     public function guildView($name)
