@@ -16,7 +16,7 @@
         <h4>Ticket #{{ $ticket->id }} - {{ $ticket->subject }}</h4>
 
         @foreach($data as $row)
-            <div class="card mb-2 {{ $row->type == 'player' ? 'text-start' : 'text-end' }}">
+            <div class="card mb-2 {{ $row->type == 'player' ? 'text-end' : 'text-start' }}">
                 <div class="card-body">
                     <strong>{{ $row->type == 'player' ? $row->user->username : 'Admin' }}:</strong>
                     <p>{!! $row->message !!}</p>

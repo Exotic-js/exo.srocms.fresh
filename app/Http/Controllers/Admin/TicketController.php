@@ -6,19 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class TicketController extends Controller
 {
     public function index()
     {
-        $data = Ticket::whereNull('parent_id')->with('user')->latest()->paginate(20);
+        $data = Ticket::getAdminTickets(20);
 
         return view('admin.tickets.index', compact('data'));
     }
 
     public function show(Ticket $ticket)
     {
-        $data = $ticket->replies()->orderBy('created_at')->get();
+        $data = Ticket::getTicketReplies($ticket->id);
 
         return view('admin.tickets.show', compact('ticket', 'data'));
     }
@@ -40,6 +41,9 @@ class TicketController extends Controller
             'status' => true,
         ]);
 
+        Cache::forget("ticket_replies_{$ticket->id}");
+        Cache::forget("admin_tickets_page_1");
+
         return back()->with('success', 'Reply sent!');
     }
 
@@ -47,6 +51,9 @@ class TicketController extends Controller
     {
         $ticket->replies()->update(['status' => false]);
         $ticket->update(['status' => false]);
+
+        Cache::forget("ticket_replies_{$ticket->id}");
+        Cache::forget("admin_tickets_page_1");
 
         return back()->with('success', 'Ticket closed!');
     }

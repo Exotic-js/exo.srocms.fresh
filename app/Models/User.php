@@ -131,12 +131,22 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Ticket::class, 'user_id', 'id')
             ->whereNull('parent_id')
-            ->latest();
+            ->latest()->limit(10);
+    }
+
+    public function getTickets()
+    {
+        return cache()->remember("user_tickets_{$this->jid}", 600, fn () => $this->tickets()->get());
     }
 
     public function getInvitesCreated()
     {
         return cache()->remember( "user_invites_created_{$this->jid}", 600, fn () => $this->invitesCreated()->get());
+    }
+
+    public function clearInvitesCache(): void
+    {
+        Cache::forget("user_invites_created_{$this->jid}");
     }
 
     public function invitesCreated()

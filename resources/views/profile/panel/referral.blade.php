@@ -110,10 +110,18 @@
             const result = await fp.get();
             const fingerprint = result.visitorId;
 
-            if (!document.cookie.includes(`fingerprint=${fingerprint}`)) {
-                document.cookie = `fingerprint=${fingerprint}; path=/; max-age=${60*60*24*30}`;
-                window.location.reload();
+            const url = new URL(window.location.href);
+
+            // reload مرة واحدة فقط مع fingerprint
+            if (!url.searchParams.has('fp')) {
+                url.searchParams.set('fp', fingerprint);
+                window.location.href = url.toString();
+                return;
             }
+
+            // امسح fingerprint من URL بعد تسجيله
+            url.searchParams.delete('fp');
+            window.history.replaceState({}, document.title, url.pathname + url.search);
         })();
     </script>
 @endpush

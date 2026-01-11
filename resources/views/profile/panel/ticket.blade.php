@@ -33,8 +33,9 @@
                             <td>{{ $row->subject }}</td>
                             <td>{{ config('global.tickets.categories')[$row->category] ?? $row->category }}</td>
                             <td>
+                                @php($lastReply = \App\Models\Ticket::getLastReply($row->id))
                                 @if($row->status)
-                                    @if(optional($row->lastReply)->type === 'admin')
+                                    @if(optional($lastReply)->type === 'admin')
                                         <span class="badge bg-success">Admin replied</span>
                                     @else
                                         <span class="badge bg-secondary">Waiting support</span>

@@ -12,6 +12,7 @@ use App\Models\Voucher;
 use App\Services\VoteService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class PanelController extends Controller
@@ -76,16 +77,18 @@ class PanelController extends Controller
         return redirect()->back()->with('success', 'Voucher redeemed successfully!');
     }
 
-    public function referral(Request $request): View
+    public function referral(Request $request)
     {
         $user = $request->user();
 
-        $fingerprint = $request->cookie('fingerprint') ?? session('fingerprint');
-        if ($fingerprint && session('fingerprint') !== $fingerprint) {
-            session(['fingerprint' => $fingerprint]);
-        }
+        $fingerprint = $request->query('fp');
 
-        $invite = Referral::createReferral($user, session('fingerprint'));
+        $invite = Referral::createReferral($user, $fingerprint);
+
+        if ($fingerprint && is_null($invite->fingerprint)) {
+            $invite->update(['fingerprint' => $fingerprint]);
+            Cache::forget("user_invites_created_{$user->jid}");
+        }
 
         $totalPoints = $user->getInvitesCreated()->whereNotNull('invited_jid')->sum('points');
         $usedInvites = $user->getInvitesCreated()->whereNotNull('invited_jid')->load('invitedUser');
@@ -127,20 +130,23 @@ class PanelController extends Controller
 
     public function ticket()
     {
-        $data = auth()->user()->tickets()->paginate(20);
+        $data = Ticket::getUserTickets(auth()->id(), 20);
 
         return view('profile.panel.ticket', compact('data'));
     }
 
-    public function showTicket(Ticket $ticket)
+    public function showTicket(int $id)
     {
-        $data = $ticket->load('replies');
+        $ticket = Ticket::getUserTicket($id, auth()->id());
 
-        if ($ticket->user_id != auth()->id()) {
-            abort(403, 'Ticket not yours');
-        }
+        abort_if(!$ticket, 403, 'Ticket not yours');
 
-        return view('profile.panel.ticket-show', compact('data'));
+        $replies = Ticket::getReplies($ticket->id);
+
+        return view('profile.panel.ticket-show', [
+            'data'    => $ticket,
+            'replies' => $replies,
+        ]);
     }
 
     public function createTicket()
@@ -155,34 +161,29 @@ class PanelController extends Controller
         $config = array_keys(config('global.tickets.categories'));
 
         $validated = $request->validate([
-            'subject' => 'required_without:parent_id|string|max:255',
-            'message' => 'required|string',
-            'category' => 'required_without:parent_id|in:' . implode(',', $config),
+            'subject'   => 'required_without:parent_id|string|max:255',
+            'message'   => 'required|string',
+            'category'  => 'required_without:parent_id|in:' . implode(',', $config),
             'parent_id' => 'nullable|integer',
         ]);
 
         if ($request->filled('parent_id')) {
-            $parentTicket = Ticket::findOrFail($request->parent_id);
-
-            if ($parentTicket->user_id != auth()->id()) {
-                abort(403, 'Ticket not yours');
-            }
+            $parent = Ticket::getUserTicket($request->parent_id, auth()->id());
+            abort_if(!$parent, 403);
 
             Ticket::createTicket([
-                'parent_id'=> $parentTicket->id,
-                'message'  => $validated['message'],
+                'parent_id' => $parent->id,
+                'message'   => $validated['message'],
             ]);
 
             return back()->with('success', 'Reply sent!');
         }
 
-        Ticket::createTicket([
-            'subject'  => $validated['subject'],
-            'category' => $validated['category'],
-            'message'  => $validated['message'],
-        ]);
+        Ticket::createTicket($validated);
 
-        return redirect()->route('profile.tickets')->with('success', 'Ticket created!');
+        return redirect()
+            ->route('profile.tickets')
+            ->with('success', 'Ticket created!');
     }
 
     public function vote(Request $request)

@@ -58,13 +58,17 @@ class Referral extends Model
             $code = strtoupper(Str::random(8));
         } while (self::where('code', $code)->exists());
 
-        return $user->getInvitesCreated()->create([
+        $invite =  $user->InvitesCreated()->create([
             'code' => $code,
             'name' => $user->username,
             'jid' => $user->jid,
             'ip' => $ip ?? '0.0.0.0',
             'fingerprint' => $fingerprint,
         ]);
+
+        $user->clearInvitesCache();
+
+        return $invite;
     }
 
     public static function inviteReferral(User $user, string $inviteCode, string $fingerprint, string $ip): ?self
