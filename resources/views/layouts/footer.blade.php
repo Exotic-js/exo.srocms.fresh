@@ -13,7 +13,7 @@
                 - {{ __('All Rights Reserved.') }}
             </p>
             <p class="text-body-secondary">
-                Coded by <a class="link-default" href="https://github.com/m1xawy" target="_blank">m1xawy</a>
+                Powered by <a class="link-default" href="https://github.com/m1xawy/sro-cms" target="_blank">iSRO CMS v2.5</a>
             </p>
         </div>
 
