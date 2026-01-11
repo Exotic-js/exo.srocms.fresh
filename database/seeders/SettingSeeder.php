@@ -88,11 +88,11 @@ class SettingSeeder extends Seeder
         );
         DB::table('settings')->updateOrInsert(
             ['key' => 'duplicate_email'],
-            ['value' => 1,]
+            ['value' => 0,]
         );
         DB::table('settings')->updateOrInsert(
             ['key' => 'agree_terms'],
-            ['value' => 1,]
+            ['value' => 0,]
         );
     }
 }

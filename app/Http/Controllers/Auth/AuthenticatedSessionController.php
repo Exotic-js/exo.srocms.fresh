@@ -74,7 +74,7 @@ class AuthenticatedSessionController extends Controller
     {
         $user = Auth::user();
 
-        if (! config("settings.verify_jid_{$user->tbUser->JID}")) {
+        if (! config("settings.verify_jid_{$user->tbUser?->JID}")) {
             return null;
         }
 
