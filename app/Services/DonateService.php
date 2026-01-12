@@ -331,19 +331,9 @@ class DonateService
         $config = config('donate.paymentwall');
         $pingback = $request->all();
 
-        $authorizedIps = [
-            '174.36.92.186',
-            '174.36.96.66',
-            '174.36.92.187',
-            '174.36.92.192',
-            '174.37.14.28',
-            '174.36.92.189',
-            '174.37.0.50',
-            '174.36.92.190',
-        ];
-        $authorizedRanges = [
-            '216.127.71.0/24',
-        ];
+        $authorizedIps    = $config['authorized_ips'] ?? [];
+        $authorizedRanges = $config['authorized_ranges'] ?? [];
+
         $clientIp = $request->header('CF-Connecting-IP') ?: $request->ip();
         $ipValid = in_array($clientIp, $authorizedIps);
         if (!$ipValid) {
