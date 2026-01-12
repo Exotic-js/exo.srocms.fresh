@@ -20,6 +20,7 @@
                                 <h2>{{ $data->CharName16 }}</h2>
                                 <p class="m-0">{{ __('Item Points:') }} <span class="">{{ $data->ItemPoints }}</span></p>
 
+                                @if(config('ranking.extra.character_build'))
                                 <p class="mb-0">
                                     @foreach($data->buildInfo as $key => $row)
                                         @if(isset(config('ranking.skill_mastery')[$row->MasteryID]))
@@ -27,6 +28,8 @@
                                         @endif
                                     @endforeach
                                 </p>
+                                @endif
+                                @if(config('ranking.extra.character_buff'))
                                 <ul class="list-unstyled d-flex">
                                     @foreach($data->buffInfo as $row)
                                         <li class="me-1">
@@ -34,12 +37,13 @@
                                         </li>
                                     @endforeach
                                 </ul>
+                                @endif
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="row mt-3 justify-content-end">
-                            @if($data->charJob->JobType)
+                            @if(config('ranking.extra.character_job') && $data->charJob->JobType)
                                 <div class="col-md-4">
                                     <div class="d-flex">
                                         <div class="d-flex align-items-center">
@@ -107,12 +111,16 @@
                             <div class="tab-pane fade show active" id="info-tab-pane" role="tabpanel" aria-labelledby="info-tab" tabindex="0">
                                 @include('ranking.character.partials.character-information')
                             </div>
+                            @if(config('widgets.globals_history.enabled'))
                             <div class="tab-pane fade" id="globals-tab-pane" role="tabpanel" aria-labelledby="globals-tab" tabindex="0">
                                 @include('ranking.character.partials.character-global-history')
                             </div>
+                            @endif
+                            @if(config('widgets.unique_history.enabled'))
                             <div class="tab-pane fade" id="uniques-tab-pane" role="tabpanel" aria-labelledby="uniques-tab" tabindex="0">
                                 @include('ranking.character.partials.character-unique-history')
                             </div>
+                            @endif
                             @if(config('global.server.version') !== 'vSRO')
                                 @if(config('widgets.custom.owned_titles.enabled'))
                                 <div class="tab-pane fade" id="titles-tab-pane" role="tabpanel" aria-labelledby="titles-tab" tabindex="0">

@@ -47,13 +47,13 @@
             <td>{{ __('Item Points:') }}</td>
             <td>{{ $data->ItemPoints }}</td>
         </tr>
-        @if($data->pvpKill)
+        @if(config('ranking.extra.pvp_kill_logs') && $data->pvpKill)
             <tr>
                 <td>{{ __('Pvp K/D:') }}</td>
                 <td>{{ $data->pvpKill->KillCount ?? 0 }} / {{ $data->pvpKill->DeathCount ?? 0 }}</td>
             </tr>
         @endif
-        @if($data->jobKill)
+        @if(config('ranking.extra.job_kill_logs') && $data->jobKill)
         <tr>
             <td>{{ __('Job K/D:') }}</td>
             <td>{{ $data->jobKill->KillCount ?? 0 }} / {{ $data->jobKill->DeathCount ?? 0 }}</td>
@@ -73,6 +73,7 @@
                 @endif
             </td>
         </tr>
+        @if(config('ranking.extra.character_status'))
         <tr>
             <td>{{ __('Status:') }}</td>
             <td>
@@ -85,6 +86,7 @@
                 @endif
             </td>
         </tr>
+        @endif
         </tbody>
     </table>
 </div>

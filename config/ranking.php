@@ -127,7 +127,10 @@ return [
         ],
     ],
     'extra' => [
-        'character_status' => true,
+        'character_status' => false,
+        'character_build' => false,
+        'character_buff' => false,
+        'character_job' => false,
         'advanced_unique_tracker' => false,
         'pvp_kill_logs' => false,
         'job_kill_logs' => false,

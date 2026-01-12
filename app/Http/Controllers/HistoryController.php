@@ -31,6 +31,7 @@ class HistoryController extends Controller
 
     public function uniqueAdvanced()
     {
+        abort_if(!config('ranking.extra.advanced_unique_tracker'), 404);
         $data = LogInstanceWorldInfo::getUniquesAdvanced(5);
         return view('history.unique-advanced', compact('data'));
     }
@@ -49,24 +50,28 @@ class HistoryController extends Controller
 
     public function itemPlus()
     {
+        abort_if(!config('ranking.extra.item_plus_logs'), 404);
         $data = LogEventItem::getLogEventItem('plus', 8, 8, 'Seal of Sun', null, 25);
         return view('history.item-plus', compact('data'));
     }
 
     public function itemDrop()
     {
+        abort_if(!config('ranking.extra.item_drop_logs'), 404);
         $data = LogEventItem::getLogEventItem('drop', null, 8, 'Seal of Sun', null, 25);
         return view('history.item-drop', compact('data'));
     }
 
     public function pvpKill()
     {
+        abort_if(!config('ranking.extra.pvp_kill_logs'), 404);
         $data = LogEventChar::getKillLogs('pvp', 25);
         return view('history.pvp-kill', compact('data'));
     }
 
     public function jobKill()
     {
+        abort_if(!config('ranking.extra.job_kill_logs'), 404);
         $data = LogEventChar::getKillLogs('job', 25);
         return view('history.job-kill', compact('data'));
     }
