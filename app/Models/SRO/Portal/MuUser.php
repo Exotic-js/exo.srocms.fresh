@@ -87,12 +87,12 @@ class MuUser extends Model
 
     public function getMuVIPInfoAttribute()
     {
-        return cache()->remember( "user_muVIPInfo_{$this->jid}", 600, fn () => $this->muVIPInfo()->first());
+        return cache()->remember( "user_muVIPInfo_{$this->JID}", 600, fn () => $this->muVIPInfo()->first());
     }
 
     public function getMuEmailAttribute()
     {
-        return cache()->remember( "user_muEmail_{$this->jid}", 600, fn () => $this->muEmail()->first());
+        return cache()->remember( "user_muEmail_{$this->JID}", 600, fn () => $this->muEmail()->first());
     }
 
     public function muEmail()
