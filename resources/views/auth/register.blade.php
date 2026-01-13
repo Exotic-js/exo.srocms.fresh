@@ -81,7 +81,7 @@
                             <input class="form-check-input @error('terms') is-invalid @enderror" type="checkbox" name="terms" id="terms" {{ old('terms') ? 'checked' : '' }}>
 
                             <label class="form-check-label" for="terms">
-                                I agree to the <a href="{{ route('pages.page.show', ['slug' => 'terms']) }}" target="_blank">terms and conditions</a>
+                                I agree to the <a href="{{ route('page.show', ['slug' => 'terms']) }}" target="_blank">terms and conditions</a>
                             </label>
 
                             @error('terms')
