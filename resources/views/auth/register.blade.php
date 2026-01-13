@@ -7,7 +7,7 @@
             <div class="col-md-6">
                 <h2 class="mt-5">{{ __('Register') }}</h2>
 
-                @if (!config('settings.disable_register'))
+                @if (!config('settings.disable_register', false))
                     <form method="POST" action="{{ route('register') }}">
                     @csrf
 
@@ -76,7 +76,7 @@
                         </div>
                     @endif
 
-                    @if(config('settings.agree_terms'))
+                    @if(config('settings.agree_terms', false))
                         <div class="form-check mb-3">
                             <input class="form-check-input @error('terms') is-invalid @enderror" type="checkbox" name="terms" id="terms" {{ old('terms') ? 'checked' : '' }}>
 

@@ -35,7 +35,7 @@
                         <tr>
                             <td>{{ $row->id }}</td>
                             <td>{{ $row->title }}</td>
-                            <td><a href="{{ route('pages.page.show', ['slug' => $row->slug]) }}" target="_blank">{{ route('pages.page.show', ['slug' => $row->slug]) }}</a></td>
+                            <td><a href="{{ route('page.show', ['slug' => $row->slug]) }}" target="_blank">{{ route('page.show', ['slug' => $row->slug]) }}</a></td>
                             <td>
                                 @if($row->active == 1)
                                     <span class="text-success">Active</span>

@@ -1,4 +1,4 @@
-@if($config['enabled'])
+@if(isset($config) && $config['enabled'])
     <div class="table-responsive">
         <table class="table table-striped">
             <thead class="table-dark">

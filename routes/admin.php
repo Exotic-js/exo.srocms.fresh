@@ -1,42 +1,42 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\CharactersController;
-use App\Http\Controllers\Admin\LogsController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\CharacterController;
+use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\Admin\TicketController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\DownloadController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\PagesController;
 use App\Http\Controllers\Admin\SettingController;
-use App\Http\Controllers\Admin\UsersController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/index', [AdminController::class, 'index'])->name('admin');
+    Route::get('/admin/index', [DashboardController::class, 'index'])->name('admin');
 
     Route::prefix('admin')->name('admin.')->group(function() {
-        Route::get('/logs/donate', [LogsController::class, 'donate'])->name('logs.donate');
-        Route::get('/logs/referral', [LogsController::class, 'referral'])->name('logs.referral');
-        Route::get('/logs/vote', [LogsController::class, 'vote'])->name('logs.vote');
-        Route::get('/logs/smc', [LogsController::class, 'smc'])->name('logs.smc');
+        Route::get('/logs/donate', [LogController::class, 'donate'])->name('logs.donate');
+        Route::get('/logs/referral', [LogController::class, 'referral'])->name('logs.referral');
+        Route::get('/logs/vote', [LogController::class, 'vote'])->name('logs.vote');
+        Route::get('/logs/smc', [LogController::class, 'smc'])->name('logs.smc');
 
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
         Route::post('/settings/clear-cache', [SettingController::class, 'clearCache'])->name('settings.clear-cache');
 
-        Route::get('/users', [UsersController::class, 'index'])->name('users.index');
-        Route::get('/users/{user}/view', [UsersController::class, 'view'])->name('users.view');
-        Route::put('/users/{user}', [UsersController::class, 'update'])->name('users.update');
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::get('/users/{user}/view', [UserController::class, 'view'])->name('users.view');
+        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
 
-        Route::post('/users/{user}/silk', [UsersController::class, 'silk'])->name('users.silk');
-        Route::post('/users/{user}/block', [UsersController::class, 'block'])->name('users.block');
-        Route::post('/users/{user}/unblock', [UsersController::class, 'unblock'])->name('users.unblock');
+        Route::post('/users/{user}/silk', [UserController::class, 'silk'])->name('users.silk');
+        Route::post('/users/{user}/block', [UserController::class, 'block'])->name('users.block');
+        Route::post('/users/{user}/unblock', [UserController::class, 'unblock'])->name('users.unblock');
 
-        Route::get('/characters', [CharactersController::class, 'index'])->name('characters.index');
-        Route::get('/characters/{char}/view', [CharactersController::class, 'view'])->name('characters.view');
-        Route::put('/characters/{char}', [CharactersController::class, 'update'])->name('characters.update');
-        Route::put('/characters/{char}/unstuck', [CharactersController::class, 'unstuck'])->name('characters.unstuck');
+        Route::get('/characters', [CharacterController::class, 'index'])->name('characters.index');
+        Route::get('/characters/{char}/view', [CharacterController::class, 'view'])->name('characters.view');
+        Route::put('/characters/{char}', [CharacterController::class, 'update'])->name('characters.update');
+        Route::put('/characters/{char}/unstuck', [CharacterController::class, 'unstuck'])->name('characters.unstuck');
 
         Route::get('/news', [NewsController::class, 'index'])->name('news.index');
         Route::get('/news/create', [NewsController::class, 'create'])->name('news.create');

@@ -40,7 +40,7 @@
                     <a href="#" class="nav-link px-2 text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{{ __('Pages') }}</a>
                     <ul class="dropdown-menu" style="">
                         @forelse ($pageNames as $row)
-                            <li><a class="dropdown-item" href="{{ route('pages.page.show', ['slug' => $row->slug]) }}">{{ $row->title }}</a></li>
+                            <li><a class="dropdown-item" href="{{ route('page.show', ['slug' => $row->slug]) }}">{{ $row->title }}</a></li>
                         @empty
                             <li><a class="dropdown-item" href="#">{{ __('No Pages') }}</a></li>
                         @endforelse
@@ -49,7 +49,7 @@
             </ul>
 
             <div class="d-flex text-end">
-                @if(config('settings.dark_mode') == 'switch')
+                @if(config('settings.dark_mode', 'switch') == 'switch')
                 <div class="dropdown bd-mode-toggle">
                     <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
                         <symbol id="check2" viewBox="0 0 16 16">
@@ -97,7 +97,7 @@
                 </div>
                 @endif
 
-                @if(config('settings.default_locale') == 'switch')
+                @if(config('settings.default_locale', 'switch') == 'switch')
                 <div class="dropdown">
                     <a href="#" class="nav-link px-3 py-2 text-white dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
                         <span class="fi fi-{{ config('global.languages')[App::getLocale()]['flag'] }}"></span>

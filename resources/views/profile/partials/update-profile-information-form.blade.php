@@ -6,7 +6,7 @@
             @csrf
         </form>
 
-        @if(config('settings.update_type') === 'verify_code')
+        @if(config('settings.update_type', 'standard') === 'verify_code')
             <form id="send-verify-code" method="POST" action="{{ route('profile.resend.verify.code') }}">
                 @csrf
                 <input type="hidden" name="context" id="verify-context">
@@ -39,7 +39,7 @@
                 </label>
 
                 <div class="col-md-6">
-                    <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email', $user->email) }}" @if(config('settings.update_type') == 'verify_code') disabled @endif required autocomplete="email">
+                    <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email', $user->email) }}" @if(config('settings.update_type', 'standard') == 'verify_code') disabled @endif required autocomplete="email">
 
                     @error('email')
                     <span class="invalid-feedback" role="alert">
@@ -67,7 +67,7 @@
                 </div>
             </div>
 
-            @if(config('settings.update_type') == 'verify_code')
+            @if(config('settings.update_type', 'standard') == 'verify_code')
                 @include('profile.partials.input._verify_code', ['name' => 'verify_code_email'])
                 @include('profile.partials.input._new_email')
                 @include('profile.partials.input._verify_login')

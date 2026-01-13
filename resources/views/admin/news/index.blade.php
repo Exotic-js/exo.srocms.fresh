@@ -36,7 +36,7 @@
                         <tr>
                             <td>{{ $row->id }}</td>
                             <td style="white-space: nowrap;max-width: 150px;overflow: hidden;text-overflow: ellipsis;">{{ $row->title }}</td>
-                            <td><a href="{{ route('pages.post.show', ['slug' => $row->slug]) }}" target="_blank">{{ route('pages.post.show', ['slug' => $row->slug]) }}</a></td>
+                            <td><a href="{{ route('post.show', ['slug' => $row->slug]) }}" target="_blank">{{ route('post.show', ['slug' => $row->slug]) }}</a></td>
                             <td>{{ $row->category }}</td>
                             <td>
                                 @if($row->active == 1)

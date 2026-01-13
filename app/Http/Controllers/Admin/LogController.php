@@ -9,7 +9,7 @@ use App\Models\SRO\Account\SmcLog;
 use App\Models\Vote;
 use Illuminate\Http\Request;
 
-class LogsController extends Controller
+class LogController extends Controller
 {
     public function donate(Request $request)
     {

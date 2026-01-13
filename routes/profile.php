@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\DonateController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TicketController;
 use App\Http\Controllers\PanelController;
 use Illuminate\Support\Facades\Route;
 

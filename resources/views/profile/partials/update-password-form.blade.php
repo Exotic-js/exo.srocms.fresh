@@ -6,7 +6,7 @@
             {{ __('Ensure your account is using a long, random password to stay secure.') }}
         </div>
 
-        @if(config('settings.update_type') === 'verify_code')
+        @if(config('settings.update_type', 'standard') === 'verify_code')
             <form id="send-verify-code" method="POST" action="{{ route('profile.resend.verify.code') }}">
                 @csrf
                 <input type="hidden" name="context" id="verify-context">
@@ -17,7 +17,7 @@
             @csrf
             @method('put')
 
-            @if(config('settings.update_type') !== 'verify_code')
+            @if(config('settings.update_type', 'standard') !== 'verify_code')
                 @include('profile.partials.input._password', ['name' => 'current_password'])
             @else
                 @include('profile.partials.input._verify_code', ['name' => 'verify_code_password'])

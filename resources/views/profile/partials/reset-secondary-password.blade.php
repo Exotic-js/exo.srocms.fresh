@@ -10,7 +10,7 @@
             <div class="alert alert-danger">{{ session('passcode_error') }}</div>
         @endif
 
-        @if(config('settings.update_type') === 'verify_code')
+        @if(config('settings.update_type', 'standard') === 'verify_code')
             <form id="send-verify-code" method="POST" action="{{ route('profile.resend.verify.code') }}">
                 @csrf
                 <input type="hidden" name="context" id="verify-context">
@@ -20,7 +20,7 @@
         <form method="POST" action="{{ route('profile.reset.secondary.password') }}">
             @csrf
 
-            @if(config('settings.update_type') !== 'verify_code')
+            @if(config('settings.update_type', 'standard') !== 'verify_code')
                 @include('profile.partials.input._password')
             @else
                 @include('profile.partials.input._verify_code', ['name' => 'verify_code_secondary'])

@@ -20,7 +20,7 @@
                                 <h2>{{ $data->CharName16 }}</h2>
                                 <p class="m-0">{{ __('Item Points:') }} <span class="">{{ $data->ItemPoints }}</span></p>
 
-                                @if(config('ranking.extra.character_build'))
+                                @if(config('ranking.extra.character_build') && $data->buildInfo)
                                 <p class="mb-0">
                                     @foreach($data->buildInfo as $key => $row)
                                         @if(isset(config('ranking.skill_mastery')[$row->MasteryID]))
@@ -29,7 +29,7 @@
                                     @endforeach
                                 </p>
                                 @endif
-                                @if(config('ranking.extra.character_buff'))
+                                @if(config('ranking.extra.character_buff') && $data->buffInfo)
                                 <ul class="list-unstyled d-flex">
                                     @foreach($data->buffInfo as $row)
                                         <li class="me-1">
@@ -99,35 +99,25 @@
                                 <button class="nav-link" id="uniques-tab" data-bs-toggle="tab" data-bs-target="#uniques-tab-pane" type="button" role="tab" aria-controls="uniques-tab-pane" aria-selected="false">{{ __('Unique Kills') }}</button>
                             </li>
                             @endif
-                            @if(config('global.server.version') !== 'vSRO')
-                                @if(config('widgets.custom.owned_titles.enabled'))
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="titles-tab" data-bs-toggle="tab" data-bs-target="#titles-tab-pane" type="button" role="tab" aria-controls="titles-tab-pane" aria-selected="false">{{ __('Owned Titles') }}</button>
-                                </li>
-                               @endif
-                            @endif
+                            @if(config('widgets.custom.owned_titles.enabled'))
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="titles-tab" data-bs-toggle="tab" data-bs-target="#titles-tab-pane" type="button" role="tab" aria-controls="titles-tab-pane" aria-selected="false">{{ __('Owned Titles') }}</button>
+                            </li>
+                           @endif
                         </ul>
                         <div class="tab-content" id="myTabContent">
                             <div class="tab-pane fade show active" id="info-tab-pane" role="tabpanel" aria-labelledby="info-tab" tabindex="0">
                                 @include('ranking.character.partials.character-information')
                             </div>
-                            @if(config('widgets.globals_history.enabled'))
                             <div class="tab-pane fade" id="globals-tab-pane" role="tabpanel" aria-labelledby="globals-tab" tabindex="0">
                                 @include('ranking.character.partials.character-global-history')
                             </div>
-                            @endif
-                            @if(config('widgets.unique_history.enabled'))
                             <div class="tab-pane fade" id="uniques-tab-pane" role="tabpanel" aria-labelledby="uniques-tab" tabindex="0">
                                 @include('ranking.character.partials.character-unique-history')
                             </div>
-                            @endif
-                            @if(config('global.server.version') !== 'vSRO')
-                                @if(config('widgets.custom.owned_titles.enabled'))
-                                <div class="tab-pane fade" id="titles-tab-pane" role="tabpanel" aria-labelledby="titles-tab" tabindex="0">
-                                    @include('partials.character-owned-titles', ['Limit' => 5, 'CharID' => $data->CharID])
-                                </div>
-                                @endif
-                            @endif
+                            <div class="tab-pane fade" id="titles-tab-pane" role="tabpanel" aria-labelledby="titles-tab" tabindex="0">
+                                @include('partials.character-owned-titles', ['Limit' => 5, 'CharID' => $data->CharID])
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-6">

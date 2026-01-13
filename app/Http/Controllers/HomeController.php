@@ -6,7 +6,7 @@ use App\Models\Download;
 use App\Models\News;
 use App\Models\Pages;
 
-class PageController extends Controller
+class HomeController extends Controller
 {
     public function index()
     {
@@ -34,7 +34,7 @@ class PageController extends Controller
 
         abort_if(!$data, 404);
 
-        return view('pages.view', compact('data'));
+        return view('pages.post', compact('data'));
     }
 
     public function page($slug)

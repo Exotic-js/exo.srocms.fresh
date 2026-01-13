@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SRO\Shard\Char;
 use Illuminate\Http\Request;
 
-class CharactersController extends Controller
+class CharacterController extends Controller
 {
     public function index(Request $request)
     {

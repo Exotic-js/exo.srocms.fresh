@@ -1,3 +1,4 @@
+@if(config('widgets.globals_history.enabled'))
 <div class="table-responsive">
     <table class="table table-striped">
         <thead class="table-dark">
@@ -20,3 +21,4 @@
         </tbody>
     </table>
 </div>
+@endif

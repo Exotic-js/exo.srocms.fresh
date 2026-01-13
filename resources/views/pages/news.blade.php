@@ -41,11 +41,11 @@
                                                         <span class="badge text-bg-{{ match($row->category) {'news' => 'warning', 'update' => 'primary', 'event' => 'success', default => 'warning'} }}">{{ ucfirst($row->category) }}</span>
                                                         {{ $row->published_at->format("M j, Y") }}
                                                     </div>
-                                                    <a href="{{ route('pages.post.show', ['slug' => $row->slug]) }}" class="text-decoration-none">
+                                                    <a href="{{ route('post.show', ['slug' => $row->slug]) }}" class="text-decoration-none">
                                                         <h3 class="card-title fw-bold font-cinzel h5">{{ \Illuminate\Support\Str::words(strip_tags($row->title), 3, '...') }}</h3>
                                                     </a>
                                                     <div class="card-text">{{ \Illuminate\Support\Str::words(strip_tags($row->content), 20, '...') }}</div>
-                                                    <a href="{{ route('pages.post.show', ['slug' => $row->slug]) }}" class="text-decoration-none font-cinzel mt-4">Read More →</a>
+                                                    <a href="{{ route('post.show', ['slug' => $row->slug]) }}" class="text-decoration-none font-cinzel mt-4">Read More →</a>
                                                 </div>
                                             </div>
                                         </div>

@@ -9,7 +9,7 @@ use App\Models\SRO\Portal\AphChangedSilk;
 use App\Models\SRO\Shard\Char;
 use App\Models\User;
 
-class AdminController extends Controller
+class DashboardController extends Controller
 {
     public function index()
     {
