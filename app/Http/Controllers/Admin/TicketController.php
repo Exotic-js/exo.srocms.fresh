@@ -49,7 +49,7 @@ class TicketController extends Controller
 
     public function close(Ticket $ticket)
     {
-        $ticket->replies()->update(['status' => false]);
+        $ticket->closeTicket($ticket->id);
         $ticket->update(['status' => false]);
 
         Cache::forget("ticket_replies_{$ticket->id}");

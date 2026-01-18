@@ -274,7 +274,7 @@ class Char extends Model
     public static function getGoldSum()
     {
         return Cache::remember('gold_sum', 86400, function () {
-            return self::all()->sum('RemainGold');
+            return self::query()->sum('RemainGold');
         });
     }
 

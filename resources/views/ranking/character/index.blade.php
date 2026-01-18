@@ -172,6 +172,20 @@
             height: 32px;
         }
     </style>
+    <style>
+        .table-inventory tr td {
+            background: none;
+            border: none;
+        }
+        /*
+        #display-inventory .d-block {
+            display: block !important;
+        }
+        */
+        #display-inventory .d-none {
+            display: none !important;
+        }
+    </style>
 @endpush
 
 @push('scripts')
