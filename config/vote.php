@@ -7,7 +7,7 @@ return [
         'route' => 'xtremetop100',
         'image' => 'https://www.xtremetop100.com/votenew.jpg',
         'url' => 'https://www.xtremetop100.com/in.php?site=SERVER_ID&postback={JID}',
-        'ip' => '137.74.41.178, 2001:41d0:305:2100::413b, ::1',
+        'ip' => '137.74.41.178, 2001:41d0:305:2100::413b',
         'reward' => 5,
         'timeout' => 12,
     ],
@@ -70,5 +70,16 @@ return [
         'ip' => '116.203.234.215',
         'reward' => 5,
         'timeout' => 12,
+    ],
+    'vote4rewards' => [
+        'enabled' => true, //Postback url: https://localhost/postback/vote4rewards
+        'name' => 'Vote4Rewards',
+        'route' => 'vote4rewards',
+        'image' => 'https://vote4rewards.de/vote4rewards_small_banner.png',
+        'webhook_secret' => '0EKA5t4XD0vGrNCnkNzFZULVVm3ighm0', // example: Q7A9DA2xVdkL3rP0B8mNfH5S3LJcWgUy
+        'url' => 'https://vote4rewards.de/vote/SERVER_ID?rewarder={JID}', // example: https://vote4rewards.de/vote/fc5296a9-814d-406b-aeba-68d83ff414bb?rewarder={JID}
+        'ip' => '91.98.130.153',
+        'reward' => 2,
+        'timeout' => 6,
     ],
 ];
