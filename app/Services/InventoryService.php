@@ -140,12 +140,12 @@ class InventoryService
         $info->nOptValue = $item->nOptValue ?? 0;
         $info->Country = $item->Country == 0 ? 'Chinese' : 'European';
         $info->Gender = $item->ReqGender == 0 ? 'Female' : 'Male';
-        $info->SoxType = $this->getSoxType($item);
-        $info->SoxName = $this->getSoxName($item);
         $info->Degree = (int)ceil($item->ItemClass / 3) ?? null;
         $info->JobDegree = config('item.job_degree')[$item->ItemClass] ?? null;
         $info->Type = config('item.types')[$item->TypeID1][$item->TypeID2][$item->TypeID3][$item->TypeID4] ?? null;
         $info->Detail = config('item.detail')[$item->Slot] ?? null;
+        $info->SoxType = $this->getSoxType($item);
+        $info->SoxName = $this->getSoxName($item);
         $info->DevilMaxHP = $this->getDevilMaxHP($item);
         $info->WhiteInfo = $this->getWhiteInfo($item);
         $info->BlueInfo = $this->getBlueInfo($item);
@@ -253,15 +253,17 @@ class InventoryService
         ];
 
         $bits = [512, 64, 8, 1];
-        $param1 = (int)(($item['MagParam1'] ?? 0) > 4611686018427387904
-            ? $item['MagParam1'] - 4611686018427387904
-            : ($item['MagParam1'] ?? 0));
-
+        $param1 = (int)(($item['MagParam1'] ?? 0) > 4611686018427387904 ? $item['MagParam1'] - 4611686018427387904 : ($item['MagParam1'] ?? 0));
         $index = 0;
 
         if (config('global.server.version') !== 'vSRO') {
             foreach ($bits as $bit) {
                 $count = intdiv($param1, $bit);
+                if ($count > 6) {
+                    $param1 -= $count * $bit;
+                    continue;
+                }
+
                 if ($count > 0) {
                     $param1 -= $count * $bit;
                     foreach ($config as $id => $opt) {
