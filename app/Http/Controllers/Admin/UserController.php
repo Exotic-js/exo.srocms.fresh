@@ -15,7 +15,7 @@ class UserController extends Controller
     {
         $data = TbUser::query()
             ->when($request->filled('search'), function ($q) use ($request) {
-                $q->where('StrUserID', 'like', '%' . $request->search . '%');
+                $q->where('StrUserID', 'like', "%{$request->search}%");
             })
             ->paginate(20);
 

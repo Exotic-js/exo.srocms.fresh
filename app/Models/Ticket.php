@@ -15,116 +15,129 @@ class Ticket extends Model
         'category',
         'type',
         'message',
-        'status'
+        'status',
     ];
 
-    public static function createTicket(array $data): self
+    public static function open(array $data): self
     {
         $ticket = self::create([
-            'parent_id' => $data['parent_id'] ?? null,
-            'user_id' => $data['user_id'] ?? auth()->id(),
-            'admin_id' => $data['admin_id'] ?? null,
-            'subject' => $data['subject'] ?? '',
-            'category' => $data['category'] ?? '',
-            'type' => $data['type'] ?? 'player',
+            'user_id' => auth()->id(),
+            'subject' => $data['subject'],
+            'category' => $data['category'],
             'message' => $data['message'],
-            'status' => $data['status'] ?? true,
+            'type' => 'player',
+            'status' => true,
         ]);
 
-        Cache::forget("user_tickets_{$ticket->user_id}_page_1");
-
-        if ($ticket->parent_id) {
-            Cache::forget("ticket_replies_{$ticket->parent_id}");
-        }
-
-        Cache::forget("ticket_{$ticket->parent_id}_replies");
-        Cache::forget("admin_tickets_page_1");
+        Cache::forget("user:{$ticket->user_id}:tickets:page:1");
+        Cache::forget("admin:tickets:page:1");
 
         return $ticket;
+    }
+
+    public static function replyTo(self $parent, array $data): self
+    {
+        abort_if(!$parent->status, 403, 'Ticket closed');
+
+        $reply = self::create([
+            'parent_id' => $parent->id,
+            'user_id' => $parent->user_id,
+            'admin_id' => $data['admin_id'] ?? null,
+            'subject' => $parent->subject,
+            'category' => $parent->category,
+            'message' => $data['message'],
+            'type' => $data['type'],
+            'status' => true,
+        ]);
+
+        Cache::forget("ticket:{$parent->id}:replies");
+        Cache::forget("ticket:{$parent->id}:last_reply");
+        Cache::forget("admin:tickets:page:1");
+
+        return $reply;
     }
 
     public static function getUserTickets(int $userId, int $perPage = 20)
     {
         $page = request('page', 1);
 
-        return Cache::remember("user_tickets_{$userId}_page_{$page}", 600, function () use ($userId, $perPage) {
-                return self::where('user_id', $userId)
-                    ->whereNull('parent_id')
-                    ->latest()
-                    ->paginate($perPage);
-            }
+        return Cache::remember("user:{$userId}:tickets:page:{$page}", 600, fn () =>
+            self::where('user_id', $userId)
+                ->whereNull('parent_id')
+                ->latest()
+                ->paginate($perPage)
         );
     }
 
     public static function getUserTicket(int $ticketId, int $userId): ?self
     {
-        return Cache::remember("ticket_{$ticketId}", 600, function () use ($ticketId, $userId) {
-            return self::where('id', $ticketId)
+        return Cache::remember("ticket:{$ticketId}:user:{$userId}", 600, fn () =>
+            self::where('id', $ticketId)
                 ->where('user_id', $userId)
-                ->first();
-        });
+                ->whereNull('parent_id')
+                ->first()
+        );
     }
 
     public static function getReplies(int $ticketId)
     {
-        return Cache::remember("ticket_{$ticketId}_replies", 600, function () use ($ticketId) {
-            return self::where('parent_id', $ticketId)
-                ->orderBy('created_at')
-                ->get();
-        });
+        return Cache::remember("ticket:{$ticketId}:replies", 600, fn () =>
+            self::findOrFail($ticketId)
+                ->replies()
+                ->with('user')
+                ->get()
+        );
     }
 
     public static function getLastReply(int $ticketId): ?self
     {
-        return Cache::remember("ticket_{$ticketId}_last_reply", 600, function () use ($ticketId) {
-            return self::where('parent_id', $ticketId)
+        return Cache::remember("ticket:{$ticketId}:last_reply", 600, fn () =>
+            self::where('parent_id', $ticketId)
                 ->latest()
-                ->first();
-        });
+                ->first()
+        );
     }
 
     public static function getAdminTickets(int $perPage = 20)
     {
         $page = request('page', 1);
 
-        return Cache::remember("admin_tickets_page_{$page}", 600, function () use ($perPage) {
-                return self::whereNull('parent_id')
-                    ->with(['user', 'lastReply'])
-                    ->latest()
-                    ->paginate($perPage);
-            }
+        return Cache::remember("admin:tickets:page:{$page}", 600, fn () =>
+            self::whereNull('parent_id')
+                ->with(['user', 'lastReply'])
+                ->latest()
+                ->paginate($perPage)
         );
     }
 
-    public static function getTicketReplies(int $ticketId)
-    {
-        return Cache::remember("ticket_replies_{$ticketId}", 600, function () use ($ticketId) {
-                return self::where('parent_id', $ticketId)
-                    ->with('user')
-                    ->orderBy('created_at')
-                    ->get();
-            }
-        );
-    }
-
-    public static function closeTicket(int $ticketId): void
+    public static function close(int $ticketId): void
     {
         self::where('id', $ticketId)->orWhere('parent_id', $ticketId)->update(['status' => false]);
 
-        Cache::forget("ticket_{$ticketId}");
-        Cache::forget("ticket_{$ticketId}_replies");
-        Cache::forget("ticket_{$ticketId}_last_reply");
+        Cache::forget("ticket:{$ticketId}:replies");
+        Cache::forget("ticket:{$ticketId}:last_reply");
+        Cache::forget("admin:tickets:page:1");
     }
 
-    public function lastReply() {
-        return $this->hasOne(self::class, 'parent_id')->latest();
-    }
-
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function admin() {
+    public function admin()
+    {
         return $this->belongsTo(User::class, 'admin_id');
+    }
+
+    public function replies()
+    {
+        return $this->hasMany(self::class, 'parent_id')
+            ->orderBy('created_at');
+    }
+
+    public function lastReply()
+    {
+        return $this->hasOne(self::class, 'parent_id')
+            ->latestOfMany();
     }
 }

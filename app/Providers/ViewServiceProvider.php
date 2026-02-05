@@ -37,7 +37,7 @@ class ViewServiceProvider extends ServiceProvider
                 ]);
             });
 
-            if(config('widgets.event_schedule.enabled')) {
+            if(config('widgets.event_schedule.enabled', false)) {
                 View::composer(['partials.event-schedule'], function ($view) {
                     $view->with([
                         'eventSchedule' => ScheduleService::getEventSchedules(),
@@ -45,7 +45,7 @@ class ViewServiceProvider extends ServiceProvider
                 });
             }
 
-            if(config('widgets.fortress_war.enabled')) {
+            if(config('widgets.fortress_war.enabled', false)) {
                 View::composer(['partials.fortress-war'], function ($view) {
                     $view->with([
                         'fortressWar' => SiegeFortress::getFortressWar(),
@@ -53,7 +53,7 @@ class ViewServiceProvider extends ServiceProvider
                 });
             }
 
-            if(config('widgets.globals_history.enabled')) {
+            if(config('widgets.globals_history.enabled', false)) {
                 View::composer(['partials.globals-history'], function ($view) {
                     $view->with([
                         'globalsHistory' => LogChatMessage::getGlobalsHistory(5),
@@ -61,7 +61,7 @@ class ViewServiceProvider extends ServiceProvider
                 });
             }
 
-            if(config('widgets.unique_history.enabled')) {
+            if(config('widgets.unique_history.enabled', false)) {
                 View::composer(['partials.unique-history'], function ($view) {
                     $view->with([
                         'uniqueHistory' => LogInstanceWorldInfo::getUniquesKill(5),
@@ -69,7 +69,7 @@ class ViewServiceProvider extends ServiceProvider
                 });
             }
 
-            if(config('widgets.top_player.enabled')) {
+            if(config('widgets.top_player.enabled', false)) {
                 View::composer(['partials.top-player'], function ($view) {
                     $view->with([
                         'topPlayer' => Char::getPlayerRanking(5),
@@ -77,7 +77,7 @@ class ViewServiceProvider extends ServiceProvider
                 });
             }
 
-            if(config('widgets.top_guild.enabled')) {
+            if(config('widgets.top_guild.enabled', false)) {
                 View::composer(['partials.top-guild'], function ($view) {
                     $view->with([
                         'topGuild' => Guild::getGuildRanking(5),
@@ -85,7 +85,7 @@ class ViewServiceProvider extends ServiceProvider
                 });
             }
 
-            if(config('widgets.sox_plus.enabled')) {
+            if(config('widgets.sox_plus.enabled', false)) {
                 View::composer(['partials.sox-plus'], function ($view) {
                     $view->with([
                         'soxPlus' => LogEventItem::getLogEventItem('plus', 8, 8, 'Seal of Sun', null, 5),
@@ -93,7 +93,7 @@ class ViewServiceProvider extends ServiceProvider
                 });
             }
 
-            if(config('widgets.sox_drop.enabled')) {
+            if(config('widgets.sox_drop.enabled', false)) {
                 View::composer(['partials.sox-drop'], function ($view) {
                     $view->with([
                         'soxDrop' => LogEventItem::getLogEventItem('drop', null, 8, 'Seal of Sun', null, 5),
@@ -101,7 +101,7 @@ class ViewServiceProvider extends ServiceProvider
                 });
             }
 
-            if(config('widgets.pvp_kills.enabled')) {
+            if(config('widgets.pvp_kills.enabled', false)) {
                 View::composer(['partials.pvp-kills'], function ($view) {
                     $view->with([
                         'pvpKills' => LogEventChar::getKillLogs('pvp', 5),
@@ -109,7 +109,7 @@ class ViewServiceProvider extends ServiceProvider
                 });
             }
 
-            if(config('widgets.job_kills.enabled')) {
+            if(config('widgets.job_kills.enabled', false)) {
                 View::composer(['partials.job-kills'], function ($view) {
                     $view->with([
                         'jobKills' => LogEventChar::getKillLogs('job', 5),

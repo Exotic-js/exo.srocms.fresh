@@ -74,9 +74,7 @@ class ProfileController extends Controller
         $token = PasswordResetToken::getToken($user->email);
 
         if (!$token || $request->verify_code_email !== $token->token || $token->isExpired()) {
-            return back()->withErrors([
-                'verify_code_email' => 'The provided verification code is invalid or expired.',
-            ]);
+            return back()->withErrors(['verify_code_email' => 'The provided verification code is invalid or expired.',]);
         }
 
         if ($request->filled('new_email')) {

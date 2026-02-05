@@ -9,13 +9,9 @@ return [
         'image' => 'images/donate/paypal.png',
         //'endpoint' => 'https://api-m.paypal.com', // for production
         'endpoint' => 'https://api-m.sandbox.paypal.com', // for sandbox
-        //'endpoint_ipn' => 'https://www.paypal.com/cgi-bin/webscr', // for production IPN
-        'endpoint_ipn' => 'https://www.sandbox.paypal.com/cgi-bin/webscr', // for sandbox IPN
         'client_id' => 'PAYPAL_CLIENT_ID',
         'client_secret' => 'PAYPAL_CLIENT_SECRET',
-        'webhook_id' => 'PAYPAL_WEBHOOK_ID',
-        'business_email' => 'PAYPAL_BUSINESS_EMAIL',
-        'mode' => 'sandbox', //live, sandbox, IPN
+        'mode' => 'sandbox', //live, sandbox
         'package' => [
             [
                 'name' => '500 Silk',
@@ -120,7 +116,7 @@ return [
         ],
     ],
     'coinpayments' => [
-        'enabled' => true,
+        'enabled' => false,
         'name' => 'CoinPayments',
         'route' => 'coinpayments',
         'currency' => 'USD',
@@ -173,7 +169,7 @@ return [
         ],
     ],
     'fawaterk' => [
-        'enabled' => true,
+        'enabled' => false,
         'name' => 'Fawaterk',
         'route' => 'fawaterk',
         'currency' => 'EGP',

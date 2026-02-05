@@ -17,26 +17,26 @@
 
         <div class="row">
             @foreach($data as $key => $row)
-                @if($row->enabled)
-                    <div class="col-md-3 mb-4">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <div class="d-flex overflow-hidden align-items-center justify-content-center mb-2">
-                                    <img class="object-fit-cover rounded border" src="{{ $row->image }}" alt="" style="min-width: 90px; min-height: 50px;"/>
-                                </div>
-                                <p class="text-white mb-0">{{ $row->name }}</p>
-                                <p class="text-muted mb-0">{{ __('Reward:') }} {{ $row->reward }} Silk</p>
-                                <p class="text-muted mb-2">{{ __('Timeout:') }} {{ $row->timeout }} Hours</p>
-
-                                @if($row->expire)
-                                    {{ __('Wait until') }} {{ $row->expire?->format('Y-m-d H:i') }}
-                                @else
-                                    <a href="#" target="_blank" class="btn btn-primary vote-btn" data-site="{{ $key }}" data-url="{{ route('profile.vote.voting', $key) }}">Vote Now</a>
-                                @endif
+                <div class="col-md-3 mb-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div class="d-flex overflow-hidden align-items-center justify-content-center mb-2">
+                                <img class="object-fit-cover rounded border" src="{{ $row->image }}" alt="" style="min-width: 90px; min-height: 50px;"/>
                             </div>
+                            <p class="text-white mb-0">{{ $row->name }}</p>
+                            <p class="text-muted mb-0">{{ __('Reward:') }} {{ $row->reward }} Silk</p>
+                            <p class="text-muted mb-2">{{ __('Timeout:') }} {{ $row->timeout }} Hours</p>
+
+                            @if(!$row->enabled)
+                                {{ __('Disabled') }}
+                            @elseif($row->expire)
+                                {{ __('Wait until') }} {{ $row->expire?->format('Y-m-d H:i') }}
+                            @else
+                                <a href="#" target="_blank" class="btn btn-primary vote-btn" data-site="{{ $key }}" data-url="{{ route('profile.vote.voting', $key) }}">Vote Now</a>
+                            @endif
                         </div>
                     </div>
-                @endif
+                </div>
             @endforeach
         </div>
     </div>

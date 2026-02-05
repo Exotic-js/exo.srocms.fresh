@@ -30,14 +30,12 @@
                         <td>{{ $row->user->username }}</td>
                         <td>{{ config('global.tickets.categories')[$row->category] ?? $row->category }}</td>
                         <td>
-                            @if($row->status)
-                                @if(optional($row->lastReply)->type === 'player')
-                                    <span class="badge bg-warning text-dark">User replied</span>
-                                @else
-                                    <span class="badge bg-info">Waiting user</span>
-                                @endif
-                            @else
+                            @if(!$row->status)
                                 <span class="badge bg-danger">Closed</span>
+                            @elseif(optional($row->lastReply)->type === 'player')
+                                <span class="badge bg-warning text-dark">User replied</span>
+                            @else
+                                <span class="badge bg-info">Waiting user</span>
                             @endif
                         </td>
                         <td>{{ $row->created_at->format('Y-m-d H:i') }}</td>

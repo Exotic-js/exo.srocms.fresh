@@ -159,61 +159,6 @@ class DonateService
         return redirect()->route('profile.donate')->with('success', 'Payment completed successfully!');
     }
 
-    public function webhookPaypal(Request $request)
-    {
-        $config = config('donate.paypal');
-        $data = $request->all();
-
-        if (($data['payment_status'] ?? '') !== 'Completed') {
-            return response('Payment not completed', 200);
-        }
-
-        if (($data['receiver_email'] ?? '') !== $config['business_email']) {
-            return response('Invalid receiver', 403);
-        }
-
-        if (Donate::where('transaction_id', $data['txn_id'])->exists()) {
-            return response('Duplicate TXN', 409);
-        }
-
-        $jid = $data['custom'] ?? null;
-        if (!$jid) {
-            return response('Missing custom', 400);
-        }
-
-        $user = User::where('jid', $jid)->first();
-        if (!$user) {
-            return response('User not found', 404);
-        }
-
-        $paidAmount = (float) ($data['mc_gross'] ?? 0);
-        $currency   = $data['mc_currency'] ?? '';
-        if ($currency !== $config['currency']) {
-            return response('Invalid currency', 400);
-        }
-
-        $package = collect($config['package'])->firstWhere('price', $paidAmount);
-        if (!$package) {
-            return response('Invalid package amount', 400);
-        }
-
-        if (config('global.server.version') === 'vSRO') {
-            SkSilk::setSkSilk($user->jid, 0, $package['value']);
-        } else {
-            AphChangedSilk::setChangedSilk($user->jid, 3, $package['value']);
-        }
-
-        Donate::DonateLog([
-            'method' => 'Paypal-IPN',
-            'transaction_id' => $data['txn_id'],
-            'amount' => $package['price'],
-            'value' => $package['value'],
-            'jid' => $user->jid,
-        ]);
-
-        return response('OK', 200);
-    }
-
     public function processStripe(Request $request)
     {
         $config = config('donate.stripe');
@@ -525,9 +470,9 @@ class DonateService
                 'email' => $user->email,
             ],
             "redirectionUrls" => [
-                "successUrl" => route('webhook', ['method' => 'fawaterk', 'status' => 'success']),
-                "failUrl" => route('webhook', ['method' => 'fawaterk', 'status' => 'fail']),
-                "pendingUrl" => route('webhook', ['method' => 'fawaterk', 'status' => 'pending']),
+                "successUrl" => route('callback', ['method' => 'fawaterk', 'status' => 'success']),
+                "failUrl" => route('callback', ['method' => 'fawaterk', 'status' => 'fail']),
+                "pendingUrl" => route('callback', ['method' => 'fawaterk', 'status' => 'pending']),
             ],
             'cartItems' => [
                 [
@@ -564,7 +509,7 @@ class DonateService
         return back()->withErrors(['fawaterk' => $errorMsg])->withInput();
     }
 
-    public function webhookFawaterk(Request $request)
+    public function callbackFawaterk(Request $request)
     {
         $config = config('donate.fawaterk');
         $status = $request->query('status');

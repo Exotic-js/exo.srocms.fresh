@@ -19,41 +19,35 @@ class TicketController extends Controller
 
     public function show(Ticket $ticket)
     {
-        $data = Ticket::getTicketReplies($ticket->id);
+        $replies = Ticket::getReplies($ticket->id);
+        $replies = collect([$ticket])->merge($replies);
 
-        return view('admin.tickets.show', compact('ticket', 'data'));
+        return view('admin.tickets.show', [
+            'ticket'  => $ticket,
+            'data'    => $replies,
+        ]);
     }
 
     public function reply(Request $request, Ticket $ticket)
     {
+        abort_if(!$ticket->status, 403, 'Ticket closed');
+
         $request->validate([
             'message' => 'required|string',
         ]);
 
-        Ticket::create([
-            'parent_id' => $ticket->id,
-            'user_id' => $ticket->user_id,
+        Ticket::replyTo($ticket, [
+            'message'  => $request->message,
+            'type'     => 'admin',
             'admin_id' => Auth::id(),
-            'subject' => $ticket->subject,
-            'category' => $ticket->category,
-            'type' => 'admin',
-            'message' => $request->message,
-            'status' => true,
         ]);
-
-        Cache::forget("ticket_replies_{$ticket->id}");
-        Cache::forget("admin_tickets_page_1");
 
         return back()->with('success', 'Reply sent!');
     }
 
     public function close(Ticket $ticket)
     {
-        $ticket->closeTicket($ticket->id);
-        $ticket->update(['status' => false]);
-
-        Cache::forget("ticket_replies_{$ticket->id}");
-        Cache::forget("admin_tickets_page_1");
+        Ticket::close($ticket->id);
 
         return back()->with('success', 'Ticket closed!');
     }

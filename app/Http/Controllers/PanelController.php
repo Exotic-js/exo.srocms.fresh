@@ -177,22 +177,21 @@ class PanelController extends Controller
         ]);
 
         if ($request->filled('parent_id')) {
-            $parent = Ticket::getUserTicket($request->parent_id, auth()->id());
-            abort_if(!$parent, 403);
 
-            Ticket::createTicket([
-                'parent_id' => $parent->id,
-                'message'   => $validated['message'],
+            $parent = Ticket::getUserTicket($validated['parent_id'], auth()->id());
+            abort_if(!$parent || !$parent->status, 403, 'Ticket closed');
+
+            Ticket::replyTo($parent, [
+                'message' => $validated['message'],
+                'type'    => 'player',
             ]);
 
             return back()->with('success', 'Reply sent!');
         }
 
-        Ticket::createTicket($validated);
+        Ticket::open($validated);
 
-        return redirect()
-            ->route('profile.tickets')
-            ->with('success', 'Ticket created!');
+        return redirect()->route('profile.tickets')->with('success', 'Ticket created!');
     }
 
     public function vote(Request $request)
@@ -235,13 +234,14 @@ class PanelController extends Controller
         $config = config("vote.{$site}");
 
         if (!$config || !$config['enabled']) {
-            return redirect()->back()->withErrors('Vote Site not found or disabled.');
+            return response('Vote Site not found or disabled.', 403);
         }
 
-        if (!method_exists($voteService, "postback" . ucfirst($site))) {
-            return redirect()->back()->withErrors('Invalid postback method.');
+        $methodName = "postback" . ucfirst($site);
+        if (!method_exists($voteService, $methodName)) {
+            return response('Invalid postback method.', 403);
         }
 
-        return $voteService->{"postback" . ucfirst($site)}($request);
+        return $voteService->$methodName($request);
     }
 }

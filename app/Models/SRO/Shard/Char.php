@@ -329,6 +329,11 @@ class Char extends Model
         return cache()->remember("char_jid_{$this->CharID}", 86400, fn() => $this->user?->UserJID);
     }
 
+    public function getGuildAttribute()
+    {
+        return cache()->remember("char_guild_{$this->CharID}", 86400, fn() => $this->guild()->first());
+    }
+
     public function getHasJobSuitAttribute(): bool
     {
         return (bool) Inventory::getInventorySlot($this->CharID, 8);

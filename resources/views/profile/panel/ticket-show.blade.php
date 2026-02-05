@@ -22,7 +22,7 @@
                 </div>
 
                 @foreach($replies as $row)
-                    <div class="card mb-2 {{ $row->type === 'admin' ? 'text-end' : '' }}">
+                    <div class="card mb-2 {{ $row->type === 'admin' ? 'text-end' : 'text-start' }}">
                         <div class="card-body">
                             <strong>{{ $row->type === 'admin' ? 'Admin' : 'You' }}</strong>
                             <p>{!! $row->message !!}</p>

@@ -4,11 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\PasswordResetToken;
-use App\Models\SRO\Account\TbUser;
-use App\Models\SRO\Portal\MuUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class PasswordController extends Controller

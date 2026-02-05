@@ -45,12 +45,10 @@ class RegisteredUserController extends Controller
 
         $request->validate($this->getValidationRules($request));
 
-        $ip = filter_var($request->ip(), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ?: '0.0.0.0';
-
         if (config('global.server.version') === 'vSRO') {
-            $jid = $this->createAccountVSRO($request, $ip);
+            $jid = $this->createAccountVSRO($request);
         } else {
-            $jid = $this->createAccountISRO($request, $ip);
+            $jid = $this->createAccountISRO($request);
         }
 
         $user = User::create([
@@ -94,9 +92,11 @@ class RegisteredUserController extends Controller
         return $rules;
     }
 
-    private function createAccountVSRO(Request $request, string $ip): int
+    private function createAccountVSRO(Request $request): int
     {
-        return DB::transaction(function () use ($request, $ip) {
+        return DB::transaction(function () use ($request) {
+            $ip = filter_var($request->ip(), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ?: '0.0.0.0';
+
             $tbUser = TbUser::setVSROAccount(null, $request->username, $request->password, $request->email, $ip);
             SkSilk::setSkSilk($tbUser->JID, 0, 0);
 
@@ -104,17 +104,17 @@ class RegisteredUserController extends Controller
         });
     }
 
-    private function createAccountISRO(Request $request, string $ip): int
+    private function createAccountISRO(Request $request): int
     {
-        return DB::transaction(function () use ($request, $ip) {
-            $userBinIP = ip2long($ip);
+        return DB::transaction(function () use ($request) {
+            $ip = filter_var($request->ip(), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ?: '0.0.0.0';
 
             $portalUser = MuUser::setPortalAccount($request->username, $request->password);
 
             MuEmail::setEmail($portalUser->JID, $request->email);
-            MuhAlteredInfo::setAlteredInfo($portalUser->JID, $request->username, $request->email, $userBinIP);
-            AuhAgreedService::setAgreedService($portalUser->JID, $userBinIP);
-            MuJoiningInfo::setJoiningInfo($portalUser->JID, $userBinIP);
+            MuhAlteredInfo::setAlteredInfo($portalUser->JID, $request->username, $request->email, ip2long($ip));
+            AuhAgreedService::setAgreedService($portalUser->JID, ip2long($ip));
+            MuJoiningInfo::setJoiningInfo($portalUser->JID, ip2long($ip));
             MuVIPInfo::setVIPInfo($portalUser->JID);
 
             //type 1 = silk, type 3 = premium silk
