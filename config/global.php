@@ -55,7 +55,7 @@ return [
         'news_limit' => 3,
     ],
     'referral' => [
-        'enabled' => true,
+        'enabled' => false,
         'reward_points' => 5, //5 Default, 0 = No eward
         'minimum_redeem' => 25,
     ],

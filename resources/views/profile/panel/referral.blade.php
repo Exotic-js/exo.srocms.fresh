@@ -9,6 +9,7 @@
     <div class="container">
         <div class="card border-0">
             <div class="card-body">
+                @if(config('global.referral.enabled'))
                 @if ($invite)
                     @if (session('success'))
                         <div class="alert alert-success">{{ session('success') }}</div>
@@ -96,6 +97,11 @@
                 @else
                     <div class="alert alert-warning">
                         No invite code found for this user.
+                    </div>
+                @endif
+                @else
+                    <div class="alert alert-danger text-center" role="alert">
+                        {{ __('Referral is disabled!') }}
                     </div>
                 @endif
             </div>
