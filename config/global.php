@@ -60,7 +60,7 @@ return [
         'minimum_redeem' => 25,
     ],
     'tickets' => [
-        'enabled' => true,
+        'enabled' => false,
         'categories' => [
             'sales' => 'Sales',
             'bugs' => 'Bugs',

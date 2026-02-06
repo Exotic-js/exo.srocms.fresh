@@ -24,7 +24,7 @@ class Ticket extends Model
             'user_id' => auth()->id(),
             'subject' => $data['subject'],
             'category' => $data['category'],
-            'message' => $data['message'],
+            'message' => self::sanitizeHtml($data['message']),
             'type' => 'player',
             'status' => true,
         ]);
@@ -45,7 +45,7 @@ class Ticket extends Model
             'admin_id' => $data['admin_id'] ?? null,
             'subject' => $parent->subject,
             'category' => $parent->category,
-            'message' => $data['message'],
+            'message' => self::sanitizeHtml($data['message']),
             'type' => $data['type'],
             'status' => true,
         ]);
@@ -55,6 +55,17 @@ class Ticket extends Model
         Cache::forget("admin:tickets:page:1");
 
         return $reply;
+    }
+
+    private static function sanitizeHtml(string $html): string
+    {
+        $html = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $html);
+        $html = preg_replace('/on\w+="[^"]*"/i', '', $html);
+        $html = preg_replace('/javascript:/i', '', $html);
+
+        $allowed = '<p><br><b><strong><i><em><u><ul><ol><li><a><span>';
+
+        return strip_tags($html, $allowed);
     }
 
     public static function getUserTickets(int $userId, int $perPage = 20)

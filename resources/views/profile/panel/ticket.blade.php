@@ -9,6 +9,7 @@
     <div class="container">
         <div class="card border-0">
             <div class="card-body">
+                @if(config('global.tickets.enabled'))
                 <a href="{{ route('profile.ticket.create') }}" class="btn btn-primary mb-3">New Ticket</a>
 
                 @if(session('success'))
@@ -55,6 +56,11 @@
                 </table>
 
                 {{ $data->links('pagination::bootstrap-5') }}
+                @else
+                    <div class="alert alert-danger text-center" role="alert">
+                        {{ __('Ticket is disabled!') }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>
