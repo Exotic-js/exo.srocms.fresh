@@ -15,10 +15,10 @@ class AdminMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (auth()->check() && isset(auth()->user()->role->is_admin) && auth()->user()->role->is_admin) {
+        if (auth()->user()?->role?->is_admin === true) {
             return $next($request);
         }
 
-        abort(403, 'Unauthorized');
+        abort(403);
     }
 }
