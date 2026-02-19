@@ -170,7 +170,35 @@
                             </div>
                             <div class="tab-pane fade" id="chest" role="tabpanel">
                                 <div class="card">
-
+                                    <div id="display-Chest" class="card-body p-3 d-flex flex-column justify-content-center align-items-center">
+                                        <h2 class="text-center">Chest</h2>
+                                        <div class="table-responsive_">
+                                            <table class="table">
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col">No.</th>
+                                                    <th scope="col">Name</th>
+                                                    <th scope="col">Qty.</th>
+                                                    <th scope="col">Date Registered</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                @foreach($data->charChestItems as $key => $row)
+                                                    <tr>
+                                                        <td>{{ $key + 1 }}</td>
+                                                        <td>
+                                                            <img src="{{ asset('images/sro/'.$row->IconPath.'.png') }}" alt="" width="32" height="32" class="">
+                                                            {{ $row->ItemName }}
+                                                        </td>
+                                                        <td>{{ $row->ItemCount }}</td>
+                                                        <td>{{ $row->RegDate }}</td>
+                                                    </tr>
+                                                @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {{ $data->charChestItems->links('pagination::bootstrap-5') }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -354,6 +382,11 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 8px;
             margin-bottom: 20px;
+        }
+    </style>
+    <style>
+        #display-Chest nav p.small {
+            display: none;
         }
     </style>
 @endpush

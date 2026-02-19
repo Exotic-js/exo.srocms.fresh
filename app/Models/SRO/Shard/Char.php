@@ -299,6 +299,11 @@ class Char extends Model
         return app(InventoryService::class)->getStorageItems($this->user?->UserJID ?? 0, 180, 0);
     }
 
+    public function getCharChestItemsAttribute()
+    {
+        return BuyCashItemListByWeb::getWebChest($this->user?->UserJID ?? 0);
+    }
+
     public function getCharPetItems(?int $petId = null)
     {
         return app(InventoryService::class)->getPetItems($this->CharID, $petId, 196, 0);
