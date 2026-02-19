@@ -46,6 +46,41 @@
             <div class="col-md-3">
                 <div class="card">
                     <div class="card-body">
+                        <p>Online Players</p>
+                        <h2>{{ $onlineCounter->onlinePlayer }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <p>Support tickets</p>
+                        <h2>{{ $ticketCount }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <p>Votes</p>
+                        <h2>{{ $voteCount }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <p>Donate</p>
+                        <h2>{{ number_format($totalDonate, 0, ',', '.') }}$</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
                         <p>PHP Memory used</p>
                         <h4>{{ number_format($systemInfo->memoryUsage / 1024 / 1024, 2) }}M / {{ $systemInfo->memoryLimit }}</h4>
                     </div>

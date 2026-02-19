@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class Vote extends Model
 {
@@ -58,5 +59,12 @@ class Vote extends Model
             })
             ->where('expire', '>', now())
             ->first();
+    }
+
+    public static function getVotesCount()
+    {
+        return Cache::remember('votes_count', 60, function () {
+            return self::whereNotNull('expire')->count();
+        });
     }
 }

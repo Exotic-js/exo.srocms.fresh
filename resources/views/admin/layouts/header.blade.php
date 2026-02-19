@@ -52,11 +52,25 @@
     <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="#">SRO CMS v2.5 - <small>by:m1xawy</small></a>
 
     <ul class="navbar-nav flex-row">
-        <li class="nav-item text-nowrap">
-            <a class="nav-link px-3 text-white" href="{{ route('home') }}">
-                <svg class="bi" aria-hidden="true"><use xlink:href="#house-fill"/></svg>
-                {{ __('Back Home') }}
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle px-3 text-white" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="https://www.gravatar.com/avatar/{{ md5(strtolower(trim(auth()->user()->email))) }}?s=60&d=identicon" class="rounded-circle me-2" width="30" height="30" alt="User">
+                {{ auth()->user()->username }}
             </a>
+
+            <ul class="dropdown-menu dropdown-menu-end shadow position-absolute" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="{{ route('admin.users.view', auth()->user()->tbUser->JID) }}">Profile</a></li>
+                <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form method="POST" action="{{ route('logout') }}" onsubmit="return confirm('Are you sure you want to Sign out?')">
+                        @csrf
+                        <a class="dropdown-item text-danger" href="{{ route('logout') }}" onclick="event.preventDefault();this.closest('form').submit();">
+                            {{ __('Logout') }}
+                        </a>
+                    </form>
+                </li>
+            </ul>
         </li>
         <li class="nav-item text-nowrap d-md-none">
             <button class="nav-link px-3 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSearch" aria-controls="navbarSearch" aria-expanded="false" aria-label="Toggle search">

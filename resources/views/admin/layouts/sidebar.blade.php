@@ -12,6 +12,12 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link d-flex align-items-center gap-2 {{ request()->routeIs('admin.logs.worldmap') ? 'active' : '' }}" href="{{ route('admin.logs.worldmap') }}">
+                    <svg class="bi" aria-hidden="true"><use xlink:href="#house-fill"></use></svg>
+                    {{ __('World Map') }}
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link d-flex align-items-center gap-2 {{ request()->routeIs('admin.users.index') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
                     <svg class="bi" aria-hidden="true"><use xlink:href="#people"/></svg>
                     {{ __('Users') }}
@@ -91,23 +97,24 @@
         </ul>
 
         <hr class="my-3">
-
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-1 mb-1 text-body-secondary text-uppercase">
+            <span>Settings</span>
+        </h6>
         <ul class="nav flex-column mb-auto">
             <li class="nav-item">
                 <a class="nav-link d-flex align-items-center gap-2 {{ request()->routeIs('admin.settings.index') ? 'active' : '' }}" href="{{ route('admin.settings.index') }}">
                     <svg class="bi" aria-hidden="true"><use xlink:href="#gear-wide-connected"/></svg>
-                    {{ __('Settings') }}
+                    {{ __('General') }}
                 </a>
             </li>
+            <!--
             <li class="nav-item">
-                <form method="POST" action="{{ route('logout') }}" onsubmit="return confirm('Are you sure you want to Sign out?')">
-                    @csrf
-                    <a class="nav-link text-danger d-flex align-items-center gap-2" href="{{ route('logout') }}" onclick="event.preventDefault();this.closest('form').submit();">
-                        <svg class="bi" aria-hidden="true"><use xlink:href="#door-closed"/></svg>
-                        {{ __('Log Out') }}
-                    </a>
-                </form>
+                <a class="nav-link d-flex align-items-center gap-2 {{ request()->routeIs('admin.settings.index') ? 'active' : '' }}" href="{{ route('admin.settings.index') }}">
+                    <svg class="bi" aria-hidden="true"><use xlink:href="#gear-wide-connected"/></svg>
+                    {{ __('Widgets') }}
+                </a>
             </li>
+            -->
         </ul>
     </div>
 </div>

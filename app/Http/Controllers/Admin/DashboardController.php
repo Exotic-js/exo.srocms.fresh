@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Donate;
 use App\Models\SRO\Account\SkSilk;
 use App\Models\SRO\Account\TbUser;
 use App\Models\SRO\Portal\AphChangedSilk;
 use App\Models\SRO\Shard\Char;
+use App\Models\Ticket;
 use App\Models\User;
+use App\Models\Vote;
 
 class DashboardController extends Controller
 {
@@ -27,6 +30,9 @@ class DashboardController extends Controller
         return view('admin.index', [
             'userCount' => TbUser::getTbUserCount(),
             'charCount' => Char::getCharCount(),
+            'ticketCount' => Ticket::getTicketsCount(),
+            'voteCount' => Vote::getVotesCount(),
+            'totalDonate' => Donate::getDonateSum(),
             'totalGold' => Char::getGoldSum(),
             'totalSilk' => config('global.server.version') === 'vSRO' ? SkSilk::getSilkSum() : AphChangedSilk::getSilkSum(),
             'systemInfo' => $systemInfo,

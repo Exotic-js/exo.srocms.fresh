@@ -20,6 +20,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/logs/referral', [LogController::class, 'referral'])->name('logs.referral');
         Route::get('/logs/vote', [LogController::class, 'vote'])->name('logs.vote');
         Route::get('/logs/smc', [LogController::class, 'smc'])->name('logs.smc');
+        Route::get('/logs/worldmap', [LogController::class, 'worldmap'])->name('logs.worldmap');
 
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');

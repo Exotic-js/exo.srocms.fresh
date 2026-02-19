@@ -130,6 +130,13 @@ class Ticket extends Model
         Cache::forget("admin:tickets:page:1");
     }
 
+    public static function getTicketsCount()
+    {
+        return Cache::remember('tickets:count', 60, function () {
+            return self::whereNull('parent_id')->count();
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

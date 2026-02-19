@@ -13,7 +13,7 @@ class SettingController extends Controller
     {
         $data = Setting::cached();
 
-        return view('admin.settings', compact('data'));
+        return view('admin.settings.index', compact('data'));
     }
 
     public function update(Request $request)
@@ -23,6 +23,7 @@ class SettingController extends Controller
         }
 
         cache()->forget('settings');
+        cache()->forget('settings_all');
 
         return back()->with('success', 'Settings updated!');
     }
@@ -33,6 +34,7 @@ class SettingController extends Controller
 
         Artisan::call('optimize:clear');
         cache()->forget('settings');
+        cache()->forget('settings_all');
 
         return back()->with('success', 'All caches have been cleared!');
     }

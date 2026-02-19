@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Donate;
 use App\Models\Referral;
 use App\Models\SRO\Account\SmcLog;
+use App\Models\SRO\Shard\Char;
 use App\Models\Vote;
 use Illuminate\Http\Request;
 
@@ -65,5 +66,12 @@ class LogController extends Controller
         $data = $query->latest('dLogDate')->paginate(20);
 
         return view('admin.logs.smc', compact('data'));
+    }
+
+    public function worldmap()
+    {
+        $data = Char::select('CharID', 'CharName16', 'PosX', 'PosZ', 'PosY', 'LatestRegion')->get();
+
+        return view('admin.logs.worldmap', compact('data'));
     }
 }

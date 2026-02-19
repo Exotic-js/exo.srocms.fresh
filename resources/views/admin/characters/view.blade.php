@@ -121,6 +121,11 @@
                                 Pet
                             </button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="chest-tab" data-bs-toggle="tab" data-bs-target="#chest" type="button" role="tab">
+                                Chest
+                            </button>
+                        </li>
                     </ul>
 
                     <div class="card-body">
@@ -161,6 +166,11 @@
                                             </div>
                                         </form>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="chest" role="tabpanel">
+                                <div class="card">
+
                                 </div>
                             </div>
                         </div>
@@ -208,6 +218,10 @@
                         <h4 class="text-center">Unstuck</h4>
                     </div>
                     <div class="card-body">
+                        <div class="d-flex justify-content-center">
+                            <div id="player-map"></div>
+                        </div>
+
                         <ul class="list-unstyled w-50 m-auto p-3">
                             <li>
                                 <span>Current X:</span>
@@ -508,6 +522,29 @@
             arrowContainer.appendChild(pageNumber);
             arrowContainer.appendChild(nextBtn);
             container.appendChild(arrowContainer);
+        });
+    </script>
+
+    <script src="{{ asset('xSROMap/assets/js/minimap.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            createMinimapCanvas(
+                '{{ asset('https://raw.githubusercontent.com/JellyBitz/xSROMap/master/assets/img/silkroad/minimap/8') }}/',
+                'player-map',
+                206,
+                206,
+                {{ $data->PosX }},
+                {{ $data->PosZ }},
+                {{ $data->PosY }},
+                {{ $data->LatestRegion }}
+            );
+            addMinimapCursor(
+                'player-map',
+                '{{ asset('https://raw.githubusercontent.com/JellyBitz/xSROMap/master/assets/img/silkroad/minimap/icon/mm_sign_otherplayer.png') }}',
+                6,
+                6
+            );
         });
     </script>
 @endpush
