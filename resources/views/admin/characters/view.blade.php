@@ -121,11 +121,13 @@
                                 Pet
                             </button>
                         </li>
+                        @if(config('global.server.version') !== 'vSRO')
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="chest-tab" data-bs-toggle="tab" data-bs-target="#chest" type="button" role="tab">
                                 Chest
                             </button>
                         </li>
+                        @endif
                     </ul>
 
                     <div class="card-body">
@@ -168,6 +170,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @if(config('global.server.version') !== 'vSRO')
                             <div class="tab-pane fade" id="chest" role="tabpanel">
                                 <div class="card">
                                     <div id="display-Chest" class="card-body p-3 d-flex flex-column justify-content-center align-items-center">
@@ -201,6 +204,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>
