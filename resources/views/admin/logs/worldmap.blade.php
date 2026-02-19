@@ -9,7 +9,18 @@
     <div class="col-12 my-5">
         <div class="row">
             <div class="col-md-3 sidebar-wrapper" style="position: initial; left: auto">
-                <div class="sidebar-menu">
+                <div id="search" class="sidebar-search">
+                    <div>
+                        <div class="input-group">
+                            <input type="text" class="form-control search-menu" placeholder="Search... X,Y?">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="navigation" class="sidebar-menu">
                     <ul>
                         <li class="header-menu">
                             <span>Navigation</span>
