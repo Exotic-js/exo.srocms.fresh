@@ -243,6 +243,11 @@ class Char extends Model
         });
     }
 
+    public static function getCharLocations()
+    {
+        return self::select('CharID', 'CharName16', 'PosX', 'PosZ', 'PosY', 'LatestRegion')->get();
+    }
+
     public function getCharStatus()
     {
         return $this->hasMany(LogEventChar::class, 'CharID', 'CharID')

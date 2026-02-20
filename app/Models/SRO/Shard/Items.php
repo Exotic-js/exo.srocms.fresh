@@ -62,7 +62,7 @@ class Items extends Model
                 DB::raw("REPLACE(REPLACE(_RefObjCommon.AssocFileIcon128, '\\', '/'), '.ddj', '') as IconPath")
             )
             ->join('_RefObjCommon', '_Items.RefItemID', '=', '_RefObjCommon.ID')
-            ->leftJoin(DB::raw('SILKROAD_R_ACCOUNT.._Rigid_ItemNameDesc'), '_Rigid_ItemNameDesc.StrID', '=', '_RefObjCommon.NameStrID128')
+            ->leftJoin(DB::raw(DB::connection('account')->getDatabaseName().'.dbo._Rigid_ItemNameDesc'), '_Rigid_ItemNameDesc.StrID', '=', '_RefObjCommon.NameStrID128')
             ->whereIn('Serial64', $serials)
             ->get()
             ->keyBy('Serial64')

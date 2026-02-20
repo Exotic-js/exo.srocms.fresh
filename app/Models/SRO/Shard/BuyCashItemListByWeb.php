@@ -56,7 +56,7 @@ class BuyCashItemListByWeb extends Model
                     DB::raw("REPLACE(REPLACE(_RefObjCommon.AssocFileIcon128, '\\\\', '/'), '.ddj', '') as IconPath")
                 )
                 ->join('_RefObjCommon', '_BuyCashItemList_By_Web.RefItemID', '=', '_RefObjCommon.ID')
-                ->leftJoin(DB::raw('SILKROAD_R_ACCOUNT.._Rigid_ItemNameDesc'), '_Rigid_ItemNameDesc.StrID', '=', '_RefObjCommon.NameStrID128')
+                ->leftJoin(DB::raw(DB::connection('account')->getDatabaseName() .'.dbo._Rigid_ItemNameDesc'), '_Rigid_ItemNameDesc.StrID', '=', '_RefObjCommon.NameStrID128')
                 ->join('_RefObjItem', '_RefObjCommon.Link', '=', '_RefObjItem.ID')
                 ->join('_User', '_BuyCashItemList_By_Web.JID', '=', '_User.UserJID')
                 ->join('_Char', '_User.CharID', '=', '_Char.CharID')

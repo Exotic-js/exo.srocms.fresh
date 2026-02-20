@@ -70,7 +70,7 @@ class LogController extends Controller
 
     public function worldmap()
     {
-        $data = Char::select('CharID', 'CharName16', 'PosX', 'PosZ', 'PosY', 'LatestRegion')->get();
+        $data = Char::getCharLocations();
 
         return view('admin.logs.worldmap', compact('data'));
     }
