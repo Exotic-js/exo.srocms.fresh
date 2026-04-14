@@ -21,7 +21,7 @@ Route::prefix('ranking')->name('ranking.')->group(function() {
     Route::any('/job-kd', [RankingController::class, 'jobKDRanking'])->name('job-kd');
     Route::any('/custom/{type}', [RankingController::class, 'customRanking'])->name('custom');
 
-    Route::get('/character/{name}', [RankingController::class, 'characterView'])->name('character.view');
-    Route::get('/guild/{name}', [RankingController::class, 'guildView'])->name('guild.view');
+    Route::get('/character/{name}', [RankingController::class, 'characterView'])->where('name', '[a-zA-Z0-9_]{1,64}')->name('character.view');
+    Route::get('/guild/{name}', [RankingController::class, 'guildView'])->where('name', '[a-zA-Z0-9_]{1,64}')->name('guild.view');
     Route::any('/guild/crest/{bin}', [RankingController::class, 'guildCrest'])->name('guild.crest');
 });
