@@ -23,6 +23,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/logs/worldmap', [LogController::class, 'worldmap'])->name('logs.worldmap');
 
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::get('/general', [SettingController::class, 'general'])->name('settings.general');
+        Route::get('/widgets', [SettingController::class, 'widgets'])->name('settings.widgets');
+        Route::get('/donate', [SettingController::class, 'donate'])->name('settings.donate');
+        Route::get('/ranking', [SettingController::class, 'ranking'])->name('settings.ranking');
         Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
         Route::post('/settings/clear-cache', [SettingController::class, 'clearCache'])->name('settings.clear-cache');
 

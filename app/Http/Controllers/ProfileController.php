@@ -183,7 +183,17 @@ class ProfileController extends Controller
 
     public function updateSettings(Request $request)
     {
+        $allowedKeys = [
+            'item_stats_jid_' . auth()->user()->tbUser->JID,
+            'job_name_jid_' . auth()->user()->tbUser->JID,
+            'verify_jid_' . auth()->user()->tbUser->JID,
+        ];
+
         foreach ($request->except(['_token']) as $key => $value) {
+            if (!in_array($key, $allowedKeys)) {
+                continue;
+            }
+
             Setting::updateOrCreate(['key' => $key], ['value' => is_array($value) ? json_encode($value) : $value]);
         }
 

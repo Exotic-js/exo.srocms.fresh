@@ -15,10 +15,10 @@ class AdminMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (auth()->user()?->role?->is_admin === true) {
-            return $next($request);
+        if (!auth()->check() || !auth()->user()->role?->is_admin) {
+            abort(403);
         }
 
-        abort(403);
+        return $next($request);
     }
 }
