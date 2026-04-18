@@ -108,7 +108,6 @@
                 </a>
             </li>
 
-            <!--
             <li class="nav-item">
                 <a class="nav-link d-flex align-items-center gap-2 {{ request()->routeIs('admin.settings.widgets') ? 'active' : '' }}" href="{{ route('admin.settings.widgets') }}">
                     <svg class="bi" aria-hidden="true"><use xlink:href="#gear-wide-connected"/></svg>
@@ -127,7 +126,6 @@
                     {{ __('Ranking') }}
                 </a>
             </li>
-            -->
         </ul>
     </div>
 </div>

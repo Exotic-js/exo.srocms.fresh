@@ -44,7 +44,7 @@
                         </div>
                     </div>
 
-                    @if (env('NOCAPTCHA_ENABLE', false))
+                    @if (config('captcha.enabled', false))
                         <!-- google recaptch -->
                         <div class="form-group row mb-3">
                             <div class="col-md-12">

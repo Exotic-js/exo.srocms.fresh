@@ -57,7 +57,7 @@ class SettingController extends Controller
     public function donate()
     {
         $context = $this->settingsViewContext();
-        $context['gateways'] = $context['donate'];
+        $context['gateways'] = config('donate', []);
 
         return view('admin.settings.donate', $context);
     }

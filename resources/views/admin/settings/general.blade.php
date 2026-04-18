@@ -31,20 +31,34 @@
                 </button>
             </li>
 
-            <!--
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="misc-tab" data-bs-toggle="tab" data-bs-target="#misc" type="button" role="tab" aria-controls="misc" aria-selected="false">
-                    {{ __('Misc') }}
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-mail" type="button" role="tab">
+                    {{ __('Mail') }}
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">
-                    {{ __('History pages') }}
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-captcha" type="button" role="tab">
+                    {{ __('Captcha') }}
                 </button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="cache-tab" data-bs-toggle="tab" data-bs-target="#cache" type="button" role="tab" aria-controls="cache" aria-selected="false">
                     {{ __('Cache') }}
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-sliders" type="button" role="tab">
+                    {{ __('Sliders') }}
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-footer" type="button" role="tab">
+                    {{ __('Footer') }}
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">
+                    {{ __('History') }}
                 </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -58,41 +72,10 @@
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-sliders" type="button" role="tab">
-                    {{ __('Sliders') }}
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-footer-general" type="button" role="tab">
-                    {{ __('General Links') }}
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-footer-social" type="button" role="tab">
-                    {{ __('Social Links') }}
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-footer-backlink" type="button" role="tab">
-                    {{ __('Backlinks') }}
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-vote" type="button" role="tab">
                     {{ __('Vote') }}
                 </button>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-mail" type="button" role="tab">
-                    {{ __('Mail') }}
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-captcha" type="button" role="tab">
-                    {{ __('Captcha') }}
-                </button>
-            </li>
-            -->
         </ul>
 
         <form method="POST" action="{{ route('admin.settings.update') }}" onsubmit="serializeGeneral()">
@@ -276,30 +259,132 @@
                     </div>
                 </div>
 
-                {{-- ===================== MISC ===================== --}}
-                <div class="tab-pane fade" id="misc" role="tabpanel" aria-labelledby="misc-tab">
-                </div>
-
-                {{-- ===================== HISTORY ===================== --}}
-                <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
-                    <input type="hidden" id="ranking_source" value="{{ json_encode($ranking, JSON_UNESCAPED_SLASHES) }}">
-                    <input type="hidden" id="ranking_payload" name="ranking" value="{{ json_encode($ranking, JSON_UNESCAPED_SLASHES) }}">
-
-                    <div class="mb-3">
+                {{-- ===================== MAIL ===================== --}}
+                <div class="tab-pane fade" id="tab-mail" role="tabpanel">
+                    <div>
+                        <div class="fw-semibold mb-3">{{ __('Mail Configuration') }}</div>
                         <div>
-                            <h5 class="fw-semibold mb-3">{{ __('History pages') }}</h5>
-                            <div class="d-flex flex-column gap-2">
-                                @foreach([ 'event_schedule' => __('Event schedule'), 'unique_tracker' => __('Unique tracker'), 'advanced_unique_tracker' => __('Advanced unique tracker'), 'fortress_history' => __('Fortress history'), 'global_history' => __('Global history'), 'pvp_kill_logs' => __('PvP kill logs'), 'job_kill_logs' => __('Job kill logs'), 'item_plus_logs' => __('Item plus logs'), 'item_drop_logs' => __('Item drop logs') ] as $key => $label)
-                                    <label class="form-check mb-0">
-                                        <input class="form-check-input" type="checkbox" id="extra_{{ $key }}" data-rk="extra" data-key="{{ $key }}" {{ !empty($ranking['extra'][$key]) ? 'checked' : '' }}>
-                                        <span class="form-check-label ms-2">{{ $label }}</span>
-                                    </label>
-                                @endforeach
+
+                            <div class="mb-3">
+                                <label class="form-label">{{ __('Mailer') }}</label>
+                                <select class="form-select" id="mail_mailer">
+                                    @foreach(['log' => 'Log (debug)', 'smtp' => 'SMTP', 'sendmail' => 'Sendmail', 'mailgun' => 'Mailgun', 'ses' => 'Amazon SES', 'postmark' => 'Postmark'] as $val => $label)
+                                        <option value="{{ $val }}" {{ ($mail['MAIL_MAILER'] ?? 'log') === $val ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="form-text">{{ __('Use "Log" for local testing — emails are written to storage/logs instead of being sent.') }}</div>
                             </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">{{ __('Host') }}</label>
+                                    <input type="text" class="form-control" id="mail_host"
+                                           value="{{ $mail['MAIL_HOST'] ?? '127.0.0.1' }}"
+                                           placeholder="smtp.mailtrap.io">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">{{ __('Port') }}</label>
+                                    <input type="number" class="form-control" id="mail_port"
+                                           value="{{ $mail['MAIL_PORT'] ?? 2525 }}"
+                                           placeholder="2525">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">{{ __('Scheme') }}</label>
+                                    <select class="form-select" id="mail_scheme">
+                                        @foreach(['null' => 'None', 'tls' => 'TLS', 'ssl' => 'SSL'] as $val => $label)
+                                            <option value="{{ $val }}" {{ ($mail['MAIL_SCHEME'] ?? 'null') === $val ? 'selected' : '' }}>
+                                                {{ $label }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">{{ __('Username') }}</label>
+                                    <input type="text" class="form-control" id="mail_username"
+                                           value="{{ ($mail['MAIL_USERNAME'] ?? 'null') !== 'null' ? ($mail['MAIL_USERNAME'] ?? '') : '' }}"
+                                           placeholder="null">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">{{ __('Password') }}</label>
+                                    <input type="password" class="form-control" id="mail_password"
+                                           value="{{ ($mail['MAIL_PASSWORD'] ?? 'null') !== 'null' ? ($mail['MAIL_PASSWORD'] ?? '') : '' }}"
+                                           placeholder="null">
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">{{ __('From Address') }}</label>
+                                    <input type="email" class="form-control" id="mail_from_address"
+                                           value="{{ $mail['MAIL_FROM_ADDRESS'] ?? 'hello@example.com' }}"
+                                           placeholder="hello@example.com">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">{{ __('From Name') }}</label>
+                                    <input type="text" class="form-control" id="mail_from_name"
+                                           value="{{ $mail['MAIL_FROM_NAME'] ?? $appName }}"
+                                           placeholder="{{ $appName }}">
+                                </div>
+                            </div>
+
                         </div>
                     </div>
+
+                    <input type="hidden" id="mail" name="mail">
                 </div>
 
+                {{-- ===================== CAPTCHA ===================== --}}
+                <div class="tab-pane fade" id="tab-captcha" role="tabpanel">
+                    <div>
+                        <div class="fw-semibold mb-3">{{ __('reCAPTCHA Configuration') }}</div>
+                        <div>
+
+                            <div class="mb-3">
+                                <label class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="captcha_enabled"
+                                        {{ $captcha['enabled'] ?? false ? 'checked' : '' }}>
+                                    <span class="form-check-label fw-semibold">{{ __('Enable Captcha') }}</span>
+                                </label>
+                                <div class="form-text">{{ __('Protects login, register, and contact forms from bots.') }}</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">{{ __('Site Key') }}</label>
+                                <input type="text" class="form-control" id="captcha_sitekey"
+                                       value="{{ $captcha['sitekey'] ?? '' }}"
+                                       placeholder="NOCAPTCHA_SITEKEY">
+                                <div class="form-text">
+                                    {{ __('The public key used in the frontend widget.') }}
+                                    <a href="https://www.google.com/recaptcha/admin" target="_blank">{{ __('Get keys from Google') }} &nearr;</a>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">{{ __('Secret Key') }}</label>
+                                <input type="password" class="form-control" id="captcha_secret"
+                                       value="{{ $captcha['secret'] ?? '' }}"
+                                       placeholder="NOCAPTCHA_SECRET">
+                                <div class="form-text">{{ __('The private key used for server-side verification. Keep this secret.') }}</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">{{ __('Timeout (seconds)') }}</label>
+                                <input type="number" class="form-control" id="captcha_timeout"
+                                       min="1" max="120"
+                                       value="{{ $captcha['options']['timeout'] ?? 30 }}">
+                                <div class="form-text">{{ __('How long the captcha response token is valid.') }}</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="captcha" name="captcha">
+                </div>
                 {{-- ===================== CACHE ===================== --}}
                 <div class="tab-pane fade" id="cache" role="tabpanel" aria-labelledby="cache-tab">
                     <div>
@@ -364,7 +449,6 @@
                     <table class="table table-bordered" id="ticketCategoriesTable">
                         <thead class="table-light">
                         <tr>
-                            <th>{{ __('Key') }}</th>
                             <th>{{ __('Label') }}</th>
                             <th style="width:80px;">{{ __('Action') }}</th>
                         </tr>
@@ -372,13 +456,11 @@
                         <tbody>
                         @forelse($tickets['categories'] ?? [] as $catKey => $catLabel)
                             <tr>
-                                <td><input type="text" class="form-control form-control-sm" data-tc="key"   value="{{ $catKey }}"></td>
-                                <td><input type="text" class="form-control form-control-sm" data-tc="label" value="{{ $catLabel }}"></td>
+                                <td><input type="text" class="form-control form-control-sm" data-tc="label" value="{{ is_numeric($catKey) ? $catLabel : $catLabel }}"></td>
                                 <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
                             </tr>
                         @empty
                             <tr>
-                                <td><input type="text" class="form-control form-control-sm" data-tc="key"   placeholder="sales"></td>
                                 <td><input type="text" class="form-control form-control-sm" data-tc="label" placeholder="Sales"></td>
                                 <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
                             </tr>
@@ -465,314 +547,248 @@
                 <input type="hidden" id="sliders" name="sliders">
             </div>
 
-            {{-- ===================== FOOTER ===================== --}}
-            {{-- ===================== GENERAL LINKS ===================== --}}
-            <div class="tab-pane fade" id="tab-footer-general" role="tabpanel">
-                <p class="text-muted small mb-3">{{ __('Navigation links shown in the footer.') }}</p>
+                {{-- ===================== FOOTER ===================== --}}
+                <div class="tab-pane fade" id="tab-footer" role="tabpanel">
+                    {{-- ===================== GENERAL LINKS ===================== --}}
+                    <h5 class="fw-semibold mb-3">{{ __('General Links') }}</h5>
+                    <p class="text-muted small mb-3">{{ __('Navigation links shown in footer.') }}</p>
+                    
+                    <button type="button" class="btn btn-secondary btn-sm mb-3" onclick="addFooterGeneralRow()">{{ __('+ Add Row') }}</button>
 
-                <button type="button" class="btn btn-secondary btn-sm mb-3" onclick="addFooterGeneralRow()">{{ __('+ Add Row') }}</button>
-
-                <table class="table table-bordered align-middle" id="footer-general">
-                    <thead class="table-light">
-                    <tr>
-                        <th>{{ __('Name') }}</th>
-                        <th>{{ __('URL') }}</th>
-                        <th style="width:80px;">{{ __('Action') }}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @forelse($footer['general'] ?? [] as $item)
+                    <table class="table table-bordered align-middle mb-4" id="footer-general">
+                        <thead class="table-light">
                         <tr>
-                            <td><input type="text" class="form-control form-control-sm" data-fi="name"  value="{{ $item['name']  ?? '' }}"></td>
-                            <td><input type="text" class="form-control form-control-sm" data-fi="url"   value="{{ $item['url']   ?? '' }}"></td>
-                            <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
+                            <th>{{ __('Name') }}</th>
+                            <th>{{ __('URL') }}</th>
+                            <th style="width:80px;">{{ __('Action') }}</th>
                         </tr>
-                    @empty
+                        </thead>
+                        <tbody>
+                        @forelse($footer['general'] ?? [] as $item)
+                            <tr>
+                                <td><input type="text" class="form-control form-control-sm" data-fi="name"  value="{{ $item['name']  ?? '' }}"></td>
+                                <td><input type="text" class="form-control form-control-sm" data-fi="url"   value="{{ $item['url']   ?? '' }}"></td>
+                                <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td><input type="text" class="form-control form-control-sm" data-fi="name"  placeholder="{{ __('Home') }}"></td>
+                                <td><input type="text" class="form-control form-control-sm" data-fi="url"   placeholder="#"></td>
+                                <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
+                            </tr>
+                        @endforelse
+                        </tbody>
+                    </table>
+
+                    {{-- ===================== SOCIAL LINKS ===================== --}}
+                    <h5 class="fw-semibold mb-3">{{ __('Social Links') }}</h5>
+                    <p class="text-muted small mb-3">{{ __('Social media links. Use Font Awesome icon HTML in the Image/Icon column.') }}</p>
+                    
+                    <button type="button" class="btn btn-secondary btn-sm mb-3" onclick="addFooterSocialRow()">{{ __('+ Add Row') }}</button>
+
+                    <table class="table table-bordered align-middle mb-4" id="footer-social">
+                        <thead class="table-light">
                         <tr>
-                            <td><input type="text" class="form-control form-control-sm" data-fi="name"  placeholder="{{ __('Home') }}"></td>
-                            <td><input type="text" class="form-control form-control-sm" data-fi="url"   placeholder="#"></td>
-                            <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
+                            <th>{{ __('Name') }}</th>
+                            <th>{{ __('URL') }}</th>
+                            <th>{{ __('Icon (FA HTML)') }}</th>
+                            <th style="width:80px;">{{ __('Action') }}</th>
                         </tr>
-                    @endforelse
-                    </tbody>
-                </table>
-                <input type="hidden" id="footer" name="footer">
-            </div>
+                        </thead>
+                        <tbody>
+                        @forelse($footer['social'] ?? [] as $item)
+                            <tr>
+                                <td><input type="text" class="form-control form-control-sm" data-fi="name"  value="{{ $item['name']  ?? '' }}"></td>
+                                <td><input type="text" class="form-control form-control-sm" data-fi="url"   value="{{ $item['url']   ?? '' }}"></td>
+                                <td><input type="text" class="form-control form-control-sm font-monospace" data-fi="image" value="{{ $item['image'] ?? '' }}" placeholder='<i class="fab fa-facebook-f"></i>'></td>
+                                <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td><input type="text" class="form-control form-control-sm" data-fi="name"  placeholder="Facebook"></td>
+                                <td><input type="text" class="form-control form-control-sm" data-fi="url"   placeholder="https://facebook.com/..."></td>
+                                <td><input type="text" class="form-control form-control-sm font-monospace" data-fi="image" placeholder='<i class="fab fa-facebook-f"></i>'></td>
+                                <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
+                            </tr>
+                        @endforelse
+                        </tbody>
+                    </table>
 
-            {{-- ===================== SOCIAL LINKS ===================== --}}
-            <div class="tab-pane fade" id="tab-footer-social" role="tabpanel">
-                <p class="text-muted small mb-3">{{ __('Social media links. Use Font Awesome icon HTML in the Image/Icon column.') }}</p>
+                    {{-- ===================== BACKLINKS ===================== --}}
+                    <h5 class="fw-semibold mb-3">{{ __('Backlinks') }}</h5>
+                    <p class="text-muted small mb-3">{{ __('External sites that link back to your server. Use an image URL or leave empty.') }}</p>
+                    
+                    <button type="button" class="btn btn-secondary btn-sm mb-3" onclick="addFooterBacklinkRow()">{{ __('+ Add Row') }}</button>
 
-                <button type="button" class="btn btn-secondary btn-sm mb-3" onclick="addFooterSocialRow()">{{ __('+ Add Row') }}</button>
-
-                <table class="table table-bordered align-middle" id="footer-social">
-                    <thead class="table-light">
-                    <tr>
-                        <th>{{ __('Name') }}</th>
-                        <th>{{ __('URL') }}</th>
-                        <th>{{ __('Icon (FA HTML)') }}</th>
-                        <th style="width:80px;">{{ __('Action') }}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @forelse($footer['social'] ?? [] as $item)
+                    <table class="table table-bordered align-middle" id="footer-backlink">
+                        <thead class="table-light">
                         <tr>
-                            <td><input type="text" class="form-control form-control-sm" data-fi="name"  value="{{ $item['name']  ?? '' }}"></td>
-                            <td><input type="text" class="form-control form-control-sm" data-fi="url"   value="{{ $item['url']   ?? '' }}"></td>
-                            <td><input type="text" class="form-control form-control-sm font-monospace" data-fi="image" value="{{ $item['image'] ?? '' }}" placeholder='<i class="fab fa-facebook-f"></i>'></td>
-                            <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
+                            <th>{{ __('Name') }}</th>
+                            <th>{{ __('URL') }}</th>
+                            <th>{{ __('Image URL') }}</th>
+                            <th style="width:80px;">{{ __('Action') }}</th>
                         </tr>
-                    @empty
-                        <tr>
-                            <td><input type="text" class="form-control form-control-sm" data-fi="name"  placeholder="Facebook"></td>
-                            <td><input type="text" class="form-control form-control-sm" data-fi="url"   placeholder="https://facebook.com/..."></td>
-                            <td><input type="text" class="form-control form-control-sm font-monospace" data-fi="image" placeholder='<i class="fab fa-facebook-f"></i>'></td>
-                            <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
-                        </tr>
-                    @endforelse
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                        @forelse($footer['backlink'] ?? [] as $item)
+                            <tr>
+                                <td><input type="text" class="form-control form-control-sm" data-fi="name"  value="{{ $item['name']  ?? '' }}"></td>
+                                <td><input type="text" class="form-control form-control-sm" data-fi="url"   value="{{ $item['url']   ?? '' }}"></td>
+                                <td><input type="text" class="form-control form-control-sm" data-fi="image" value="{{ $item['image'] ?? '' }}" placeholder="https://example.com/logo.png"></td>
+                                <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td><input type="text" class="form-control form-control-sm" data-fi="name"  placeholder="Elitepvpers"></td>
+                                <td><input type="text" class="form-control form-control-sm" data-fi="url"   placeholder="https://..."></td>
+                                <td><input type="text" class="form-control form-control-sm" data-fi="image" placeholder="https://example.com/logo.png"></td>
+                                <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
+                            </tr>
+                        @endforelse
+                        </tbody>
+                    </table>
 
-            {{-- ===================== BACKLINKS ===================== --}}
-            <div class="tab-pane fade" id="tab-footer-backlink" role="tabpanel">
-                <p class="text-muted small mb-3">{{ __('External sites that link back to your server. Use an image URL or leave empty.') }}</p>
-
-                <button type="button" class="btn btn-secondary btn-sm mb-3" onclick="addFooterBacklinkRow()">{{ __('+ Add Row') }}</button>
-
-                <table class="table table-bordered align-middle" id="footer-backlink">
-                    <thead class="table-light">
-                    <tr>
-                        <th>{{ __('Name') }}</th>
-                        <th>{{ __('URL') }}</th>
-                        <th>{{ __('Image URL') }}</th>
-                        <th style="width:80px;">{{ __('Action') }}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @forelse($footer['backlink'] ?? [] as $item)
-                        <tr>
-                            <td><input type="text" class="form-control form-control-sm" data-fi="name"  value="{{ $item['name']  ?? '' }}"></td>
-                            <td><input type="text" class="form-control form-control-sm" data-fi="url"   value="{{ $item['url']   ?? '' }}"></td>
-                            <td><input type="text" class="form-control form-control-sm" data-fi="image" value="{{ $item['image'] ?? '' }}" placeholder="https://example.com/logo.png"></td>
-                            <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td><input type="text" class="form-control form-control-sm" data-fi="name"  placeholder="Elitepvpers"></td>
-                            <td><input type="text" class="form-control form-control-sm" data-fi="url"   placeholder="https://..."></td>
-                            <td><input type="text" class="form-control form-control-sm" data-fi="image" placeholder="https://example.com/logo.png"></td>
-                            <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
-                        </tr>
-                    @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            {{-- ===================== VOTE ===================== --}}
-            <div class="tab-pane fade" id="tab-vote" role="tabpanel">
-                <div id="voteContainer">
-                    @foreach($vote as $voteKey => $voteDefault)
-                        <div class="card mb-3">
-                            <div class="card-header fw-semibold">{{ $voteDefault['name'] }}</div>
-                            <div class="card-body">
-                                <div class="alert alert-info py-2 mb-3" role="alert">
-                                    {{ __('Postback URL:') }} <code>{{ $appUrl }}/postback/{{ $voteKey }}</code>
-                                </div>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox"
-                                           id="vote_{{ $voteKey }}_enabled"
-                                        {{ !empty($voteDefault['enabled']) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="vote_{{ $voteKey }}_enabled">{{ __('Enabled') }}</label>
-                                </div>
-
-                                <div class="row g-3">
-                                    <div class="col-12">
-                                        <label class="form-label">{{ __('Vote Name') }}</label>
-                                        <input type="text" class="form-control form-control-sm font-monospace"
-                                               id="vote_{{ $voteKey }}_name"
-                                               value="{{ $voteDefault['name'] ?? '' }}"
-                                               placeholder="">
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label">{{ __('Vote URL') }}</label>
-                                        <input type="text" class="form-control form-control-sm font-monospace"
-                                               id="vote_{{ $voteKey }}_url"
-                                               value="{{ $voteDefault['url'] ?? '' }}"
-                                               placeholder="https://...{JID}">
-                                        <div class="form-text">{{ __("Use {JID} as placeholder for the player's username.") }}</div>
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label">{{ __('Vote Image') }}</label>
-                                        <input type="text" class="form-control form-control-sm font-monospace"
-                                               id="vote_{{ $voteKey }}_image"
-                                               value="{{ $voteDefault['image'] ?? '' }}"
-                                               placeholder="">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">{{ __('Reward Points') }}</label>
-                                        <input type="number" class="form-control form-control-sm"
-                                               id="vote_{{ $voteKey }}_reward"
-                                               min="0" value="{{ $voteDefault['reward'] ?? 5 }}">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">{{ __('Timeout (hours)') }}</label>
-                                        <input type="number" class="form-control form-control-sm"
-                                               id="vote_{{ $voteKey }}_timeout"
-                                               min="1" value="{{ $voteDefault['timeout'] ?? 12 }}">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">{{ __('Allowed IP(s)') }}</label>
-                                        <input type="text" class="form-control form-control-sm font-monospace"
-                                               id="vote_{{ $voteKey }}_ip"
-                                               value="{{ $voteDefault['ip'] ?? '' }}"
-                                               placeholder="{{ $voteDefault['ip'] }}">
-                                    </div>
-                                    @if($voteKey === 'vote4rewards')
-                                        <div class="col-12">
-                                            <label class="form-label">{{ __('Webhook Secret') }}</label>
-                                            <input type="password" class="form-control form-control-sm"
-                                                   id="vote_{{ $voteKey }}_webhook_secret"
-                                                   value="{{ $voteDefault['webhook_secret'] ?? '' }}"
-                                                   placeholder="Q7A9DA2xVdkL3rP0B8mNfH5S3LJcWgUy">
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
+                    <input type="hidden" id="footer" name="footer">
                 </div>
 
-                <input type="hidden" id="vote" name="vote">
-            </div>
+                {{-- ===================== HISTORY ===================== --}}
+                <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                    <input type="hidden" id="ranking_source" value="{{ json_encode($ranking, JSON_UNESCAPED_SLASHES) }}">
+                    <input type="hidden" id="ranking_payload" name="ranking" value="{{ json_encode($ranking, JSON_UNESCAPED_SLASHES) }}">
 
-            {{-- ===================== MAIL ===================== --}}
-            <div class="tab-pane fade" id="tab-mail" role="tabpanel">
-                <div>
-                    <div class="fw-semibold mb-3">{{ __('Mail Configuration') }}</div>
-                    <div>
-
-                        <div class="mb-3">
-                            <label class="form-label">{{ __('Mailer') }}</label>
-                            <select class="form-select" id="mail_mailer">
-                                @foreach(['log' => 'Log (debug)', 'smtp' => 'SMTP', 'sendmail' => 'Sendmail', 'mailgun' => 'Mailgun', 'ses' => 'Amazon SES', 'postmark' => 'Postmark'] as $val => $label)
-                                    <option value="{{ $val }}" {{ ($mail['MAIL_MAILER'] ?? 'log') === $val ? 'selected' : '' }}>
-                                        {{ $label }}
-                                    </option>
+                    <div class="mb-3">
+                        <div>
+                            <h5 class="fw-semibold mb-3">{{ __('History') }}</h5>
+                            <div class="d-flex flex-column gap-2">
+                                @foreach([ 'event_schedule' => __('Event schedule'), 'unique_tracker' => __('Unique tracker'), 'advanced_unique_tracker' => __('Advanced unique tracker'), 'fortress_history' => __('Fortress history'), 'global_history' => __('Global history'), 'pvp_kill_logs' => __('PvP kill logs'), 'job_kill_logs' => __('Job kill logs'), 'item_plus_logs' => __('Item plus logs'), 'item_drop_logs' => __('Item drop logs') ] as $key => $label)
+                                    <label class="form-check mb-0">
+                                        <input class="form-check-input" type="checkbox" id="extra_{{ $key }}" data-rk="extra" data-key="{{ $key }}" {{ !empty($ranking['extra'][$key]) ? 'checked' : '' }}>
+                                        <span class="form-check-label ms-2">{{ $label }}</span>
+                                    </label>
                                 @endforeach
-                            </select>
-                            <div class="form-text">{{ __('Use "Log" for local testing — emails are written to storage/logs instead of being sent.') }}</div>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label">{{ __('Host') }}</label>
-                                <input type="text" class="form-control" id="mail_host"
-                                       value="{{ $mail['MAIL_HOST'] ?? '127.0.0.1' }}"
-                                       placeholder="smtp.mailtrap.io">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">{{ __('Port') }}</label>
-                                <input type="number" class="form-control" id="mail_port"
-                                       value="{{ $mail['MAIL_PORT'] ?? 2525 }}"
-                                       placeholder="2525">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">{{ __('Scheme') }}</label>
-                                <select class="form-select" id="mail_scheme">
-                                    @foreach(['null' => 'None', 'tls' => 'TLS', 'ssl' => 'SSL'] as $val => $label)
-                                        <option value="{{ $val }}" {{ ($mail['MAIL_SCHEME'] ?? 'null') === $val ? 'selected' : '' }}>
-                                            {{ $label }}
-                                        </option>
-                                    @endforeach
-                                </select>
                             </div>
                         </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label">{{ __('Username') }}</label>
-                                <input type="text" class="form-control" id="mail_username"
-                                       value="{{ ($mail['MAIL_USERNAME'] ?? 'null') !== 'null' ? ($mail['MAIL_USERNAME'] ?? '') : '' }}"
-                                       placeholder="null">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">{{ __('Password') }}</label>
-                                <input type="password" class="form-control" id="mail_password"
-                                       value="{{ ($mail['MAIL_PASSWORD'] ?? 'null') !== 'null' ? ($mail['MAIL_PASSWORD'] ?? '') : '' }}"
-                                       placeholder="null">
-                            </div>
-                        </div>
-
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label">{{ __('From Address') }}</label>
-                                <input type="email" class="form-control" id="mail_from_address"
-                                       value="{{ $mail['MAIL_FROM_ADDRESS'] ?? 'hello@example.com' }}"
-                                       placeholder="hello@example.com">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">{{ __('From Name') }}</label>
-                                <input type="text" class="form-control" id="mail_from_name"
-                                       value="{{ $mail['MAIL_FROM_NAME'] ?? $appName }}"
-                                       placeholder="{{ $appName }}">
-                            </div>
-                        </div>
-
                     </div>
                 </div>
+                {{-- ===================== TICKETS ===================== --}}
+                <div class="tab-pane fade" id="tab-tickets" role="tabpanel">
+                    <div class="mb-3">
+                        <label class="form-check">
+                            <input class="form-check-input" type="checkbox" id="tickets_enabled"
+                                {{ $tickets['enabled'] ?? false ? 'checked' : '' }}>
+                            <span class="form-check-label fw-semibold">{{ __('Enable Ticket System') }}</span>
+                        </label>
+                    </div>
 
-                <input type="hidden" id="mail" name="mail">
-            </div>
+                    <h6 class="mb-1">{{ __('Categories') }}</h6>
+                    <p class="text-muted small mb-3">{{ __('Define the ticket categories users can choose from.') }}</p>
 
-
-            {{-- ===================== CAPTCHA ===================== --}}
-            <div class="tab-pane fade" id="tab-captcha" role="tabpanel">
-                <div>
-                    <div class="fw-semibold mb-3">{{ __('reCAPTCHA Configuration') }}</div>
                     <div>
-
-                        <div class="mb-3">
-                            <label class="form-check">
-                                <input class="form-check-input" type="checkbox" id="captcha_enabled"
-                                    {{ $captcha['enabled'] ?? false ? 'checked' : '' }}>
-                                <span class="form-check-label fw-semibold">{{ __('Enable Captcha') }}</span>
-                            </label>
-                            <div class="form-text">{{ __('Protects login, register, and contact forms from bots.') }}</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">{{ __('Site Key') }}</label>
-                            <input type="text" class="form-control" id="captcha_sitekey"
-                                   value="{{ $captcha['sitekey'] ?? '' }}"
-                                   placeholder="NOCAPTCHA_SITEKEY">
-                            <div class="form-text">
-                                {{ __('The public key used in the frontend widget.') }}
-                                <a href="https://www.google.com/recaptcha/admin" target="_blank">{{ __('Get keys from Google') }} &nearr;</a>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">{{ __('Secret Key') }}</label>
-                            <input type="password" class="form-control" id="captcha_secret"
-                                   value="{{ $captcha['secret'] ?? '' }}"
-                                   placeholder="NOCAPTCHA_SECRET">
-                            <div class="form-text">{{ __('The private key used for server-side verification. Keep this secret.') }}</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">{{ __('Timeout (seconds)') }}</label>
-                            <input type="number" class="form-control" id="captcha_timeout"
-                                   min="1" max="120"
-                                   value="{{ $captcha['options']['timeout'] ?? 30 }}">
-                            <div class="form-text">{{ __('How long the captcha response token is valid.') }}</div>
-                        </div>
-
+                        <button type="button" class="btn btn-secondary btn-sm mb-3" onclick="addTicketCategory()">
+                            {{ __('+ Add Category') }}
+                        </button>
+                        <table class="table table-bordered" id="ticketCategoriesTable">
+                            <thead class="table-light">
+                            <tr>
+                                <th>{{ __('Label') }}</th>
+                                <th style="width:80px;">{{ __('Action') }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @forelse($tickets['categories'] ?? [] as $catKey => $catLabel)
+                                <tr>
+                                    <td><input type="text" class="form-control form-control-sm" data-tc="label" value="{{ is_numeric($catKey) ? $catLabel : $catLabel }}"></td>
+                                    <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td><input type="text" class="form-control form-control-sm" data-tc="label" placeholder="Sales"></td>
+                                    <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
+                                </tr>
+                            @endforelse
+                            </tbody>
+                        </table>
                     </div>
+
+                    <input type="hidden" id="tickets" name="tickets">
                 </div>
 
-                <input type="hidden" id="captcha" name="captcha">
-            </div>
+                {{-- ===================== VOTE ===================== --}}
+                <div class="tab-pane fade" id="tab-vote" role="tabpanel">
+                    <div id="voteContainer">
+                        @foreach($vote as $voteKey => $voteDefault)
+                            <div class="card mb-3">
+                                <div class="card-header fw-semibold">{{ $voteDefault['name'] }}</div>
+                                <div class="card-body">
+                                    <div class="alert alert-info py-2 mb-3" role="alert">
+                                        {{ __('Postback URL:') }} <code>{{ $appUrl }}/postback/{{ $voteKey }}</code>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox"
+                                               id="vote_{{ $voteKey }}_enabled"
+                                            {{ !empty($voteDefault['enabled']) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="vote_{{ $voteKey }}_enabled">{{ __('Enabled') }}</label>
+                                    </div>
+
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <label class="form-label">{{ __('Vote Name') }}</label>
+                                            <input type="text" class="form-control form-control-sm font-monospace"
+                                                   id="vote_{{ $voteKey }}_name"
+                                                   value="{{ $voteDefault['name'] ?? '' }}"
+                                                   placeholder="">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">{{ __('Vote URL') }}</label>
+                                            <input type="text" class="form-control form-control-sm font-monospace"
+                                                   id="vote_{{ $voteKey }}_url"
+                                                   value="{{ $voteDefault['url'] ?? '' }}"
+                                                   placeholder="https://...{JID}">
+                                            <div class="form-text">{{ __("Use {JID} as placeholder for the player's username.") }}</div>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">{{ __('Vote Image') }}</label>
+                                            <input type="text" class="form-control form-control-sm font-monospace"
+                                                   id="vote_{{ $voteKey }}_image"
+                                                   value="{{ $voteDefault['image'] ?? '' }}"
+                                                   placeholder="">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">{{ __('Reward Points') }}</label>
+                                            <input type="number" class="form-control form-control-sm"
+                                                   id="vote_{{ $voteKey }}_reward"
+                                                   min="0" value="{{ $voteDefault['reward'] ?? 5 }}">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">{{ __('Timeout (hours)') }}</label>
+                                            <input type="number" class="form-control form-control-sm"
+                                                   id="vote_{{ $voteKey }}_timeout"
+                                                   min="1" value="{{ $voteDefault['timeout'] ?? 12 }}">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">{{ __('Allowed IP(s)') }}</label>
+                                            <input type="text" class="form-control form-control-sm font-monospace"
+                                                   id="vote_{{ $voteKey }}_ip"
+                                                   value="{{ $voteDefault['ip'] ?? '' }}"
+                                                   placeholder="{{ $voteDefault['ip'] }}">
+                                        </div>
+                                        @if($voteKey === 'vote4rewards')
+                                            <div class="col-12">
+                                                <label class="form-label">{{ __('Webhook Secret') }}</label>
+                                                <input type="password" class="form-control form-control-sm"
+                                                       id="vote_{{ $voteKey }}_webhook_secret"
+                                                       value="{{ $voteDefault['webhook_secret'] ?? '' }}"
+                                                       placeholder="Q7A9DA2xVdkL3rP0B8mNfH5S3LJcWgUy">
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <input type="hidden" id="vote" name="vote">
+                </div>
 
     </div>{{-- .tab-content --}}
 
@@ -818,7 +834,6 @@
             const tbody = document.querySelector('#ticketCategoriesTable tbody');
             const row   = tbody.insertRow();
             row.innerHTML = `
-                <td><input type="text" class="form-control form-control-sm" data-tc="key"   placeholder="category_key"></td>
                 <td><input type="text" class="form-control form-control-sm" data-tc="label" placeholder="Category Label"></td>
                 <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
             `;
@@ -826,10 +841,13 @@
 
         function serializeTickets() {
             const categories = {};
-            document.querySelectorAll('#ticketCategoriesTable tbody tr').forEach(tr => {
-                const key   = tr.querySelector('[data-tc="key"]').value.trim();
+            document.querySelectorAll('#ticketCategoriesTable tbody tr').forEach((tr, index) => {
                 const label = tr.querySelector('[data-tc="label"]').value.trim();
-                if (key) categories[key] = label;
+                if (label) {
+                    // Generate a key from the label (lowercase, replace spaces with underscores)
+                    const key = label.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                    categories[key] = label;
+                }
             });
             document.getElementById('tickets').value = JSON.stringify({
                 enabled:    document.getElementById('tickets_enabled').checked,

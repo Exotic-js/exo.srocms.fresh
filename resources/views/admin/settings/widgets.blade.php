@@ -64,13 +64,20 @@
                         @foreach($limitWidgets as $widget)
                             <div class="col-md-6 col-lg-4">
                                 <div class="h-100">
-                                    <div class="d-flex align-items-center">
+                                    <div class="d-flex align-items-center mb-2">
                                         <label class="form-check mb-0">
                                             <input class="form-check-input" type="checkbox"
                                                    id="{{ $widget['id'] }}_enabled"
                                                 {{ !empty($widgets[$widget['id']]['enabled']) ? 'checked' : '' }}>
                                             <span class="form-check-label fw-semibold">{{ __($widget['label']) }}</span>
                                         </label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small">{{ __('Limit') }}</label>
+                                        <input type="number" class="form-control form-control-sm" 
+                                               id="{{ $widget['id'] }}_limit"
+                                               value="{{ $widgets[$widget['id']]['limit'] ?? 5 }}"
+                                               min="1" max="50">
                                     </div>
                                 </div>
                             </div>
@@ -446,6 +453,7 @@
                 .forEach(id => {
                     document.getElementById(id).value = JSON.stringify({
                         enabled: document.getElementById(id + '_enabled').checked,
+                        limit: parseInt(document.getElementById(id + '_limit').value) || 5,
                     });
                 });
         }

@@ -133,6 +133,8 @@ return [
         'character_job' => false,
         'character_unique_history' => false,
         'character_global_history' => false,
+        'character_pvp_kill' => false,
+        'character_job_kill' => false,
 
         'event_schedule' => false,
         'fortress_history' => false,

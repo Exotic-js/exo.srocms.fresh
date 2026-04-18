@@ -31,7 +31,7 @@ class AuthenticatedSessionController extends Controller
         $request->validate([
             'username' => ['required'],
             'password' => ['required'],
-            'g-recaptcha-response' => [Rule::requiredIf(function () {return env('NOCAPTCHA_ENABLE', false);}), 'captcha'],
+            'g-recaptcha-response' => [Rule::requiredIf(function () {return config('captcha.enabled', false);}), 'captcha'],
         ]);
 
         $request->authenticate();

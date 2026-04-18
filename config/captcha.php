@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'enabled' => env('NOCAPTCHA_ENABLE', false),
     'secret' => env('NOCAPTCHA_SECRET'),
     'sitekey' => env('NOCAPTCHA_SITEKEY'),
     'options' => [

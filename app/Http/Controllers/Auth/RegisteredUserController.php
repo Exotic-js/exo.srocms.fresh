@@ -75,7 +75,7 @@ class RegisteredUserController extends Controller
             'username' => ['required', 'regex:/^[A-Za-z0-9]*$/', 'min:6', 'max:16', 'unique:' . User::class],
             'email' => ['required', 'string', 'email', 'max:70', 'unique:' . User::class],
             'password' => ['required', 'min:6', 'max:32', 'confirmed'],
-            'g-recaptcha-response' => env('NOCAPTCHA_ENABLE', false) ? ['required', 'captcha'] : ['nullable'],
+            'g-recaptcha-response' => config('captcha.enabled', false) ? ['required', 'captcha'] : ['nullable'],
             'terms' => config('settings.agree_terms', false) ? ['required', 'accepted'] : ['nullable'],
             'invite' => ['nullable', 'string'],
             'fingerprint' => ['nullable', 'string'],

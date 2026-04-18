@@ -40,7 +40,6 @@ class SettingsServiceProvider extends ServiceProvider
             $this->applyJsonSettings($settings, 'sliders', 'global.sliders');
             $this->applyJsonSettings($settings, 'footer', 'global.footer');
 
-
         } catch (\Exception $e) {
             // DB not ready (e.g. during migrations), silently skip
         }
@@ -55,7 +54,21 @@ class SettingsServiceProvider extends ServiceProvider
         Config::set('settings', $mergedSettings);
 
         Config::set('app.name', $mergedSettings['site_title'] ?? config('app.name'));
-        Config::set('app.url',  $mergedSettings['site_url']   ?? config('app.url'));
+        Config::set('app.url', $mergedSettings['site_url']   ?? config('app.url'));
+
+        // Apply donate settings to override config defaults
+        $donateConfig = config('donate', []);
+        if (!empty($settings['donate']) && is_array($donateConfig)) {
+            foreach ($donateConfig as $gateway => $gatewayConfig) {
+                if (isset($gatewayConfig['fields']) && is_array($gatewayConfig['fields'])) {
+                    foreach ($gatewayConfig['fields'] as $fieldKey => $fieldConfig) {
+                        $currentValue = $settings['donate'][$gateway][$fieldKey] ?? null;
+                        $configValue = $gatewayConfig['fields'][$fieldKey]['placeholder'] ?? null;
+                        Config::set("donate.{$gateway}.{$fieldKey}", $currentValue ?? $configValue);
+                    }
+                }
+            }
+        }
 
         if (!empty($mergedSettings['timezone'])) {
             date_default_timezone_set($mergedSettings['timezone']);
@@ -102,6 +115,7 @@ class SettingsServiceProvider extends ServiceProvider
             return;
         }
 
+        Config::set('captcha.enabled',          $captcha['enabled']             ?? config('captcha.enabled'));
         Config::set('captcha.secret',           $captcha['secret']              ?? config('captcha.secret'));
         Config::set('captcha.sitekey',          $captcha['sitekey']             ?? config('captcha.sitekey'));
         Config::set('captcha.options.timeout',  $captcha['options']['timeout']  ?? 30);
@@ -127,11 +141,11 @@ class SettingsServiceProvider extends ServiceProvider
         Config::set('mail.default',               $mail['MAIL_MAILER']       ?? config('mail.default'));
         Config::set('mail.mailers.smtp.host',      $mail['MAIL_HOST']         ?? config('mail.mailers.smtp.host'));
         Config::set('mail.mailers.smtp.port',      $mail['MAIL_PORT']         ?? config('mail.mailers.smtp.port'));
-        Config::set('mail.mailers.smtp.encryption',$nullable($mail['MAIL_SCHEME']   ?? null));
-        Config::set('mail.mailers.smtp.username',  $nullable($mail['MAIL_USERNAME'] ?? null));
-        Config::set('mail.mailers.smtp.password',  $nullable($mail['MAIL_PASSWORD'] ?? null));
+        Config::set('mail.mailers.smtp.encryption',$nullable($mail['MAIL_SCHEME']   ?? config('mail.mailers.smtp.encryption')));
+        Config::set('mail.mailers.smtp.username',  $nullable($mail['MAIL_USERNAME'] ?? config('mail.mailers.smtp.username')));
+        Config::set('mail.mailers.smtp.password',  $nullable($mail['MAIL_PASSWORD'] ?? config('mail.mailers.smtp.password')));
         Config::set('mail.from.address',           $mail['MAIL_FROM_ADDRESS'] ?? config('mail.from.address'));
-        Config::set('mail.from.name',              $mail['MAIL_FROM_NAME']    ?? config('app.name'));
+        Config::set('mail.from.name',              $mail['MAIL_FROM_NAME']    ?? config('mail.from.name'));
     }
 
     private function applyJsonSettings(array $settings, string $settingKey, string $configKey): void

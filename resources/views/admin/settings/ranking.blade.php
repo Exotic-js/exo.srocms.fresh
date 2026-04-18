@@ -106,8 +106,8 @@
 
                 <div class="tab-pane fade" id="ranking-hidden" role="tabpanel" aria-labelledby="ranking-hidden-tab">
                     <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center fw-semibold mb-3">
-                            {{ __('Hidden characters') }}
+                        <div class="fw-semibold mb-3">{{ __('Hidden characters') }}</div>
+                        <div class="mb-3">
                             <button type="button" class="btn btn-secondary btn-sm" onclick="addHiddenCharacterRow()">{{ __('+ Add Character') }}</button>
                         </div>
                         <div>
@@ -133,8 +133,8 @@
                     </div>
 
                     <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center fw-semibold mb-3">
-                            {{ __('Hidden guilds') }}
+                        <div class="fw-semibold mb-3">{{ __('Hidden guilds') }}</div>
+                        <div class="mb-3">
                             <button type="button" class="btn btn-secondary btn-sm" onclick="addHiddenGuildRow()">{{ __('+ Add Guild') }}</button>
                         </div>
                         <div>
@@ -162,8 +162,8 @@
 
                 <div class="tab-pane fade" id="ranking-uniques" role="tabpanel" aria-labelledby="ranking-uniques-tab">
                     <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center fw-semibold mb-3">
-                            {{ __('Unique Ranking Points') }}
+                        <div class="fw-semibold mb-3">{{ __('Unique Ranking Points') }}</div>
+                        <div class="mb-3">
                             <button type="button" class="btn btn-secondary btn-sm" onclick="addUniqueRow()">{{ __('+ Add Unique') }}</button>
                         </div>
                         <div>
@@ -199,8 +199,8 @@
 
                 <div class="tab-pane fade" id="ranking-hwan" role="tabpanel" aria-labelledby="ranking-hwan-tab">
                     <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center fw-semibold mb-3">
-                            {{ __('Hwan Level Labels') }}
+                        <div class="fw-semibold mb-3">{{ __('Hwan Level Labels') }}</div>
+                        <div class="mb-3">
                             <button type="button" class="btn btn-secondary btn-sm" onclick="addHwanLevelRow()">{{ __('+ Add Hwan Level') }}</button>
                         </div>
                         <div>
@@ -238,8 +238,8 @@
                 </div>
 
                 <div class="tab-pane fade" id="ranking-custom" role="tabpanel" aria-labelledby="ranking-custom-tab">
-                    <div class="mb-4 d-flex justify-content-between align-items-center">
-                        <h5 class="fw-semibold mb-0">{{ __('Custom Ranking') }}</h5>
+                    <div class="fw-semibold mb-3">{{ __('Custom Ranking') }}</div>
+                    <div class="mb-4">
                         <button type="button" class="btn btn-secondary btn-sm" onclick="addCustomRankCard()">{{ __('+ Add Custom Ranking') }}</button>
                     </div>
                     <div class="alert alert-info mb-4">
@@ -251,14 +251,17 @@
                     <div id="customRankingList">
                         @foreach($ranking['custom'] ?? [] as $customKey => $custom)
                             <div class="mb-3 custom-ranking-item">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div>
-                                        <strong>{{ $customKey }}</strong>
-                                        <div class="text-muted small">{{ $custom['name'] ?? '' }}</div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>{{ $customKey }}</strong>
+                                                <div class="text-muted small">{{ $custom['name'] ?? '' }}</div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div>
-                                    <div class="row g-3">
+                                    <div class="card-body">
+                                        <div class="row g-3">
                                         <div class="col-12">
                                             <div class="form-check mt-1">
                                                 <input class="form-check-input" type="checkbox" data-rk="custom_enabled" id="custom_enabled_{{ $customKey }}" {{ !empty($custom['enabled']) ? 'checked' : '' }}>
@@ -281,6 +284,7 @@
                                             <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.custom-ranking-item').remove()">{{ __('Remove') }}</button>
                                         </div>
                                     </div>
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
@@ -292,7 +296,7 @@
                         <div class="fw-semibold mb-3">{{ __('Character Ranking Extras') }}</div>
                         <div>
                             <div class="d-flex flex-column gap-2">
-                                @foreach([ 'character_status' => __('Character status'), 'character_build' => __('Character build'), 'character_buff' => __('Character buff'), 'character_job' => __('Character job'), 'character_unique_history' => __('Character unique history'), 'character_global_history' => __('Character global history') ] as $key => $label)
+                                @foreach([ 'character_status' => __('Character status'), 'character_build' => __('Character build'), 'character_buff' => __('Character buff'), 'character_job' => __('Character job'), 'character_unique_history' => __('Character unique history'), 'character_global_history' => __('Character global history'), 'character_pvp_kill' => __('Character PvP kill'), 'character_job_kill' => __('Character job kill') ] as $key => $label)
                                     <label class="form-check mb-0">
                                         <input class="form-check-input" type="checkbox" id="extra_{{ $key }}" data-rk="extra" data-key="{{ $key }}" {{ !empty($ranking['extra'][$key]) ? 'checked' : '' }}>
                                         <span class="form-check-label ms-2">{{ $label }}</span>
@@ -350,14 +354,17 @@
             const card = document.createElement('div');
             card.className = 'mb-3 custom-ranking-item';
             card.innerHTML = `
-                <div class="align-items-start mb-3">
-                    <div>
-                        <strong>{{ __('New custom ranking') }}</strong>
-                        <div class="text-muted small">{{ __('Fill the fields below') }}</div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ __('New custom ranking') }}</strong>
+                                <div class="text-muted small">{{ __('Fill the fields below') }}</div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <div class="row g-3">
+                    <div class="card-body">
+                        <div class="row g-3">
                         <div class="col-12">
                             <div class="form-check mt-1">
                                 <input class="form-check-input" type="checkbox" data-rk="custom_enabled">
@@ -378,6 +385,7 @@
                         </div>
                         <div class="col-12">
                             <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.custom-ranking-item').remove()">{{ __('Remove') }}</button>
+                        </div>
                         </div>
                     </div>
                 </div>
