@@ -1,6 +1,27 @@
 <?php
 
 return [
+    'general' => [
+        'site_title' => 'Silkroad Online',
+        'site_desc' => "Silkroad Online is a World's first blockbuster Free to play MMORPG. Silkroad Online puts players deep into ancient Chinese, Islamic, and European civilization. Enjoy Silkroad's hardcore PvP, personal dungeon system, never ending fortress war and be the top of the highest heroes!",
+        'site_url' => 'https://localhost',
+        'site_favicon' => 'images/favicon.ico',
+        'site_logo' => 'images/logo.png',
+        'hero_background' => 'images/bg.jpg',
+        'max_level' => 140,
+        'max_player' => 3500,
+        'fake_player' => 0,
+        'dark_mode' => 'switch',
+        'default_locale' => 'switch',
+        'locale' => 'en',
+        'theme' => 'default',
+        'timezone' => 'Africa/Cairo',
+        'update_type' => 'standard',
+        'disable_register' => 0,
+        'register_confirm' => 0,
+        'duplicate_email' => 0,
+        'agree_terms' => 0,
+    ],
     'server' => [
         'version' => env('SRO_VERSION', 'iSRO'), // or 'vSRO'
         //'saltKey' => 'eset5ag.nsy-g6ky5.mp',
@@ -50,10 +71,6 @@ return [
             'flag' => 'cn',
         ],
     ],
-    'homepage' => [
-        'type' => 'landing', //blog or landing
-        'news_limit' => 3,
-    ],
     'referral' => [
         'enabled' => false,
         'reward_points' => 5, //5 Default, 0 = No eward
@@ -66,6 +83,17 @@ return [
             'bugs' => 'Bugs',
             'other' => 'Other',
         ]
+    ],
+    'history' => [
+        'event_schedule' => false,
+        'unique_tracker' => false,
+        'advanced_unique_tracker' => false,
+        'fortress_history' => false,
+        'global_history' => false,
+        'pvp_kill_logs' => false,
+        'job_kill_logs' => false,
+        'item_plus_logs' => false,
+        'item_drop_logs' => false,
     ],
     'sliders' => [
         0 => [

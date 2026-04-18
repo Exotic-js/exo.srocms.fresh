@@ -20,98 +20,18 @@
             <div class="alert alert-success" role="alert">{{ session('success') }}</div>
         @endif
 
-        @php
-            /*
-             * Each gateway defines which extra fields it needs beyond the common ones.
-             * 'fields' => [ key => ['label', 'type', 'placeholder'] ]
-             * type: text | password | select
-             */
-            $gateways = [
-                'paypal' => [
-                    'label'  => 'PayPal',
-                    'fields' => [
-                        'endpoint'      => ['label' => 'Endpoint URL',     'type' => 'text',     'placeholder' => 'https://api-m.sandbox.paypal.com'],
-                        'client_id'     => ['label' => 'Client ID',        'type' => 'text',     'placeholder' => 'PAYPAL_CLIENT_ID'],
-                        'client_secret' => ['label' => 'Client Secret',    'type' => 'password', 'placeholder' => 'PAYPAL_CLIENT_SECRET'],
-                        'mode'          => ['label' => 'Mode',             'type' => 'select',   'options' => ['sandbox' => 'Sandbox', 'live' => 'Live']],
-                    ],
-                ],
-                'stripe' => [
-                    'label'  => 'Stripe',
-                    'fields' => [
-                        'endpoint'         => ['label' => 'Endpoint URL',      'type' => 'text',     'placeholder' => 'https://api.stripe.com'],
-                        'secret_key'       => ['label' => 'Secret Key',        'type' => 'password', 'placeholder' => 'STRIPE_SECRET_KEY'],
-                        'publishable_key'  => ['label' => 'Publishable Key',   'type' => 'text',     'placeholder' => 'STRIPE_PUBLISHABLE_KEY'],
-                    ],
-                ],
-                'paymentwall' => [
-                    'label'  => 'Paymentwall',
-                    'fields' => [
-                        'public_key'   => ['label' => 'Public Key',    'type' => 'text',     'placeholder' => 'YOUR_PROJECT_KEY'],
-                        'private_key'  => ['label' => 'Private Key',   'type' => 'password', 'placeholder' => 'YOUR_SECRET_KEY'],
-                        'widget_code'  => ['label' => 'Widget Code',   'type' => 'text',     'placeholder' => 'p1_1'],
-                        'api_type'     => ['label' => 'API Type',      'type' => 'text',     'placeholder' => 'vc'],
-                    ],
-                ],
-                'coinpayments' => [
-                    'label'  => 'CoinPayments',
-                    'fields' => [
-                        'endpoint'      => ['label' => 'Endpoint URL',   'type' => 'text',     'placeholder' => 'https://api.coinpayments.com'],
-                        'merchant_id'   => ['label' => 'Merchant ID',    'type' => 'text',     'placeholder' => 'COINPAYMENTS_MERCHANT_ID'],
-                        'client_id'     => ['label' => 'Client ID',      'type' => 'text',     'placeholder' => 'COINPAYMENTS_CLIENT_ID'],
-                        'client_secret' => ['label' => 'Client Secret',  'type' => 'password', 'placeholder' => 'COINPAYMENTS_CLIENT_SECRET'],
-                    ],
-                ],
-                'fawaterk' => [
-                    'label'  => 'Fawaterk',
-                    'fields' => [
-                        'endpoint'     => ['label' => 'Endpoint URL',  'type' => 'text',     'placeholder' => 'https://app.fawaterk.com'],
-                        'api_key'      => ['label' => 'API Key',       'type' => 'password', 'placeholder' => 'FAWATERK_API_KEY'],
-                        'provider_key' => ['label' => 'Provider Key',  'type' => 'password', 'placeholder' => 'FAWATERK_PROVIDER_KEY'],
-                    ],
-                ],
-                'maxicard' => [
-                    'label'  => 'MaxiCard',
-                    'fields' => [
-                        'endpoint'     => ['label' => 'Endpoint URL',  'type' => 'text',     'placeholder' => 'https://www.maxigame.org/epin/yukle.php'],
-                        'api_key'      => ['label' => 'API Key',       'type' => 'password', 'placeholder' => 'MAXICARD_API_KEY'],
-                        'api_password' => ['label' => 'API Password',  'type' => 'password', 'placeholder' => 'MAXICARD_API_PASSWORD'],
-                    ],
-                ],
-                'hipocard' => [
-                    'label'  => 'HipoCard',
-                    'fields' => [
-                        'endpoint'     => ['label' => 'Endpoint URL',  'type' => 'text',     'placeholder' => 'https://www.hipopotamya.com/api/v1/hipocard/epins'],
-                        'api_key'      => ['label' => 'API Key',       'type' => 'password', 'placeholder' => 'HIPOCARD_API_KEY'],
-                        'api_password' => ['label' => 'API Password',  'type' => 'password', 'placeholder' => 'HIPOCARD_API_PASSWORD'],
-                    ],
-                ],
-                'hipopay' => [
-                    'label'  => 'HipoPay',
-                    'fields' => [
-                        'endpoint'         => ['label' => 'Endpoint URL',    'type' => 'text',     'placeholder' => 'https://www.hipopotamya.com/api/v1/merchants/payment/token'],
-                        'api_key'          => ['label' => 'API Key',         'type' => 'password', 'placeholder' => 'HIPOPAY_API_KEY'],
-                        'api_password'     => ['label' => 'API Password',    'type' => 'password', 'placeholder' => 'HIPOPAY_API_PASSWORD'],
-                        'commission_type'  => ['label' => 'Commission Type', 'type' => 'text',     'placeholder' => '1'],
-                    ],
-                ],
-            ];
-        @endphp
+
 
         {{-- Nav Tabs --}}
         <ul class="nav nav-tabs mb-3" id="donateTabs" role="tablist">
             @foreach($gateways as $key => $gateway)
-                @php
-                    $gwData  = json_decode($data[$key] ?? '{}', true) ?? [];
-                    $enabled = $gwData['enabled'] ?? false;
-                @endphp
                 <li class="nav-item" role="presentation">
                     <button class="nav-link {{ $loop->first ? 'active' : '' }}"
                             data-bs-toggle="tab"
                             data-bs-target="#gw-{{ $key }}"
                             type="button" role="tab">
-                        {{ $gateway['label'] }}
-                        @if($enabled)
+                        {{ $gateway['label'] ?? $gateway['name'] ?? ucfirst($key) }}
+                        @if(!empty($gateway['enabled']))
                             <span class="badge bg-success ms-1" style="font-size:0.65rem;">ON</span>
                         @else
                             <span class="badge bg-secondary ms-1" style="font-size:0.65rem;">OFF</span>
@@ -121,95 +41,85 @@
             @endforeach
         </ul>
 
-        <div class="tab-content" id="donateTabsContent">
-            @foreach($gateways as $key => $gateway)
-                @php
-                    $gwData = json_decode($data[$key] ?? '{}', true) ?? [];
-                @endphp
+        <form method="POST" action="{{ route('admin.settings.update') }}" onsubmit="serializeDonate()">
+            @csrf
 
-                <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
-                     id="gw-{{ $key }}" role="tabpanel">
-
-                    <form method="POST" action="{{ route('admin.settings.update') }}"
-                          onsubmit="serializeGateway('{{ $key }}')">
-                        @csrf
+            <div class="tab-content" id="donateTabsContent">
+                @foreach($gateways as $key => $gateway)
+                    <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
+                         id="gw-{{ $key }}" role="tabpanel">
 
                         {{-- Common fields --}}
-                        <div class="card mb-3">
-                            <div class="card-header fw-semibold">{{ __('General') }}</div>
-                            <div class="card-body">
-                                <div class="row g-3">
-
-                                    <div class="col-md-2 d-flex align-items-center">
-                                        <label class="form-check mb-0">
-                                            <input class="form-check-input" type="checkbox"
-                                                   id="{{ $key }}_enabled"
-                                                {{ $gwData['enabled'] ?? false ? 'checked' : '' }}>
-                                            <span class="form-check-label fw-semibold">{{ __('Enabled') }}</span>
-                                        </label>
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <label class="form-label">{{ __('Display Name') }}</label>
-                                        <input type="text" class="form-control"
-                                               id="{{ $key }}_name"
-                                               value="{{ $gwData['name'] ?? $gateway['label'] }}">
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label class="form-label">{{ __('Currency') }}</label>
-                                        <input type="text" class="form-control"
-                                               id="{{ $key }}_currency"
-                                               value="{{ $gwData['currency'] ?? 'USD' }}"
-                                               placeholder="USD">
-                                    </div>
-
-                                    <div class="col-md-5">
-                                        <label class="form-label">{{ __('Image Path') }}</label>
-                                        <input type="text" class="form-control"
-                                               id="{{ $key }}_image"
-                                               value="{{ $gwData['image'] ?? '' }}"
-                                               placeholder="images/donate/{{ $key }}.png">
-                                    </div>
-
+                        <div class="mb-3">
+                            <div class="fw-semibold mb-3">{{ __('General') }}</div>
+                            <div>
+                                <div class="mb-3">
+                                    <label class="form-check mb-0">
+                                        <input class="form-check-input" type="checkbox"
+                                               id="{{ $key }}_enabled"
+                                            {{ !empty($gateway['enabled']) ? 'checked' : '' }}>
+                                        <span class="form-check-label fw-semibold">{{ __('Enabled') }}</span>
+                                    </label>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Display Name') }}</label>
+                                    <input type="text" class="form-control"
+                                           id="{{ $key }}_name"
+                                           value="{{ $gateway['name'] ?? $gateway['label'] ?? ucfirst($key) }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Currency') }}</label>
+                                    <input type="text" class="form-control"
+                                           id="{{ $key }}_currency"
+                                           value="{{ $gateway['currency'] ?? 'USD' }}"
+                                           placeholder="USD">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Image Path') }}</label>
+                                    <input type="text" class="form-control"
+                                           id="{{ $key }}_image"
+                                           value="{{ $gateway['image'] ?? '' }}">
                                 </div>
                             </div>
                         </div>
 
                         {{-- Gateway-specific fields --}}
-                        <div class="card mb-3">
-                            <div class="card-header fw-semibold">{{ __('Credentials & Configuration') }}</div>
-                            <div class="card-body">
-                                <div class="row g-3">
-                                    @foreach($gateway['fields'] as $fieldKey => $field)
-                                        <div class="col-md-6">
-                                            <label class="form-label">{{ __($field['label']) }}</label>
-                                            @if($field['type'] === 'select')
-                                                <select class="form-select" id="{{ $key }}_{{ $fieldKey }}">
-                                                    @foreach($field['options'] as $optVal => $optLabel)
-                                                        <option value="{{ $optVal }}"
-                                                            {{ ($gwData[$fieldKey] ?? '') === $optVal ? 'selected' : '' }}>
-                                                            {{ $optLabel }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            @else
-                                                <input type="{{ $field['type'] }}"
-                                                       class="form-control"
-                                                       id="{{ $key }}_{{ $fieldKey }}"
-                                                       value="{{ $gwData[$fieldKey] ?? '' }}"
-                                                       placeholder="{{ $field['placeholder'] ?? '' }}">
-                                            @endif
-                                        </div>
-                                    @endforeach
-                                </div>
+                        <div class="mb-3">
+                            <div class="fw-semibold mb-3">{{ __('Credentials & Configuration') }}</div>
+                            <div>
+                                @foreach($gateway['fields'] ?? [] as $fieldKey => $field)
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ __($field['label']) }}</label>
+                                        @if($field['type'] === 'select')
+                                            <select class="form-select" id="{{ $key }}_{{ $fieldKey }}">
+                                                @foreach($field['options'] as $optVal => $optLabel)
+                                                    <option value="{{ $optVal }}"
+                                                        {{ ($gateway[$fieldKey] ?? '') === $optVal ? 'selected' : '' }}>
+                                                        {{ $optLabel }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        @else
+                                            <input type="{{ $field['type'] }}"
+                                                   class="form-control"
+                                                   id="{{ $key }}_{{ $fieldKey }}"
+                                                   value="{{ $gateway[$fieldKey] ?? '' }}"
+                                                   placeholder="{{ $field['placeholder'] ?? '' }}">
+                                        @endif
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
 
                         {{-- Packages --}}
-                        <div class="card mb-3">
-                            <div class="card-header fw-semibold">{{ __('Packages') }}</div>
-                            <div class="card-body">
+                        <div class="mb-3">
+                            <div class="fw-semibold mb-3">{{ __('Packages') }}</div>
+                            <div>
+                                <button type="button" class="btn btn-secondary btn-sm"
+                                        onclick="addPkg('pkg-table-{{ $key }}')">
+                                    {{ __('+ Add Package') }}
+                                </button>
+
                                 <div class="table-responsive">
                                     <table class="table table-bordered align-middle" id="pkg-table-{{ $key }}">
                                         <thead class="table-light">
@@ -221,7 +131,7 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        @forelse($gwData['package'] ?? [] as $pkg)
+                                        @forelse($gateway['package'] ?? [] as $pkg)
                                             <tr>
                                                 <td><input type="text"   class="form-control" data-pkg="name"  value="{{ $pkg['name']  ?? '' }}"></td>
                                                 <td><input type="number" class="form-control" data-pkg="price" value="{{ $pkg['price'] ?? '' }}" step="0.01" min="0"></td>
@@ -239,23 +149,19 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <button type="button" class="btn btn-secondary btn-sm"
-                                        onclick="addPkg('pkg-table-{{ $key }}')">
-                                    {{ __('+ Add Package') }}
-                                </button>
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">
-                            {{ __('Save Changes') }}
-                        </button>
-
                         <input type="hidden" id="payload-{{ $key }}" name="{{ $key }}">
-                    </form>
-                </div>
+                    </div>
 
-            @endforeach
-        </div>
+                @endforeach
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
+            </div>
+        </form>
     </div>
 
     <script>
@@ -306,6 +212,11 @@
             })).filter(p => p.name || p.price || p.value);
 
             document.getElementById('payload-' + key).value = JSON.stringify(payload);
+        }
+
+        function serializeDonate() {
+            const gateways = {!! json_encode(array_keys($gateways)) !!};
+            gateways.forEach(serializeGateway);
         }
     </script>
 @endsection

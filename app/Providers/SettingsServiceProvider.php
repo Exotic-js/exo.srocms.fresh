@@ -26,12 +26,20 @@ class SettingsServiceProvider extends ServiceProvider
         }
 
         try {
-            $settings = Setting::pluck('value', 'key')->toArray();
+            $settings = Setting::cached()->toArray();
 
             $this->applyAppSettings($settings);
             $this->applyMailSettings($settings);
             $this->applyCaptchaSettings($settings);
             $this->applyVoteSettings($settings);
+            $this->applyJsonSettings($settings, 'donate', 'donate');
+            $this->applyJsonSettings($settings, 'widgets', 'widgets');
+            $this->applyJsonSettings($settings, 'ranking', 'ranking');
+            $this->applyJsonSettings($settings, 'referral', 'global.referral');
+            $this->applyJsonSettings($settings, 'tickets', 'global.tickets');
+            $this->applyJsonSettings($settings, 'sliders', 'global.sliders');
+            $this->applyJsonSettings($settings, 'footer', 'global.footer');
+
 
         } catch (\Exception $e) {
             // DB not ready (e.g. during migrations), silently skip
@@ -43,17 +51,18 @@ class SettingsServiceProvider extends ServiceProvider
      */
     private function applyAppSettings(array $settings): void
     {
-        Config::set('settings', $settings);
+        $mergedSettings = array_replace_recursive(config('settings', []), $settings);
+        Config::set('settings', $mergedSettings);
 
-        Config::set('app.name', $settings['site_title'] ?? config('app.name'));
-        Config::set('app.url',  $settings['site_url']   ?? config('app.url'));
+        Config::set('app.name', $mergedSettings['site_title'] ?? config('app.name'));
+        Config::set('app.url',  $mergedSettings['site_url']   ?? config('app.url'));
 
-        if (!empty($settings['timezone'])) {
-            date_default_timezone_set($settings['timezone']);
+        if (!empty($mergedSettings['timezone'])) {
+            date_default_timezone_set($mergedSettings['timezone']);
         }
 
-        if (!empty($settings['theme'])) {
-            $themePath = resource_path('themes/' . $settings['theme'] . '/views');
+        if (!empty($mergedSettings['theme'])) {
+            $themePath = resource_path('themes/' . $mergedSettings['theme'] . '/views');
             if (is_dir($themePath)) {
                 $this->app['view']->getFinder()->prependLocation($themePath);
             }
@@ -75,7 +84,7 @@ class SettingsServiceProvider extends ServiceProvider
             return;
         }
 
-        Config::set('vote', $vote);
+        Config::set('vote', array_replace_recursive(config('vote', []), $vote));
     }
 
     /**
@@ -123,5 +132,17 @@ class SettingsServiceProvider extends ServiceProvider
         Config::set('mail.mailers.smtp.password',  $nullable($mail['MAIL_PASSWORD'] ?? null));
         Config::set('mail.from.address',           $mail['MAIL_FROM_ADDRESS'] ?? config('mail.from.address'));
         Config::set('mail.from.name',              $mail['MAIL_FROM_NAME']    ?? config('app.name'));
+    }
+
+    private function applyJsonSettings(array $settings, string $settingKey, string $configKey): void
+    {
+        if (empty($settings[$settingKey])) {
+            return;
+        }
+
+        $decoded = json_decode($settings[$settingKey], true);
+        if (is_array($decoded)) {
+            Config::set($configKey, array_replace_recursive(config($configKey, []), $decoded));
+        }
     }
 }

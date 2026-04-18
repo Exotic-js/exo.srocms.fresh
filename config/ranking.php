@@ -131,6 +131,13 @@ return [
         'character_build' => false,
         'character_buff' => false,
         'character_job' => false,
+        'character_unique_history' => false,
+        'character_global_history' => false,
+
+        'event_schedule' => false,
+        'fortress_history' => false,
+        'global_history' => false,
+        'unique_tracker' => false,
         'advanced_unique_tracker' => false,
         'pvp_kill_logs' => false,
         'job_kill_logs' => false,

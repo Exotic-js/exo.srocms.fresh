@@ -13,12 +13,6 @@
     <link href="{{ asset('admin/css/dashboard.css') }}" rel="stylesheet">
     <!-- Inline Styles -->
     @stack('styles')
-    <style>
-        svg {width: 1rem; height: 1rem;}
-        .content>.container {min-height: 100vh;}
-        .table-responsive {min-height: 100vh;}
-        nav[role=navigation] > div:first-child {margin-bottom: 1rem}
-    </style>
 </head>
 <body data-bs-theme="{{ config('settings.dark_mode', 'dark') }}">
 

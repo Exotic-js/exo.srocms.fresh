@@ -53,34 +53,22 @@
             </li>
         </ul>
 
-        <div class="tab-content" id="settingsTabsContent">
+        <form method="POST" action="{{ route('admin.settings.update') }}" onsubmit="serializeWidgets()">
+            @csrf
 
-            {{-- ===================== WIDGETS TAB ===================== --}}
-            <div class="tab-pane fade show active" id="widgets" role="tabpanel">
-                <form method="POST" action="{{ route('admin.settings.update') }}">
-                    @csrf
-                    @php
-                        $limitWidgets = [
-                            ['id' => 'globals_history', 'label' => 'Globals History'],
-                            ['id' => 'unique_history',  'label' => 'Unique History'],
-                            ['id' => 'top_player',      'label' => 'Top Player'],
-                            ['id' => 'top_guild',       'label' => 'Top Guild'],
-                            ['id' => 'sox_plus',        'label' => 'SoX Plus'],
-                            ['id' => 'sox_drop',        'label' => 'SoX Drop'],
-                            ['id' => 'pvp_kills',       'label' => 'PvP Kills'],
-                            ['id' => 'job_kills',       'label' => 'Job Kills'],
-                        ];
-                    @endphp
+            <div class="tab-content" id="settingsTabsContent">
+
+                {{-- ===================== WIDGETS TAB ===================== --}}
+                <div class="tab-pane fade show active" id="widgets" role="tabpanel">
                     <div class="row g-3">
                         @foreach($limitWidgets as $widget)
-                            @php $wd = json_decode($data[$widget['id']] ?? '{"enabled":false}', true); @endphp
                             <div class="col-md-6 col-lg-4">
-                                <div class="card h-100">
-                                    <div class="card-body d-flex align-items-center">
+                                <div class="h-100">
+                                    <div class="d-flex align-items-center">
                                         <label class="form-check mb-0">
                                             <input class="form-check-input" type="checkbox"
                                                    id="{{ $widget['id'] }}_enabled"
-                                                {{ $wd['enabled'] ?? false ? 'checked' : '' }}>
+                                                {{ !empty($widgets[$widget['id']]['enabled']) ? 'checked' : '' }}>
                                             <span class="form-check-label fw-semibold">{{ __($widget['label']) }}</span>
                                         </label>
                                     </div>
@@ -88,22 +76,12 @@
                             </div>
                         @endforeach
                     </div>
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-primary" onclick="serializeWidgets()">{{ __('Save Changes') }}</button>
-                    </div>
-                    @foreach($limitWidgets as $w)
-                        <input type="hidden" id="{{ $w['id'] }}" name="{{ $w['id'] }}">
-                    @endforeach
-                </form>
-            </div>
+                </div>
 
-            {{-- ===================== DISCORD TAB ===================== --}}
-            <div class="tab-pane fade" id="discord" role="tabpanel">
-                <form method="POST" action="{{ route('admin.settings.update') }}">
-                    @csrf
-                    @php $discord = json_decode($data['discord'] ?? '{"enabled":false,"server_id":"","channel_id":"","theme":"dark"}', true); @endphp
-                    <div class="card" style="max-width:600px;">
-                        <div class="card-body">
+                {{-- ===================== DISCORD TAB ===================== --}}
+                <div class="tab-pane fade" id="discord" role="tabpanel">
+                    <div>
+                        <div>
                             <div class="mb-3">
                                 <label class="form-check">
                                     <input class="form-check-input" type="checkbox" id="discord_enabled"
@@ -130,46 +108,16 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mt-3">
-                        <button type="submit" class="btn btn-primary" onclick="serializeDiscord()">{{ __('Save Changes') }}</button>
-                    </div>
                     <input type="hidden" id="discord" name="discord">
-                </form>
-            </div>
+                </div>
 
-            {{-- ===================== EVENT SCHEDULE TAB ===================== --}}
-            <div class="tab-pane fade" id="schedule" role="tabpanel">
-                <form method="POST" action="{{ route('admin.settings.update') }}">
-                    @csrf
-
-                    @php
-                        $eventSchedule = json_decode($data['event_schedule'] ?? '{"enabled":false,"names":{},"custom":{}}', true);
-                        $savedNames    = $eventSchedule['names']  ?? [];
-                        $customEvents  = $eventSchedule['custom'] ?? [];
-
-                        $knownEvents = [
-                            10 => 'Roc',
-                            9  => 'Medusa',
-                            2  => 'Special Trade',
-                            4  => 'Fortress War',
-                            12 => 'Selket & Neith',
-                            13 => 'Anubis & Isis',
-                            14 => 'Haroeris & Seth',
-                            7  => 'Capture The Flag (CTF)',
-                            17 => 'Battle Arena (Random)',
-                            19 => 'Battle Arena (Party)',
-                            21 => 'Battle Arena (Guild)',
-                            23 => 'Battle Arena (Job)',
-                            50 => 'Survival (Solo)',
-                            49 => 'Survival (Party)',
-                        ];
-                    @endphp
-
+                {{-- ===================== EVENT SCHEDULE TAB ===================== --}}
+                <div class="tab-pane fade" id="schedule" role="tabpanel">
                     <div class="mb-3">
                         <label class="form-check">
                             <input class="form-check-input" type="checkbox" id="event_schedule_enabled"
-                                {{ $eventSchedule['enabled'] ?? false ? 'checked' : '' }}>
-                            <span class="form-check-label">{{ __('Enable Event Schedule') }}</span>
+                                {{ !empty($eventSchedule['enabled']) ? 'checked' : '' }}>
+                            <span class="form-check-label fw-semibold">{{ __('Enable Event Schedule') }}</span>
                         </label>
                     </div>
 
@@ -177,86 +125,86 @@
                         {{ __('Add original game events (by Event ID) or fully custom events with their own schedule.') }}
                     </p>
 
+                    <button type="button" class="btn btn-secondary mb-3" id="showAddFormBtn" onclick="showAddForm()">
+                        {{ __('+ Add Event') }}
+                    </button>
+
                     {{-- Event cards container --}}
                     <div id="eventsContainer">
 
                         {{-- Render saved original events (names) --}}
-                        @foreach($savedNames as $id => $name)
-                            <div class="card mb-3 event-card event-original">
-                                <div class="card-header d-flex justify-content-between align-items-center">
+                        @foreach($eventSchedule['names'] ?? [] as $id => $name)
+                            <div class="mb-3 event-item event-original">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
                                     <span>
                                         <span class="badge bg-primary me-2">{{ __('Original') }}</span>
                                         <span class="fw-semibold event-card-title">{{ $name }}</span>
                                     </span>
                                     <button type="button" class="btn btn-sm btn-danger" onclick="removeEvent(this)">{{ __('Remove') }}</button>
                                 </div>
-                                <div class="card-body">
-                                    <div class="row g-3">
-                                        <div class="col-md-3">
-                                            <label class="form-label">{{ __('Event ID') }}</label>
-                                            <input type="number" class="form-control" data-orig="id" value="{{ $id }}"
-                                                   oninput="updateOriginalTitle(this)">
-                                            <div class="form-text">{{ __('Use the numeric game event ID') }}</div>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <label class="form-label">{{ __('Display Name') }}</label>
-                                            <input type="text" class="form-control" data-orig="name" value="{{ $name }}"
-                                                   oninput="updateOriginalTitle(this)">
-                                        </div>
+                                <div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ __('Event ID') }}</label>
+                                        <input type="number" class="form-control" data-orig="id" value="{{ $id }}"
+                                               oninput="updateOriginalTitle(this)">
+                                        <div class="form-text">{{ __('Use the numeric game event ID') }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ __('Display Name') }}</label>
+                                        <input type="text" class="form-control" data-orig="name" value="{{ $name }}"
+                                               oninput="updateOriginalTitle(this)">
                                     </div>
                                 </div>
                             </div>
                         @endforeach
 
                         {{-- Render saved custom events --}}
-                        @foreach($customEvents as $key => $event)
-                            <div class="card mb-3 event-card event-custom">
-                                <div class="card-header d-flex justify-content-between align-items-center">
+                        @foreach($eventSchedule['custom'] ?? [] as $key => $event)
+                            <div class="mb-3 event-item event-custom">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
                                     <span>
                                         <span class="badge bg-success me-2">{{ __('Custom') }}</span>
                                         <span class="fw-semibold event-card-title">{{ $event['name'] ?? __('Unnamed') }}</span>
                                     </span>
                                     <button type="button" class="btn btn-sm btn-danger" onclick="removeEvent(this)">{{ __('Remove') }}</button>
                                 </div>
-                                <div class="card-body">
-                                    <div class="row g-3">
-                                        <div class="col-12">
-                                            <label class="form-check">
-                                                <input class="form-check-input" type="checkbox" data-ce="enabled"
-                                                    {{ $event['enabled'] ?? false ? 'checked' : '' }}>
-                                                <span class="form-check-label">{{ __('Enabled') }}</span>
-                                            </label>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">{{ __('Event Name') }}</label>
-                                            <input type="text" class="form-control" data-ce="name"
-                                                   value="{{ $event['name'] ?? '' }}"
-                                                   oninput="updateCustomTitle(this)">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label">{{ __('Hour (0–23)') }}</label>
-                                            <input type="number" class="form-control" min="0" max="23" data-ce="hour" value="{{ $event['hour'] ?? 0 }}">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label">{{ __('Minute (0–59)') }}</label>
-                                            <input type="number" class="form-control" min="0" max="59" data-ce="min" value="{{ $event['min'] ?? 0 }}">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">{{ __('Duration (seconds)') }}</label>
-                                            <input type="number" class="form-control" min="0" data-ce="duration" value="{{ $event['duration'] ?? 3600 }}">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">{{ __('Days') }}</label>
-                                            <div class="d-flex flex-wrap gap-2">
-                                                @foreach(['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'] as $day)
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="checkbox"
-                                                               data-ce-day="{{ $day }}"
-                                                            {{ in_array($day, $event['days'] ?? []) ? 'checked' : '' }}>
-                                                        <label class="form-check-label">{{ $day }}</label>
-                                                    </div>
-                                                @endforeach
-                                            </div>
+                                <div>
+                                    <div class="mb-3">
+                                        <label class="form-check">
+                                            <input class="form-check-input" type="checkbox" data-ce="enabled"
+                                                {{ $event['enabled'] ?? false ? 'checked' : '' }}>
+                                            <span class="form-check-label">{{ __('Enabled') }}</span>
+                                        </label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ __('Event Name') }}</label>
+                                        <input type="text" class="form-control" data-ce="name"
+                                               value="{{ $event['name'] ?? '' }}"
+                                               oninput="updateCustomTitle(this)">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ __('Hour (0–23)') }}</label>
+                                        <input type="number" class="form-control" min="0" max="23" data-ce="hour" value="{{ $event['hour'] ?? 0 }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ __('Minute (0–59)') }}</label>
+                                        <input type="number" class="form-control" min="0" max="59" data-ce="min" value="{{ $event['min'] ?? 0 }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ __('Duration (seconds)') }}</label>
+                                        <input type="number" class="form-control" min="0" data-ce="duration" value="{{ $event['duration'] ?? 3600 }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ __('Days') }}</label>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @foreach(['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'] as $day)
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           data-ce-day="{{ $day }}"
+                                                        {{ in_array($day, $event['days'] ?? []) ? 'checked' : '' }}>
+                                                    <label class="form-check-label">{{ $day }}</label>
+                                                </div>
+                                            @endforeach
                                         </div>
                                     </div>
                                 </div>
@@ -266,12 +214,12 @@
                     </div>{{-- #eventsContainer --}}
 
                     {{-- Inline Add Event Form --}}
-                    <div id="addEventForm" class="card mb-3" style="display:none; max-width: 900px;">
-                        <div class="card-header d-flex justify-content-between align-items-center">
+                    <div id="addEventForm" class="mb-3" style="display:none;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
                             <span class="fw-semibold">{{ __('New Event') }}</span>
                             <button type="button" class="btn-close" onclick="hideAddForm()"></button>
                         </div>
-                        <div class="card-body">
+                        <div>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">{{ __('Event Type') }}</label>
                                 <select class="form-select" id="newEventType" onchange="switchEventType(this.value)">
@@ -282,54 +230,50 @@
 
                             {{-- Original fields --}}
                             <div id="newEventOriginalFields">
-                                <div class="row g-3">
-                                    <div class="col-md-3">
-                                        <label class="form-label">{{ __('Event ID') }}</label>
-                                        <input type="number" class="form-control" id="newOrigId" placeholder="e.g. 10">
-                                        <div class="form-text">{{ __('Numeric game event ID') }}</div>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <label class="form-label">{{ __('Display Name') }}</label>
-                                        <input type="text" class="form-control" id="newOrigName" placeholder="e.g. Roc">
-                                    </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Event ID') }}</label>
+                                    <input type="number" class="form-control" id="newOrigId" placeholder="e.g. 10">
+                                    <div class="form-text">{{ __('Numeric game event ID') }}</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Display Name') }}</label>
+                                    <input type="text" class="form-control" id="newOrigName" placeholder="e.g. Roc">
                                 </div>
                             </div>
 
                             {{-- Custom fields --}}
                             <div id="newEventCustomFields" style="display:none;">
-                                <div class="row g-3">
-                                    <div class="col-12">
-                                        <label class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="newCeEnabled" checked>
-                                            <span class="form-check-label">{{ __('Enabled') }}</span>
-                                        </label>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">{{ __('Event Name') }}</label>
-                                        <input type="text" class="form-control" id="newCeName">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label">{{ __('Hour (0–23)') }}</label>
-                                        <input type="number" class="form-control" min="0" max="23" id="newCeHour" value="0">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label">{{ __('Minute (0–59)') }}</label>
-                                        <input type="number" class="form-control" min="0" max="59" id="newCeMin" value="0">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">{{ __('Duration (seconds)') }}</label>
-                                        <input type="number" class="form-control" min="0" id="newCeDuration" value="3600">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">{{ __('Days') }}</label>
-                                        <div class="d-flex flex-wrap gap-2" id="newCeDays">
-                                            @foreach(['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'] as $day)
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="checkbox" id="newDay{{ $day }}">
-                                                    <label class="form-check-label" for="newDay{{ $day }}">{{ $day }}</label>
-                                                </div>
-                                            @endforeach
-                                        </div>
+                                <div class="mb-3">
+                                    <label class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="newCeEnabled" checked>
+                                        <span class="form-check-label">{{ __('Enabled') }}</span>
+                                    </label>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Event Name') }}</label>
+                                    <input type="text" class="form-control" id="newCeName">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Hour (0–23)') }}</label>
+                                    <input type="number" class="form-control" min="0" max="23" id="newCeHour" value="0">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Minute (0–59)') }}</label>
+                                    <input type="number" class="form-control" min="0" max="59" id="newCeMin" value="0">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Duration (seconds)') }}</label>
+                                    <input type="number" class="form-control" min="0" id="newCeDuration" value="3600">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Days') }}</label>
+                                    <div class="d-flex flex-wrap gap-2" id="newCeDays">
+                                        @foreach(['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'] as $day)
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="newDay{{ $day }}">
+                                                <label class="form-check-label" for="newDay{{ $day }}">{{ $day }}</label>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
@@ -341,51 +285,16 @@
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-secondary mb-3" id="showAddFormBtn" onclick="showAddForm()">
-                        {{ __('+ Add Event') }}
-                    </button>
-
-                    <div class="mt-2">
-                        <button type="submit" class="btn btn-primary" onclick="serializeEventSchedule()">
-                            {{ __('Save Changes') }}
-                        </button>
-                    </div>
-
                     <input type="hidden" id="event_schedule" name="event_schedule">
-                </form>
-            </div>
+                </div>
 
-            {{-- ===================== FORTRESS WAR TAB ===================== --}}
-            <div class="tab-pane fade" id="fortress-war" role="tabpanel">
-                <form method="POST" action="{{ route('admin.settings.update') }}">
-                    @csrf
-
-                    @php
-                        $fortressWar = json_decode($data['fortress_war'] ?? '{"enabled":false,"names":{}}', true);
-                        $fwEnabled   = $fortressWar['enabled'] ?? false;
-                        $fwNames     = $fortressWar['names']   ?? [];
-
-                        $defaultFortresses = [
-                            1 => ['name' => 'Jangan',         'image' => 'images/sro/etc/fort_jangan.png'],
-                            3 => ['name' => 'Hotan',          'image' => 'images/sro/etc/fort_hotan.png'],
-                            4 => ['name' => 'Constantinople', 'image' => 'images/sro/etc/fort_constantinople.png'],
-                            6 => ['name' => 'Bandit',         'image' => 'images/sro/etc/fort_bijeokdan.png'],
-                        ];
-
-                        // Merge saved names into defaults
-                        foreach ($fwNames as $id => $saved) {
-                            if (isset($defaultFortresses[$id])) {
-                                $defaultFortresses[$id]['name']  = $saved['name']  ?? $defaultFortresses[$id]['name'];
-                                $defaultFortresses[$id]['image'] = $saved['image'] ?? $defaultFortresses[$id]['image'];
-                            }
-                        }
-                    @endphp
-
+                {{-- ===================== FORTRESS WAR TAB ===================== --}}
+                <div class="tab-pane fade" id="fortress-war" role="tabpanel">
                     <div class="mb-3">
                         <label class="form-check">
                             <input class="form-check-input" type="checkbox" id="fw_enabled"
-                                {{ $fwEnabled ? 'checked' : '' }}>
-                            <span class="form-check-label">{{ __('Enable Fortress War Widget') }}</span>
+                                {{ !empty($fortressWar['enabled']) ? 'checked' : '' }}>
+                            <span class="form-check-label fw-semibold">{{ __('Enable Fortress War') }}</span>
                         </label>
                     </div>
 
@@ -393,7 +302,7 @@
                         {{ __('Customize the display name and image path for each fortress. Fortress IDs are fixed.') }}
                     </p>
 
-                    <div class="table-responsive" style="max-width:720px;">
+                    <div class="table-responsive">
                         <table class="table table-bordered align-middle" id="fortressTable">
                             <thead class="table-light">
                             <tr>
@@ -403,7 +312,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($defaultFortresses as $id => $fort)
+                            @foreach($fortressWar['names'] ?? [] as $id => $fort)
                                 <tr>
                                     <td class="text-center">
                                         <span class="badge bg-secondary fs-6">{{ $id }}</span>
@@ -421,32 +330,20 @@
                         </table>
                     </div>
 
-                    <div class="mt-3">
-                        <button type="submit" class="btn btn-primary" onclick="serializeFortressWar()">
-                            {{ __('Save Changes') }}
-                        </button>
-                    </div>
-
                     <input type="hidden" id="fortress_war" name="fortress_war">
-                </form>
-            </div>
+                </div>
 
-            {{-- ===================== SERVER INFO TAB ===================== --}}
-            <div class="tab-pane fade" id="server-info" role="tabpanel">
-                <form method="POST" action="{{ route('admin.settings.update') }}">
-                    @csrf
-
-                    @php
-                        $serverInfo = json_decode($data['server_info'] ?? '{"enabled":false,"data":[]}', true);
-                    @endphp
-
+                {{-- ===================== SERVER INFO TAB ===================== --}}
+                <div class="tab-pane fade" id="server-info" role="tabpanel">
                     <div class="mb-3">
                         <label class="form-check">
                             <input class="form-check-input" type="checkbox" id="server_info_enabled"
-                                {{ $serverInfo['enabled'] ?? false ? 'checked' : '' }}>
-                            <span class="form-check-label">{{ __('Enable Server Info') }}</span>
+                                {{ !empty($serverInfo['enabled']) ? 'checked' : '' }}>
+                            <span class="form-check-label fw-semibold">{{ __('Enable Server Info') }}</span>
                         </label>
                     </div>
+
+                    <button type="button" class="btn btn-secondary" onclick="addRow()">{{ __('+ Add Row') }}</button>
 
                     <table class="table table-striped" id="serverInfoTable">
                         <thead>
@@ -476,35 +373,27 @@
                         </tbody>
                     </table>
 
-                    <button type="button" class="btn btn-secondary" onclick="addRow()">{{ __('+ Add Row') }}</button>
-                    <button type="submit" class="btn btn-primary" onclick="serializeServerInfo()">{{ __('Save Changes') }}</button>
-
                     <input type="hidden" id="server_info" name="server_info">
-                </form>
-            </div>
+                </div>
 
 
-            {{-- ===================== CUSTOM WIDGETS TAB ===================== --}}
-            <div class="tab-pane fade" id="custom-widgets" role="tabpanel">
-                <form method="POST" action="{{ route('admin.settings.update') }}">
-                    @csrf
-
-                    @php
-                        $customWidgets = json_decode($data['custom'] ?? '{}', true) ?? [];
-                    @endphp
+                {{-- ===================== CUSTOM WIDGETS TAB ===================== --}}
+                <div class="tab-pane fade" id="custom-widgets" role="tabpanel">
 
                     <p class="text-muted small mb-3">
                         {{ __('Each custom widget has a unique key, an optional Blade template, an optional SQL query, and an enable toggle.') }}
                     </p>
 
+                    <button type="button" class="btn btn-secondary mb-3" onclick="addCw()">{{ __('+ Add Custom Widget') }}</button>
+
                     <div id="customWidgetsContainer">
                         @foreach($customWidgets as $widgetKey => $widget)
-                            <div class="card mb-3 custom-widget-card">
-                                <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="mb-3 custom-widget-item">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
                                     <span class="fw-semibold custom-widget-title">{{ $widgetKey }}</span>
                                     <button type="button" class="btn btn-sm btn-danger" onclick="removeCw(this)">{{ __('Remove') }}</button>
                                 </div>
-                                <div class="card-body">
+                                <div>
                                     <div class="row g-3">
                                         <div class="col-md-4">
                                             <label class="form-label">{{ __('Widget Key') }}</label>
@@ -539,24 +428,20 @@
                         @endforeach
                     </div>
 
-                    <button type="button" class="btn btn-secondary mb-3" onclick="addCw()">{{ __('+ Add Custom Widget') }}</button>
-
-                    <div class="mt-2">
-                        <button type="submit" class="btn btn-primary" onclick="serializeCustomWidgets()">
-                            {{ __('Save Changes') }}
-                        </button>
-                    </div>
-
                     <input type="hidden" id="custom" name="custom">
-                </form>
-            </div>
+                </div>
 
-        </div>{{-- .tab-content --}}
+            </div>{{-- .tab-content --}}
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
+            </div>
+        </form>
     </div>
 
     <script>
         // ─── Widgets ──────────────────────────────────────────────────────────────────
-        function serializeWidgets() {
+        function serializeWidgetToggles() {
             ['globals_history','unique_history','top_player','top_guild','sox_plus','sox_drop','pvp_kills','job_kills']
                 .forEach(id => {
                     document.getElementById(id).value = JSON.stringify({
@@ -613,16 +498,16 @@
                 const id   = document.getElementById('newOrigId').value.trim();
                 const name = document.getElementById('newOrigName').value.trim();
                 if (!id) { alert('{{ __("Please enter an Event ID.") }}'); return; }
-                card.className = 'card mb-3 event-card event-original';
+                card.className = 'mb-3 event-item event-original';
                 card.innerHTML = `
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
                         <span>
                             <span class="badge bg-primary me-2">{{ __('Original') }}</span>
                             <span class="fw-semibold event-card-title">${name || 'ID: ' + id}</span>
                         </span>
                         <button type="button" class="btn btn-sm btn-danger" onclick="removeEvent(this)">{{ __('Remove') }}</button>
                     </div>
-                    <div class="card-body">
+                    <div>
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <label class="form-label">{{ __('Event ID') }}</label>
@@ -645,16 +530,16 @@
                 const duration = document.getElementById('newCeDuration').value;
                 const days     = Array.from(document.querySelectorAll('#newCeDays input:checked'))
                     .map(cb => cb.closest('.form-check-inline').querySelector('label').textContent.trim());
-                card.className = 'card mb-3 event-card event-custom';
+                card.className = 'mb-3 event-item event-custom';
                 card.innerHTML = `
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
                         <span>
                             <span class="badge bg-success me-2">{{ __('Custom') }}</span>
                             <span class="fw-semibold event-card-title">${name || '{{ __("Unnamed") }}'}</span>
                         </span>
                         <button type="button" class="btn btn-sm btn-danger" onclick="removeEvent(this)">{{ __('Remove') }}</button>
                     </div>
-                    <div class="card-body">
+                    <div>
                         <div class="row g-3">
                             <div class="col-12">
                                 <label class="form-check">
@@ -698,18 +583,18 @@
         }
 
         function removeEvent(btn) {
-            btn.closest('.event-card').remove();
+            btn.closest('.event-item').remove();
         }
 
         function updateOriginalTitle(input) {
-            const card = input.closest('.event-card');
+            const card = input.closest('.event-item');
             const id   = card.querySelector('[data-orig="id"]').value;
             const name = card.querySelector('[data-orig="name"]').value;
             card.querySelector('.event-card-title').textContent = name ? `${name} (ID: ${id})` : `ID: ${id}`;
         }
 
         function updateCustomTitle(input) {
-            const card = input.closest('.event-card');
+            const card = input.closest('.event-item');
             const name = card.querySelector('[data-ce="name"]').value;
             card.querySelector('.event-card-title').textContent = name || '{{ __("Unnamed") }}';
         }
@@ -719,7 +604,7 @@
             const custom = {};
             let customIdx = 101;
 
-            document.querySelectorAll('#eventsContainer .event-card').forEach(card => {
+            document.querySelectorAll('#eventsContainer .event-item').forEach(card => {
                 if (card.classList.contains('event-original')) {
                     const id   = card.querySelector('[data-orig="id"]').value;
                     const name = card.querySelector('[data-orig="name"]').value;
@@ -794,20 +679,20 @@
 
         // ─── Custom Widgets ───────────────────────────────────────────────────────────
         function updateCwTitle(input) {
-            const card = input.closest('.custom-widget-card');
+            const card = input.closest('.custom-widget-item');
             card.querySelector('.custom-widget-title').textContent = input.value || '{{ __("Unnamed") }}';
         }
 
         function addCw() {
             const container = document.getElementById('customWidgetsContainer');
             const card = document.createElement('div');
-            card.className = 'card mb-3 custom-widget-card';
+            card.className = 'mb-3 custom-widget-item';
             card.innerHTML = `
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center mb-3">
                     <span class="fw-semibold custom-widget-title">{{ __('New Widget') }}</span>
                     <button type="button" class="btn btn-sm btn-danger" onclick="removeCw(this)">{{ __('Remove') }}</button>
                 </div>
-                <div class="card-body">
+                <div>
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label class="form-label">{{ __('Widget Key') }}</label>
@@ -839,12 +724,12 @@
         }
 
         function removeCw(btn) {
-            btn.closest('.custom-widget-card').remove();
+            btn.closest('.custom-widget-item').remove();
         }
 
         function serializeCustomWidgets() {
             const result = {};
-            document.querySelectorAll('#customWidgetsContainer .custom-widget-card').forEach(card => {
+            document.querySelectorAll('#customWidgetsContainer .custom-widget-item').forEach(card => {
                 const key      = card.querySelector('[data-cw="key"]').value.trim();
                 const template = card.querySelector('[data-cw="template"]').value.trim();
                 const query    = card.querySelector('[data-cw="query"]').value.trim();
@@ -852,6 +737,15 @@
                 if (key) result[key] = { enabled, template, query };
             });
             document.getElementById('custom').value = JSON.stringify(result);
+        }
+
+        function serializeWidgets() {
+            serializeWidgetToggles();
+            serializeDiscord();
+            serializeEventSchedule();
+            serializeFortressWar();
+            serializeServerInfo();
+            serializeCustomWidgets();
         }
 
     </script>
