@@ -87,7 +87,8 @@ class SettingController extends Controller
                 continue;
             }
 
-            if (in_array($key, $widgetKeys, true)) {
+            // Handle widget settings - include event_schedule and other keys
+            if (in_array($key, $widgetKeys, true) || $key === 'event_schedule' || $key === 'fortress_war' || $key === 'server_info' || $key === 'custom') {
                 $decoded = json_decode($value, true);
                 if (is_array($decoded)) {
                     $widgets[$key] = $decoded;

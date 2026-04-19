@@ -32,6 +32,11 @@
                 </button>
             </li>
             <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#server-info" type="button" role="tab">
+                    {{ __('Server Info') }}
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#schedule" type="button" role="tab">
                     {{ __('Event Schedule') }}
                 </button>
@@ -46,43 +51,31 @@
                     {{ __('Custom Widgets') }}
                 </button>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#server-info" type="button" role="tab">
-                    {{ __('Server Info') }}
-                </button>
-            </li>
         </ul>
 
-        <form method="POST" action="{{ route('admin.settings.update') }}" onsubmit="serializeWidgets()">
+        <form method="POST" action="{{ route('admin.settings.update') }}" onsubmit="serializeWidgets(); return true;">
             @csrf
 
             <div class="tab-content" id="settingsTabsContent">
 
                 {{-- ===================== WIDGETS TAB ===================== --}}
                 <div class="tab-pane fade show active" id="widgets" role="tabpanel">
-                    <div class="row g-3">
-                        @foreach($limitWidgets as $widget)
-                            <div class="col-md-6 col-lg-4">
-                                <div class="h-100">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <label class="form-check mb-0">
-                                            <input class="form-check-input" type="checkbox"
-                                                   id="{{ $widget['id'] }}_enabled"
-                                                {{ !empty($widgets[$widget['id']]['enabled']) ? 'checked' : '' }}>
-                                            <span class="form-check-label fw-semibold">{{ __($widget['label']) }}</span>
-                                        </label>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label small">{{ __('Limit') }}</label>
-                                        <input type="number" class="form-control form-control-sm" 
-                                               id="{{ $widget['id'] }}_limit"
-                                               value="{{ $widgets[$widget['id']]['limit'] ?? 5 }}"
-                                               min="1" max="50">
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
+                    @foreach($limitWidgets as $widget)
+                        <div class="mb-3">
+                            <label class="form-check">
+                                <input class="form-check-input" type="checkbox"
+                                       id="{{ $widget['id'] }}_enabled"
+                                    {{ !empty($widgets[$widget['id']]['enabled']) ? 'checked' : '' }}>
+                                <span class="form-check-label fw-semibold">{{ __($widget['label']) }}</span>
+                            </label>
+                            <label class="form-label small ms-3">{{ __('Limit') }}</label>
+                            <input type="number" class="form-control form-control-sm d-inline-block" 
+                                   style="width: 80px;"
+                                   id="{{ $widget['id'] }}_limit"
+                                   value="{{ $widgets[$widget['id']]['limit'] ?? 5 }}"
+                                   min="1" max="50">
+                        </div>
+                    @endforeach
                 </div>
 
                 {{-- ===================== DISCORD TAB ===================== --}}
@@ -141,15 +134,12 @@
 
                         {{-- Render saved original events (names) --}}
                         @foreach($eventSchedule['names'] ?? [] as $id => $name)
-                            <div class="mb-3 event-item event-original">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span>
-                                        <span class="badge bg-primary me-2">{{ __('Original') }}</span>
-                                        <span class="fw-semibold event-card-title">{{ $name }}</span>
-                                    </span>
-                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeEvent(this)">{{ __('Remove') }}</button>
+                            <div class="card mb-3 event-item event-original">
+                                <div class="card-header">
+                                    <span class="badge bg-primary me-2">{{ __('Original') }}</span>
+                                    <span class="fw-semibold event-card-title">{{ $name }}</span>
                                 </div>
-                                <div>
+                                <div class="card-body">
                                     <div class="mb-3">
                                         <label class="form-label">{{ __('Event ID') }}</label>
                                         <input type="number" class="form-control" data-orig="id" value="{{ $id }}"
@@ -161,21 +151,21 @@
                                         <input type="text" class="form-control" data-orig="name" value="{{ $name }}"
                                                oninput="updateOriginalTitle(this)">
                                     </div>
+                                    <div class="d-flex justify-content-start">
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="removeEvent(this)">{{ __('Remove') }}</button>
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
 
                         {{-- Render saved custom events --}}
                         @foreach($eventSchedule['custom'] ?? [] as $key => $event)
-                            <div class="mb-3 event-item event-custom">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span>
-                                        <span class="badge bg-success me-2">{{ __('Custom') }}</span>
-                                        <span class="fw-semibold event-card-title">{{ $event['name'] ?? __('Unnamed') }}</span>
-                                    </span>
-                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeEvent(this)">{{ __('Remove') }}</button>
+                            <div class="card mb-3 event-item event-custom">
+                                <div class="card-header">
+                                    <span class="badge bg-success me-2">{{ __('Custom') }}</span>
+                                    <span class="fw-semibold event-card-title">{{ $event['name'] ?? __('Unnamed') }}</span>
                                 </div>
-                                <div>
+                                <div class="card-body">
                                     <div class="mb-3">
                                         <label class="form-check">
                                             <input class="form-check-input" type="checkbox" data-ce="enabled"
@@ -190,12 +180,30 @@
                                                oninput="updateCustomTitle(this)">
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">{{ __('Hour (0–23)') }}</label>
-                                        <input type="number" class="form-control" min="0" max="23" data-ce="hour" value="{{ $event['hour'] ?? 0 }}">
+                                        <label class="form-label">{{ __('Hours (0-23)') }}</label>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @for($hour = 0; $hour <= 23; $hour++)
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           data-ce-hour="{{ $hour }}"
+                                                        {{ isset($event['hour']) && $hour == $event['hour'] ? 'checked' : '' }}>
+                                                    <label class="form-check-label">{{ $hour }}</label>
+                                                </div>
+                                            @endfor
+                                        </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">{{ __('Minute (0–59)') }}</label>
-                                        <input type="number" class="form-control" min="0" max="59" data-ce="min" value="{{ $event['min'] ?? 0 }}">
+                                        <label class="form-label">{{ __('Minutes (0-59)') }}</label>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @for($minute = 0; $minute <= 59; $minute++)
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           data-ce-minute="{{ $minute }}"
+                                                        {{ isset($event['min']) && $minute == $event['min'] ? 'checked' : '' }}>
+                                                    <label class="form-check-label">{{ $minute }}</label>
+                                                </div>
+                                            @endfor
+                                        </div>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">{{ __('Duration (seconds)') }}</label>
@@ -214,6 +222,9 @@
                                             @endforeach
                                         </div>
                                     </div>
+                                    <div class="d-flex justify-content-start">
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="removeEvent(this)">{{ __('Remove') }}</button>
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
@@ -221,12 +232,12 @@
                     </div>{{-- #eventsContainer --}}
 
                     {{-- Inline Add Event Form --}}
-                    <div id="addEventForm" class="mb-3" style="display:none;">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div id="addEventForm" class="card border-primary mb-3" style="display:none;">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                             <span class="fw-semibold">{{ __('New Event') }}</span>
-                            <button type="button" class="btn-close" onclick="hideAddForm()"></button>
+                            <button type="button" class="btn-close btn-close-white" onclick="hideAddForm()"></button>
                         </div>
-                        <div>
+                        <div class="card-body">
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">{{ __('Event Type') }}</label>
                                 <select class="form-select" id="newEventType" onchange="switchEventType(this.value)">
@@ -237,14 +248,20 @@
 
                             {{-- Original fields --}}
                             <div id="newEventOriginalFields">
-                                <div class="mb-3">
-                                    <label class="form-label">{{ __('Event ID') }}</label>
-                                    <input type="number" class="form-control" id="newOrigId" placeholder="e.g. 10">
-                                    <div class="form-text">{{ __('Numeric game event ID') }}</div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">{{ __('Display Name') }}</label>
-                                    <input type="text" class="form-control" id="newOrigName" placeholder="e.g. Roc">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">{{ __('Event ID') }}</label>
+                                            <input type="number" class="form-control" id="newOrigId" placeholder="e.g. 10">
+                                            <div class="form-text">{{ __('Numeric game event ID') }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">{{ __('Display Name') }}</label>
+                                            <input type="text" class="form-control" id="newOrigName" placeholder="e.g. Roc">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -261,12 +278,26 @@
                                     <input type="text" class="form-control" id="newCeName">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">{{ __('Hour (0–23)') }}</label>
-                                    <input type="number" class="form-control" min="0" max="23" id="newCeHour" value="0">
+                                    <label class="form-label">{{ __('Hours (0-23)') }}</label>
+                                    <div class="d-flex flex-wrap gap-2" id="newCeHours">
+                                        @for($hour = 0; $hour <= 23; $hour++)
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="newHour{{ $hour }}">
+                                                <label class="form-check-label" for="newHour{{ $hour }}">{{ $hour }}</label>
+                                            </div>
+                                        @endfor
+                                    </div>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">{{ __('Minute (0–59)') }}</label>
-                                    <input type="number" class="form-control" min="0" max="59" id="newCeMin" value="0">
+                                    <label class="form-label">{{ __('Minutes (0-59)') }}</label>
+                                    <div class="d-flex flex-wrap gap-2" id="newCeMinutes">
+                                        @for($minute = 0; $minute <= 59; $minute++)
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="newMinute{{ $minute }}">
+                                                <label class="form-check-label" for="newMinute{{ $minute }}">{{ $minute }}</label>
+                                            </div>
+                                        @endfor
+                                    </div>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">{{ __('Duration (seconds)') }}</label>
@@ -350,10 +381,10 @@
                         </label>
                     </div>
 
-                    <button type="button" class="btn btn-secondary" onclick="addRow()">{{ __('+ Add Row') }}</button>
+                    <button type="button" class="btn btn-secondary mb-3" onclick="addRow()">{{ __('+ Add Row') }}</button>
 
-                    <table class="table table-striped" id="serverInfoTable">
-                        <thead>
+                    <table class="table table-bordered align-middle" id="serverInfoTable">
+                        <thead class="table-light">
                         <tr>
                             <th>{{ __('Icon') }}</th>
                             <th>{{ __('Name') }}</th>
@@ -364,17 +395,17 @@
                         <tbody>
                         @forelse($serverInfo['data'] ?? [] as $row)
                             <tr>
-                                <td><input type="text" class="form-control" value="{{ $row['icon'] ?? '' }}" data-key="icon"></td>
-                                <td><input type="text" class="form-control" value="{{ $row['name'] ?? '' }}" data-key="name"></td>
-                                <td><input type="text" class="form-control" value="{{ $row['value'] ?? '' }}" data-key="value"></td>
-                                <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">{{ __('Remove') }}</button></td>
+                                <td><input type="text" class="form-control form-control-sm" value="{{ $row['icon'] ?? '' }}" data-key="icon"></td>
+                                <td><input type="text" class="form-control form-control-sm" value="{{ $row['name'] ?? '' }}" data-key="name"></td>
+                                <td><input type="text" class="form-control form-control-sm" value="{{ $row['value'] ?? '' }}" data-key="value"></td>
+                                <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">{{ __('Remove') }}</button></td>
                             </tr>
                         @empty
                             <tr>
-                                <td><input type="text" class="form-control" data-key="icon"></td>
-                                <td><input type="text" class="form-control" data-key="name"></td>
-                                <td><input type="text" class="form-control" data-key="value"></td>
-                                <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">{{ __('Remove') }}</button></td>
+                                <td><input type="text" class="form-control form-control-sm" data-key="icon"></td>
+                                <td><input type="text" class="form-control form-control-sm" data-key="name"></td>
+                                <td><input type="text" class="form-control form-control-sm" data-key="value"></td>
+                                <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">{{ __('Remove') }}</button></td>
                             </tr>
                         @endforelse
                         </tbody>
@@ -395,40 +426,40 @@
 
                     <div id="customWidgetsContainer">
                         @foreach($customWidgets as $widgetKey => $widget)
-                            <div class="mb-3 custom-widget-item">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="card mb-3 custom-widget-item">
+                                <div class="card-header">
                                     <span class="fw-semibold custom-widget-title">{{ $widgetKey }}</span>
-                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeCw(this)">{{ __('Remove') }}</button>
                                 </div>
-                                <div>
-                                    <div class="row g-3">
-                                        <div class="col-md-4">
-                                            <label class="form-label">{{ __('Widget Key') }}</label>
-                                            <input type="text" class="form-control" data-cw="key"
-                                                   value="{{ $widgetKey }}"
-                                                   oninput="updateCwTitle(this)"
-                                                   placeholder="e.g. owned_titles">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label">{{ __('Template') }}</label>
-                                            <input type="text" class="form-control" data-cw="template"
-                                                   value="{{ $widget['template'] ?? '' }}"
-                                                   placeholder="e.g. partials.character-owned-titles">
-                                        </div>
-                                        <div class="col-md-4 d-flex align-items-end">
-                                            <label class="form-check mb-2">
-                                                <input class="form-check-input" type="checkbox" data-cw="enabled"
-                                                    {{ $widget['enabled'] ?? false ? 'checked' : '' }}>
-                                                <span class="form-check-label">{{ __('Enabled') }}</span>
-                                            </label>
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label">{{ __('SQL Query') }}</label>
-                                            <textarea class="form-control font-monospace" data-cw="query"
-                                                      rows="6"
-                                                      placeholder="SELECT ...">{{ $widget['query'] ?? '' }}</textarea>
-                                            <div class="form-text">{{ __('Use :Limit and :CharID as named parameters where needed.') }}</div>
-                                        </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-check">
+                                            <input class="form-check-input" type="checkbox" data-cw="enabled"
+                                                {{ $widget['enabled'] ?? false ? 'checked' : '' }}>
+                                            <span class="form-check-label fw-semibold">{{ __('Enabled') }}</span>
+                                        </label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ __('Widget Key') }}</label>
+                                        <input type="text" class="form-control" data-cw="key"
+                                               value="{{ $widgetKey }}"
+                                               oninput="updateCwTitle(this)"
+                                               placeholder="e.g. owned_titles">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ __('Template') }}</label>
+                                        <input type="text" class="form-control" data-cw="template"
+                                               value="{{ $widget['template'] ?? '' }}"
+                                               placeholder="e.g. partials.character-owned-titles">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ __('SQL Query') }}</label>
+                                        <textarea class="form-control font-monospace" data-cw="query"
+                                                  rows="6"
+                                                  placeholder="SELECT ...">{{ $widget['query'] ?? '' }}</textarea>
+                                        <div class="form-text">{{ __('Use :Limit and :CharID as named parameters where needed.') }}</div>
+                                    </div>
+                                    <div class="d-flex justify-content-start mt-3">
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="removeCw(this)">{{ __('Remove') }}</button>
                                     </div>
                                 </div>
                             </div>
@@ -440,7 +471,17 @@
 
             </div>{{-- .tab-content --}}
 
-            <div class="mt-4">
+            {{-- Hidden inputs for widget data --}}
+        <input type="hidden" id="globals_history" name="globals_history">
+        <input type="hidden" id="unique_history" name="unique_history">
+        <input type="hidden" id="top_player" name="top_player">
+        <input type="hidden" id="top_guild" name="top_guild">
+        <input type="hidden" id="sox_plus" name="sox_plus">
+        <input type="hidden" id="sox_drop" name="sox_drop">
+        <input type="hidden" id="pvp_kills" name="pvp_kills">
+        <input type="hidden" id="job_kills" name="job_kills">
+
+        <div class="mt-4">
                 <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
             </div>
         </form>
@@ -451,9 +492,18 @@
         function serializeWidgetToggles() {
             ['globals_history','unique_history','top_player','top_guild','sox_plus','sox_drop','pvp_kills','job_kills']
                 .forEach(id => {
-                    document.getElementById(id).value = JSON.stringify({
-                        enabled: document.getElementById(id + '_enabled').checked,
-                        limit: parseInt(document.getElementById(id + '_limit').value) || 5,
+                    const enabledElement = document.getElementById(id + '_enabled');
+                    const limitElement = document.getElementById(id + '_limit');
+                    const hiddenElement = document.getElementById(id);
+                    
+                    if (!hiddenElement) {
+                        console.error('Missing hidden input for widget:', id);
+                        return;
+                    }
+                    
+                    hiddenElement.value = JSON.stringify({
+                        enabled: enabledElement ? enabledElement.checked : false,
+                        limit: limitElement ? parseInt(limitElement.value) || 5 : 5,
                     });
                 });
         }
@@ -479,11 +529,11 @@
             document.getElementById('newOrigId').value = '';
             document.getElementById('newOrigName').value = '';
             document.getElementById('newCeName').value = '';
-            document.getElementById('newCeHour').value = '0';
-            document.getElementById('newCeMin').value = '0';
             document.getElementById('newCeDuration').value = '3600';
             document.getElementById('newCeEnabled').checked = true;
             document.querySelectorAll('#newCeDays input[type=checkbox]').forEach(cb => cb.checked = false);
+            document.querySelectorAll('#newCeHours input[type=checkbox]').forEach(cb => cb.checked = false);
+            document.querySelectorAll('#newCeMinutes input[type=checkbox]').forEach(cb => cb.checked = false);
             switchEventType('original');
         }
 
@@ -506,82 +556,95 @@
                 const id   = document.getElementById('newOrigId').value.trim();
                 const name = document.getElementById('newOrigName').value.trim();
                 if (!id) { alert('{{ __("Please enter an Event ID.") }}'); return; }
-                card.className = 'mb-3 event-item event-original';
+                card.className = 'card mb-3 event-item event-original';
                 card.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span>
-                            <span class="badge bg-primary me-2">{{ __('Original') }}</span>
-                            <span class="fw-semibold event-card-title">${name || 'ID: ' + id}</span>
-                        </span>
-                        <button type="button" class="btn btn-sm btn-danger" onclick="removeEvent(this)">{{ __('Remove') }}</button>
+                    <div class="card-header">
+                        <span class="badge bg-primary me-2">{{ __('Original') }}</span>
+                        <span class="fw-semibold event-card-title">${name || 'ID: ' + id}</span>
                     </div>
-                    <div>
-                        <div class="row g-3">
-                            <div class="col-md-3">
-                                <label class="form-label">{{ __('Event ID') }}</label>
-                                <input type="number" class="form-control" data-orig="id" value="${id}"
-                                       oninput="updateOriginalTitle(this)">
-                                <div class="form-text">{{ __('Use the numeric game event ID') }}</div>
-                            </div>
-                            <div class="col-md-9">
-                                <label class="form-label">{{ __('Display Name') }}</label>
-                                <input type="text" class="form-control" data-orig="name" value="${name}"
-                                       oninput="updateOriginalTitle(this)">
-                            </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">{{ __('Event ID') }}</label>
+                            <input type="number" class="form-control" data-orig="id" value="${id}"
+                                   oninput="updateOriginalTitle(this)">
+                            <div class="form-text">{{ __('Use the numeric game event ID') }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ __('Display Name') }}</label>
+                            <input type="text" class="form-control" data-orig="name" value="${name}"
+                                   oninput="updateOriginalTitle(this)">
+                        </div>
+                        <div class="d-flex justify-content-start">
+                            <button type="button" class="btn btn-sm btn-danger" onclick="removeEvent(this)">{{ __('Remove') }}</button>
                         </div>
                     </div>`;
             } else {
                 const name     = document.getElementById('newCeName').value.trim();
                 const enabled  = document.getElementById('newCeEnabled').checked;
-                const hour     = document.getElementById('newCeHour').value;
-                const min      = document.getElementById('newCeMin').value;
                 const duration = document.getElementById('newCeDuration').value;
                 const days     = Array.from(document.querySelectorAll('#newCeDays input:checked'))
                     .map(cb => cb.closest('.form-check-inline').querySelector('label').textContent.trim());
-                card.className = 'mb-3 event-item event-custom';
+                const hours    = Array.from(document.querySelectorAll('#newCeHours input:checked'))
+                    .map(cb => cb.getAttribute('data-ce-hour'));
+                const minutes  = Array.from(document.querySelectorAll('#newCeMinutes input:checked'))
+                    .map(cb => cb.getAttribute('data-ce-minute'));
+                
+                card.className = 'card mb-3 event-item event-custom';
                 card.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span>
-                            <span class="badge bg-success me-2">{{ __('Custom') }}</span>
-                            <span class="fw-semibold event-card-title">${name || '{{ __("Unnamed") }}'}</span>
-                        </span>
-                        <button type="button" class="btn btn-sm btn-danger" onclick="removeEvent(this)">{{ __('Remove') }}</button>
+                    <div class="card-header">
+                        <span class="badge bg-success me-2">{{ __('Custom') }}</span>
+                        <span class="fw-semibold event-card-title">${name || '{{ __("Unnamed") }}'}</span>
                     </div>
-                    <div>
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <label class="form-check">
-                                    <input class="form-check-input" type="checkbox" data-ce="enabled" ${enabled ? 'checked' : ''}>
-                                    <span class="form-check-label">{{ __('Enabled') }}</span>
-                                </label>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-check">
+                                <input class="form-check-input" type="checkbox" data-ce="enabled" ${enabled ? 'checked' : ''}>
+                                <span class="form-check-label">{{ __('Enabled') }}</span>
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ __('Event Name') }}</label>
+                            <input type="text" class="form-control" data-ce="name" value="${name}"
+                                   oninput="updateCustomTitle(this)">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ __('Hours (0-23)') }}</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                ${Array.from({length: 24}, (_, h) => `
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox"
+                                               data-ce-hour="${h}" ${hours.includes(h.toString()) ? 'checked' : ''}>
+                                        <label class="form-check-label">${h}</label>
+                                    </div>`).join('')}
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label">{{ __('Event Name') }}</label>
-                                <input type="text" class="form-control" data-ce="name" value="${name}"
-                                       oninput="updateCustomTitle(this)">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ __('Minutes (0-59)') }}</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                ${Array.from({length: 60}, (_, m) => `
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox"
+                                               data-ce-minute="${m}" ${minutes.includes(m.toString()) ? 'checked' : ''}>
+                                        <label class="form-check-label">${m}</label>
+                                    </div>`).join('')}
                             </div>
-                            <div class="col-md-3">
-                                <label class="form-label">{{ __('Hour (0–23)') }}</label>
-                                <input type="number" class="form-control" min="0" max="23" data-ce="hour" value="${hour}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ __('Duration (seconds)') }}</label>
+                            <input type="number" class="form-control" min="0" data-ce="duration" value="${duration}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ __('Days') }}</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                ${weekDays.map(d => `
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" data-ce-day="${d}" ${days.includes(d) ? 'checked' : ''}>
+                                        <label class="form-check-label">${d}</label>
+                                    </div>`).join('')}
                             </div>
-                            <div class="col-md-3">
-                                <label class="form-label">{{ __('Minute (0–59)') }}</label>
-                                <input type="number" class="form-control" min="0" max="59" data-ce="min" value="${min}">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">{{ __('Duration (seconds)') }}</label>
-                                <input type="number" class="form-control" min="0" data-ce="duration" value="${duration}">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">{{ __('Days') }}</label>
-                                <div class="d-flex flex-wrap gap-2">
-                                    ${weekDays.map(d => `
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" data-ce-day="${d}" ${days.includes(d) ? 'checked' : ''}>
-                                            <label class="form-check-label">${d}</label>
-                                        </div>`).join('')}
-                                </div>
-                            </div>
+                        </div>
+                        <div class="d-flex justify-content-start">
+                            <button type="button" class="btn btn-sm btn-danger" onclick="removeEvent(this)">{{ __('Remove') }}</button>
                         </div>
                     </div>`;
             }
@@ -622,12 +685,24 @@
                         .filter(cb => cb.checked)
                         .map(cb => cb.getAttribute('data-ce-day'));
 
+                    const selectedHours = Array.from(card.querySelectorAll('[data-ce-hour]'))
+                        .filter(cb => cb.checked)
+                        .map(cb => parseInt(cb.getAttribute('data-ce-hour')));
+
+                    const selectedMinutes = Array.from(card.querySelectorAll('[data-ce-minute]'))
+                        .filter(cb => cb.checked)
+                        .map(cb => parseInt(cb.getAttribute('data-ce-minute')));
+
+                    // Handle single integer values to match config format exactly
+                    const hour = selectedHours.length === 0 ? 8 : selectedHours[0];
+                    const min = selectedMinutes.length === 0 ? 0 : selectedMinutes[0];
+
                     custom[customIdx++] = {
                         enabled:  card.querySelector('[data-ce="enabled"]').checked,
                         name:     card.querySelector('[data-ce="name"]').value,
                         days:     selectedDays,
-                        hour:     parseInt(card.querySelector('[data-ce="hour"]').value)     || 0,
-                        min:      parseInt(card.querySelector('[data-ce="min"]').value)      || 0,
+                        hour:     hour,
+                        min:      min,
                         duration: parseInt(card.querySelector('[data-ce="duration"]').value) || 3600,
                     };
                 }
@@ -661,10 +736,10 @@
             const tbody = document.getElementById('serverInfoTable').querySelector('tbody');
             const row   = tbody.insertRow();
             row.innerHTML = `
-                <td><input type="text" class="form-control" data-key="icon"></td>
-                <td><input type="text" class="form-control" data-key="name"></td>
-                <td><input type="text" class="form-control" data-key="value"></td>
-                <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">{{ __('Remove') }}</button></td>
+                <td><input type="text" class="form-control form-control-sm" data-key="icon"></td>
+                <td><input type="text" class="form-control form-control-sm" data-key="name"></td>
+                <td><input type="text" class="form-control form-control-sm" data-key="value"></td>
+                <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">{{ __('Remove') }}</button></td>
             `;
         }
 
@@ -694,38 +769,39 @@
         function addCw() {
             const container = document.getElementById('customWidgetsContainer');
             const card = document.createElement('div');
-            card.className = 'mb-3 custom-widget-item';
+            card.className = 'card mb-3 custom-widget-item border-success';
             card.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                     <span class="fw-semibold custom-widget-title">{{ __('New Widget') }}</span>
-                    <button type="button" class="btn btn-sm btn-danger" onclick="removeCw(this)">{{ __('Remove') }}</button>
+                    <button type="button" class="btn-close btn-close-white" onclick="removeCw(this)"></button>
                 </div>
-                <div>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">{{ __('Widget Key') }}</label>
-                            <input type="text" class="form-control" data-cw="key"
-                                   oninput="updateCwTitle(this)"
-                                   placeholder="e.g. owned_titles">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">{{ __('Template') }}</label>
-                            <input type="text" class="form-control" data-cw="template"
-                                   placeholder="e.g. partials.my-widget">
-                        </div>
-                        <div class="col-md-4 d-flex align-items-end">
-                            <label class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" data-cw="enabled">
-                                <span class="form-check-label">{{ __('Enabled') }}</span>
-                            </label>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">{{ __('SQL Query') }}</label>
-                            <textarea class="form-control font-monospace" data-cw="query"
-                                      rows="6"
-                                      placeholder="SELECT ..."></textarea>
-                            <div class="form-text">{{ __('Use :Limit and :CharID as named parameters where needed.') }}</div>
-                        </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-check">
+                            <input class="form-check-input" type="checkbox" data-cw="enabled">
+                            <span class="form-check-label fw-semibold">{{ __('Enabled') }}</span>
+                        </label>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Widget Key') }}</label>
+                        <input type="text" class="form-control" data-cw="key"
+                               oninput="updateCwTitle(this)"
+                               placeholder="e.g. owned_titles">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Template') }}</label>
+                        <input type="text" class="form-control" data-cw="template"
+                               placeholder="e.g. partials.my-widget">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('SQL Query') }}</label>
+                        <textarea class="form-control font-monospace" data-cw="query"
+                                  rows="6"
+                                  placeholder="SELECT ..."></textarea>
+                        <div class="form-text">{{ __('Use :Limit and :CharID as named parameters where needed.') }}</div>
+                    </div>
+                    <div class="d-flex justify-content-start mt-3">
+                        <button type="button" class="btn btn-sm btn-danger" onclick="removeCw(this)">{{ __('Remove') }}</button>
                     </div>
                 </div>`;
             container.appendChild(card);
