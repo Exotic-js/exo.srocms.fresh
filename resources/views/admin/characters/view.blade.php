@@ -107,7 +107,12 @@
 
                     <ul class="nav nav-tabs justify-content-center mt-3" id="characterItemsTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="inventory-tab" data-bs-toggle="tab" data-bs-target="#inventory" type="button" role="tab">
+                            <button class="nav-link active" id="equipment-tab" data-bs-toggle="tab" data-bs-target="#equipment" type="button" role="tab">
+                                Equipment
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="inventory-tab" data-bs-toggle="tab" data-bs-target="#inventory" type="button" role="tab">
                                 Inventory
                             </button>
                         </li>
@@ -132,7 +137,35 @@
 
                     <div class="card-body">
                         <div class="tab-content">
-                            <div class="tab-pane fade show active" id="inventory" role="tabpanel">
+                            <div class="tab-pane fade show active" id="equipment" role="tabpanel">
+                                <div class="card" style="height: 345px">
+                                    <div class="card-body d-flex flex-column position-relative h-100" id="display-inventory-equipment">
+                                        <h2 class="text-center">Equipment</h2>
+
+                                        <div class="position-absolute top-0 start-0 w-100 h-100 p-4 d-block" id="display-inventory-set">
+                                            @include('ranking.character.partials.inventory.inventory-view', ['inventorySetList' => $data->getCharInventorySet(12, 0, 0)])
+                                        </div>
+                                        @if(config('global.server.version') !== 'vSRO')
+                                            <div class="position-absolute top-0 start-0 w-100 h-100 p-4 d-none" id="display-inventory-job">
+                                                @include('ranking.character.partials.inventory.inventory-job-view', ['inventoryJobList' => $data->charInventoryJob])
+                                            </div>
+                                        @endif
+                                        <div class="position-absolute top-0 start-0 w-100 h-100 p-4 d-none" id="display-inventory-avatar">
+                                            @include('ranking.character.partials.inventory.inventory-avatar-view', ['inventoryAvatarList' => $data->charInventoryAvatar])
+                                        </div>
+
+                                        @if(config('global.server.version') === 'vSRO')
+                                            <img class="position-absolute top-50 start-50 translate-middle h-100 w-auto object-fit-cover z-0 pt-4" src="{{ asset('images/character_full/'.config('ranking.character_image_vsro')[$data->RefObjID]) }}" alt=""/>
+                                        @else
+                                            <img class="position-absolute top-50 start-50 translate-middle h-100 w-auto object-fit-cover z-0 pt-4" src="{{ asset('images/character_full/'.config('ranking.character_image')[$data->RefObjID]) }}" alt=""/>
+                                        @endif
+
+                                        <button id="display-inventory-switch-isro" data-type="set" class="btn btn-secondary mt-auto w-auto align-self-center position-relative z-1">{{ __('Switch') }}</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="inventory" role="tabpanel">
                                 <div class="card">
                                     <div id="display-inventory" class="card-body p-3 d-flex flex-column justify-content-center align-items-center">
                                         <h2 class="text-center">Inventory</h2>
@@ -245,7 +278,7 @@
             </div>
 
             <div class="col-md-4">
-                <div class="card p-0">
+                <div class="card p-0 mb-4">
                     <div class="card-header">
                         <h4 class="text-center">Unstuck</h4>
                     </div>
@@ -277,6 +310,50 @@
                             <div class="row mb-0">
                                 <div class="col-md-12">
                                     <button type="submit" class="btn btn-danger w-100">{{ __('Unstuck') }}</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card p-0 mb-4">
+                    <div class="card-header">
+                        <h4 class="text-center">Add Item</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ route('admin.characters.add-item', $data) }}">
+                            @csrf
+                            <div class="row mb-3">
+                                <label for="code" class="col-md-12 col-form-label text-md-start">{{ __('Item Code') }}</label>
+
+                                <div class="col-md-12">
+                                    <input id="code" type="text" class="form-control @error('code') is-invalid @enderror" name="code" value="{{ old('code') }}" required>
+
+                                    @error('code')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="quantity" class="col-md-12 col-form-label text-md-start">{{ __('Quantity') }}</label>
+
+                                <div class="col-md-12">
+                                    <input id="quantity" type="number" class="form-control @error('quantity') is-invalid @enderror" name="quantity" value="{{ old('quantity', 1) }}" min="1" max="999">
+
+                                    @error('quantity')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row mb-0">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-primary w-100">{{ __('Add Item') }}</button>
                                 </div>
                             </div>
                         </form>
@@ -582,6 +659,27 @@
                 6,
                 6
             );
+        });
+    </script>
+
+    <script>
+        jQuery('#display-inventory-switch-isro').click(function() {
+            var current = jQuery(this).data('type');
+            var stages = ['set'];
+
+            @if(config('global.server.version') !== 'vSRO')
+            stages.push('job');
+            @endif
+            stages.push('avatar');
+
+            var currentIndex = stages.indexOf(current);
+            var nextIndex = (currentIndex + 1) % stages.length;
+            var change = stages[nextIndex];
+
+            jQuery('#display-inventory-' + current).addClass('d-none');
+            jQuery('#display-inventory-' + change).removeClass('d-none');
+
+            jQuery(this).data('type', change);
         });
     </script>
 @endpush

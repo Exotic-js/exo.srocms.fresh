@@ -47,4 +47,21 @@ class CharacterController extends Controller
 
         return back()->with('success', 'Your action was successful.');
     }
+
+    public function addItem(Request $request, Char $char)
+    {
+        $validated = $request->validate([
+            'code' => 'required|string',
+            'quantity' => 'nullable|integer|min:1|max:999',
+        ]);
+
+        $quantity = $validated['quantity'] ?? 1;
+        $result = $char->addItem($validated['code'], $quantity);
+
+        if ($result === 1) {
+            return back()->with('success', "Item '{$validated['code']}' (x{$quantity}) has been added successfully.");
+        }
+
+        return back()->with('error', "Failed to add item. In-game error code: {$result}.");
+    }
 }

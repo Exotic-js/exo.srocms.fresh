@@ -33,15 +33,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::get('/users/{user}/view', [UserController::class, 'view'])->name('users.view');
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-
         Route::post('/users/{user}/silk', [UserController::class, 'silk'])->name('users.silk');
         Route::post('/users/{user}/block', [UserController::class, 'block'])->name('users.block');
         Route::post('/users/{user}/unblock', [UserController::class, 'unblock'])->name('users.unblock');
+        Route::post('/users/{user}/change-password', [UserController::class, 'changePassword'])->name('users.change-password');
+        Route::post('/users/{user}/change-email', [UserController::class, 'changeEmail'])->name('users.change-email');
 
         Route::get('/characters', [CharacterController::class, 'index'])->name('characters.index');
         Route::get('/characters/{char}/view', [CharacterController::class, 'view'])->name('characters.view');
         Route::put('/characters/{char}', [CharacterController::class, 'update'])->name('characters.update');
         Route::put('/characters/{char}/unstuck', [CharacterController::class, 'unstuck'])->name('characters.unstuck');
+        Route::post('/characters/{char}/add-item', [CharacterController::class, 'addItem'])->name('characters.add-item');
 
         Route::get('/news', [NewsController::class, 'index'])->name('news.index');
         Route::get('/news/create', [NewsController::class, 'create'])->name('news.create');

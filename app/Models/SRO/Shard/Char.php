@@ -383,4 +383,22 @@ class Char extends Model
     {
         return $this->belongsTo(Guild::class, 'GuildID', 'ID');
     }
+
+    public function addItem(string $itemCode, int $quantity = 1, int $type = 1): int
+    {
+        try {
+            $result = DB::connection($this->getConnectionName())->selectOne(
+                'DECLARE @return_code int; EXEC @return_code = _ADD_ITEM_EXTERN @charname = ?, @codename = ?, @data = ?, @opt_level = ?, @variance = NULL; SELECT @return_code AS return_code;',
+                [$this->CharName16, $itemCode, $quantity, $type]
+            );
+
+            if (is_object($result) && property_exists($result, 'return_code')) {
+                return (int) $result->return_code;
+            }
+
+            return -1;
+        } catch (\Exception $e) {
+            return -1;
+        }
+    }
 }

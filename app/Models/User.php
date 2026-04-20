@@ -19,6 +19,12 @@ class User extends Authenticatable implements MustVerifyEmail
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
+    protected $connection = 'sqlsrv';
+
+    protected $table = 'users';
+
+    protected $primaryKey = 'id';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -54,16 +60,16 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function updateGameEmail(): void
+    public function updateGameEmail($email): void
     {
-        DB::transaction(function () {
+        DB::transaction(function () use ($email) {
             if (config('global.server.version') === 'vSRO') {
-                $this->tbUser?->update(['Email' => $this->email,]);
+                $this->tbUser?->update(['Email' => $email,]);
             } else {
-                $this->muUser?->muEmail?->update(['EmailAddr' => $this->email,]);
+                $this->muUser?->muEmail?->update(['EmailAddr' => $email,]);
 
                 $this->muUser?->muAlteredInfo?->update([
-                    'EmailAddr' => $this->email,
+                    'EmailAddr' => $email,
                     'EmailReceptionStatus' => config('settings.register_confirm') ? 'N' : 'Y',
                     'EmailCertificationStatus' => config('settings.register_confirm') ? 'N' : 'Y',
                 ]);
@@ -71,7 +77,7 @@ class User extends Authenticatable implements MustVerifyEmail
         });
     }
 
-    public function updateGamePassword(string $password): void
+    public function updateGamePassword($password): void
     {
         DB::transaction(function () use ($password) {
             if (config('global.server.version') === 'vSRO') {

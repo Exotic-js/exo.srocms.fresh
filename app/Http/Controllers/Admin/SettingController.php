@@ -87,8 +87,8 @@ class SettingController extends Controller
                 continue;
             }
 
-            // Handle widget settings - include event_schedule and other keys
-            if (in_array($key, $widgetKeys, true) || $key === 'event_schedule' || $key === 'fortress_war' || $key === 'server_info' || $key === 'custom') {
+            // Handle widget settings - include event_schedule, discord and other keys
+            if (in_array($key, $widgetKeys, true) || $key === 'event_schedule' || $key === 'fortress_war' || $key === 'server_info' || $key === 'custom' || $key === 'discord') {
                 $decoded = json_decode($value, true);
                 if (is_array($decoded)) {
                     $widgets[$key] = $decoded;
@@ -106,8 +106,13 @@ class SettingController extends Controller
             Setting::set($key, $value);
         }
 
+        // Clear all relevant caches
         cache()->forget('settings');
         cache()->forget('settings_all');
+        \Illuminate\Support\Facades\Config::set('widgets', $widgets);
+        \Illuminate\Support\Facades\Config::set('donate', $donate);
+        
+        \Log::info('=== SETTINGS UPDATE END ===');
 
         return back()->with('success', 'Settings updated!');
     }

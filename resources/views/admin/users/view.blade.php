@@ -12,6 +12,11 @@
                 {{ session('success') }}
             </div>
         @endif
+        @if (session('error'))
+            <div class="alert alert-danger" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
 
         <div class="row">
             <div class="col-md-8">
@@ -178,6 +183,66 @@
             <div class="col-md-4">
                 <div class="card p-0 mb-4">
                     <div class="card-header">
+                        <h4 class="text-center">Change Password</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ route('admin.users.change-password', $data->JID) }}">
+                            @csrf
+                            <div class="row mb-3">
+                                <label for="password" class="col-md-12 col-form-label text-md-start">{{ __('New Password') }}</label>
+
+                                <div class="col-md-12">
+                                    <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" value="{{ old('password') }}" required>
+
+                                    @error('password')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row mb-0">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-primary w-100">{{ __('Change') }}</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card p-0 mb-4">
+                    <div class="card-header">
+                        <h4 class="text-center">Change Email</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ route('admin.users.change-email', $data->JID) }}">
+                            @csrf
+                            <div class="row mb-3">
+                                <label for="email" class="col-md-12 col-form-label text-md-start">{{ __('New Email') }}</label>
+
+                                <div class="col-md-12">
+                                    <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required>
+
+                                    @error('email')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row mb-0">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-primary w-100">{{ __('Change') }}</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card p-0 mb-4">
+                    <div class="card-header">
                         <h4 class="text-center">Add Silk</h4>
                     </div>
                     <div class="card-body">
@@ -215,7 +280,7 @@
                                     @endif
 
                                     @error('type')
-                                        <span class="invalid-feedback" role="alert">
+                                    <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
                                     @enderror
@@ -230,70 +295,6 @@
                         </form>
                     </div>
                 </div>
-
-                <!--
-                <div class="card p-0 mb-4">
-                    <div class="card-header">
-                        <h4 class="text-center">Change Password</h4>
-                    </div>
-                    <div class="card-body">
-                        <form method="POST" action="#">
-                            @csrf
-                            <div class="row mb-3">
-                                <label for="password" class="col-md-12 col-form-label text-md-start">{{ __('New Password') }}</label>
-
-                                <div class="col-md-12">
-                                    <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" value="{{ old('password') }}" required>
-
-                                    @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="row mb-0">
-                                <div class="col-md-12">
-                                    <button type="submit" class="btn btn-primary w-100">{{ __('Change') }}</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                -->
-
-                <!--
-                <div class="card p-0 mb-4">
-                    <div class="card-header">
-                        <h4 class="text-center">Change Email</h4>
-                    </div>
-                    <div class="card-body">
-                        <form method="POST" action="#">
-                            @csrf
-                            <div class="row mb-3">
-                                <label for="email" class="col-md-12 col-form-label text-md-start">{{ __('New Email') }}</label>
-
-                                <div class="col-md-12">
-                                    <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required>
-
-                                    @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="row mb-0">
-                                <div class="col-md-12">
-                                    <button type="submit" class="btn btn-primary w-100">{{ __('Change') }}</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                -->
 
                 <div class="card p-0 mt-4">
                     <div class="card-header">

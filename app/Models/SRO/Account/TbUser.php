@@ -173,9 +173,9 @@ class TbUser extends Model
     public function user()
     {
         if (config('global.server.version') === 'vSRO') {
-            return $this->belongsTo(User::class, 'jid', 'JID');
+            return $this->belongsTo(User::class, 'JID', 'jid');
         } else{
-            return $this->belongsTo(User::class, 'jid', 'PortalJID');
+            return $this->belongsTo(User::class, 'PortalJID', 'jid');
         }
     }
 

@@ -57,7 +57,7 @@ class ProfileController extends Controller
 
         $user->save();
 
-        $user->updateGameEmail();
+        $user->updateGameEmail($request->email);
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
@@ -82,7 +82,7 @@ class ProfileController extends Controller
             $user->email_verified_at = null;
             $user->save();
 
-            $user->updateGameEmail();
+            $user->updateGameEmail($request->new_email);
         }
 
         if ($request->has('verify_login')) {

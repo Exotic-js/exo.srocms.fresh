@@ -53,7 +53,7 @@
             </li>
         </ul>
 
-        <form method="POST" action="{{ route('admin.settings.update') }}" onsubmit="serializeWidgets(); return true;">
+        <form method="POST" action="{{ route('admin.settings.update') }}" id="settingsForm">
             @csrf
 
             <div class="tab-content" id="settingsTabsContent">
@@ -108,7 +108,6 @@
                             </div>
                         </div>
                     </div>
-                    <input type="hidden" id="discord" name="discord">
                 </div>
 
                 {{-- ===================== EVENT SCHEDULE TAB ===================== --}}
@@ -480,6 +479,7 @@
         <input type="hidden" id="sox_drop" name="sox_drop">
         <input type="hidden" id="pvp_kills" name="pvp_kills">
         <input type="hidden" id="job_kills" name="job_kills">
+        <input type="hidden" id="discord_data" name="discord">
 
         <div class="mt-4">
                 <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
@@ -510,11 +510,18 @@
 
         // ─── Discord ──────────────────────────────────────────────────────────────────
         function serializeDiscord() {
-            document.getElementById('discord').value = JSON.stringify({
-                enabled:    document.getElementById('discord_enabled').checked,
-                server_id:  document.getElementById('discord_server_id').value,
-                channel_id: document.getElementById('discord_channel_id').value,
-                theme:      document.getElementById('discord_theme').value,
+            console.log('=== serializeDiscord() called ===');
+            const discordInput = document.getElementById('discord_data');
+            const enabled = document.getElementById('discord_enabled').checked;
+            const serverId = document.getElementById('discord_server_id').value;
+            const channelId = document.getElementById('discord_channel_id').value;
+            const theme = document.getElementById('discord_theme').value;
+            
+            discordInput.value = JSON.stringify({
+                enabled: enabled,
+                server_id: serverId,
+                channel_id: channelId,
+                theme: theme
             });
         }
 
@@ -824,13 +831,63 @@
         }
 
         function serializeWidgets() {
-            serializeWidgetToggles();
-            serializeDiscord();
-            serializeEventSchedule();
-            serializeFortressWar();
-            serializeServerInfo();
-            serializeCustomWidgets();
+            try {
+                serializeWidgetToggles();
+            } catch (e) {
+                console.error('Error in serializeWidgetToggles:', e);
+            }
+
+            try {
+                serializeDiscord();
+            } catch (e) {
+                console.error('Error in serializeDiscord:', e);
+            }
+
+            try {
+                serializeEventSchedule();
+            } catch (e) {
+                console.error('Error in serializeEventSchedule:', e);
+            }
+
+            try {
+                serializeFortressWar();
+            } catch (e) {
+                console.error('Error in serializeFortressWar:', e);
+            }
+
+            try {
+                serializeServerInfo();
+            } catch (e) {
+                console.error('Error in serializeServerInfo:', e);
+            }
+
+            try {
+                serializeCustomWidgets();
+            } catch (e) {
+                console.error('Error in serializeCustomWidgets:', e);
+            }
         }
+
+        // Form submission handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('settingsForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Serialize all form data SYNCHRONOUSLY before submission
+                    serializeWidgetToggles();
+                    serializeDiscord();
+                    serializeEventSchedule();
+                    serializeFortressWar();
+                    serializeServerInfo();
+                    serializeCustomWidgets();
+                    
+                    // Now submit immediately
+                    form.submit();
+                });
+            }
+        });
 
     </script>
 @endsection

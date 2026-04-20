@@ -8,6 +8,7 @@ use App\Models\SRO\Account\SkSilk;
 use App\Models\SRO\Account\TbUser;
 use App\Models\SRO\Portal\AphChangedSilk;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -74,5 +75,37 @@ class UserController extends Controller
         }
 
         return back()->with('error', 'No active block found.');
+    }
+
+    public function changePassword(Request $request, TbUser $user)
+    {
+        $validated = $request->validate([
+            'password' => 'required|min:6',
+        ]);
+
+        $userModel = $user->user()->first();
+
+        $userModel->update(['password' => Hash::make($validated['password'])]);
+
+        $userModel->updateGamePassword($validated['password']);
+
+        return back()->with('success', 'Password has been changed successfully.');
+    }
+
+    public function changeEmail(Request $request, TbUser $user)
+    {
+        $userModel = $user->user()->first();
+
+        $validated = $request->validate([
+            'email' => 'required|email|unique:users,email,' . $userModel->id,
+        ]);
+
+        $userModel->email = $validated['email'];
+        $userModel->email_verified_at = null;
+        $userModel->save();
+
+        $userModel->updateGameEmail($validated['email']);
+
+        return back()->with('success', 'Email has been changed successfully.');
     }
 }
