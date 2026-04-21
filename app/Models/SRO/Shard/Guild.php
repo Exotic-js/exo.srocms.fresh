@@ -166,7 +166,7 @@ class Guild extends Model
         });
     }
 
-    public function getTotalMemberAttribute()
+    public function getTotalMembersAttribute()
     {
         return Cache::remember("guild_total_member_{$this->ID}", config('global.cache.guild_info', 86400), function () {
             return DB::connection($this->getConnectionName())
@@ -176,7 +176,7 @@ class Guild extends Model
         });
     }
 
-    public function getItemPointsAttribute()
+    public function getItemPointAttribute()
     {
         return Cache::remember("guild_item_points_{$this->ID}", config('global.cache.guild_info', 86400), function () {
             return DB::connection($this->getConnectionName())

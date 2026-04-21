@@ -18,7 +18,7 @@
 
                             <div class="mt-3">
                                 <h2>{{ $data->CharName16 }}</h2>
-                                <p class="m-0">{{ __('Item Points:') }} <span class="">{{ $data->ItemPoints }}</span></p>
+                                <p class="m-0">{{ __('Item Points:') }} <span class="">{{ $data->ItemPoint }}</span></p>
 
                                 @if(config('ranking.extra.character_build') && $data->buildInfo)
                                 <p class="mb-0">

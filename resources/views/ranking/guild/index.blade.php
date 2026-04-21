@@ -31,7 +31,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <ul class="list-unstyled mt-3">
-                                        <li class="mb-2"><h4>{{ $data->ItemPoints }}</h4></li>
+                                        <li class="mb-2"><h4>{{ $data->ItemPoint }}</h4></li>
                                         <li class="mb-2">{{ __('Item Points') }}</li>
                                     </ul>
                                 </div>
@@ -43,7 +43,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <ul class="list-unstyled mt-3">
-                                        <li class="mb-2"><h4>{{ $data->TotalMember }}</h4></li>
+                                        <li class="mb-2"><h4>{{ $data->TotalMembers }}</h4></li>
                                         <li class="mb-2">{{ __('Members') }}</li>
                                     </ul>
                                 </div>
