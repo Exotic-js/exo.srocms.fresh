@@ -45,7 +45,7 @@
         </tr>
         <tr>
             <td>{{ __('Item Points:') }}</td>
-            <td>{{ $data->ItemPoints }}</td>
+            <td>{{ $data->ItemPoint }}</td>
         </tr>
         @if(config('ranking.extra.pvp_kill_logs') && $data->pvpKill)
             <tr>

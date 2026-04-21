@@ -152,7 +152,7 @@ class Char extends Model
         });
     }
 
-    public function getItemPointsAttribute()
+    public function getItemPointAttribute()
     {
         return cache()->remember("char_item_points_{$this->CharID}", config('global.cache.character_info', 86400), function () {
             return DB::connection($this->getConnectionName())
