@@ -97,15 +97,29 @@ class ScheduleService
 
             $duration = (int) ($event['duration'] ?? 0);
 
-            $candidates = collect($event['days'])->map(function ($day) use ($now, $event) {
-                $date = $now->copy()->startOfDay()->next(strtolower($day))->setTime((int) $event['hour'], (int) $event['min']);
+            // hour and min may be a single value (legacy) or an array of times (e.g. [8, 12, 20])
+            $hours = is_array($event['hour']) ? $event['hour'] : [$event['hour']];
+            $mins  = is_array($event['min'])  ? $event['min']  : [$event['min']];
 
-                if ($date->lt($now)) {
-                    $date->addWeek();
+            $candidates = collect();
+
+            foreach ($event['days'] as $day) {
+                foreach ($hours as $ti => $hour) {
+                    $min  = $mins[$ti] ?? $mins[0] ?? 0;
+                    $date = $now->copy()
+                        ->startOfDay()
+                        ->next(strtolower($day))
+                        ->setTime((int) $hour, (int) $min, 0);
+
+                    // If this slot is already in the past (or currently running), push it a week ahead
+                    // so we always get the *next* upcoming occurrence
+                    if ($date->lte($now)) {
+                        $date->addWeek();
+                    }
+
+                    $candidates->push($date);
                 }
-
-                return $date;
-            });
+            }
 
             $nextStart = $candidates->sort()->first();
 
@@ -118,13 +132,13 @@ class ScheduleService
             $status = $nextEnd ? $now->between($nextStart, $nextEnd) : false;
 
             $result->put($idx, (object) [
-                'idx' => $idx,
-                'name' => $event['name'],
+                'idx'       => $idx,
+                'name'      => $event['name'],
                 'timestamp' => $nextStart->timestamp,
-                'duration' => $duration,
-                'status' => $status,
-                'start' => $nextStart,
-                'end' => $nextEnd,
+                'duration'  => $duration,
+                'status'    => $status,
+                'start'     => $nextStart,
+                'end'       => $nextEnd,
             ]);
         }
 

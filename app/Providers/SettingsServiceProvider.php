@@ -8,17 +8,11 @@ use Illuminate\Support\ServiceProvider;
 
 class SettingsServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         if ($this->app->runningInConsole()) {
@@ -28,117 +22,75 @@ class SettingsServiceProvider extends ServiceProvider
         try {
             $settings = Setting::cached()->toArray();
 
-            $this->applyAppSettings($settings);
+            $this->applyGeneralSettings($settings);
             $this->applyMailSettings($settings);
             $this->applyCaptchaSettings($settings);
             $this->applyVoteSettings($settings);
-            $this->applyJsonSettings($settings, 'donate', 'donate');
-            $this->applyJsonSettings($settings, 'widgets', 'widgets');
-            $this->applyJsonSettings($settings, 'ranking', 'ranking');
-            $this->applyJsonSettings($settings, 'referral', 'global.referral');
-            $this->applyJsonSettings($settings, 'tickets', 'global.tickets');
-            $this->applyJsonSettings($settings, 'sliders', 'global.sliders');
-            $this->applyJsonSettings($settings, 'footer', 'global.footer');
-
-        } catch (\Exception $e) {
-            // DB not ready (e.g. during migrations), silently skip
+            $this->applyJsonConfig($settings, 'donate',  'donate');
+            $this->applyJsonConfig($settings, 'widgets', 'widgets');
+            $this->applyJsonConfig($settings, 'ranking', 'ranking');
+            $this->applyJsonConfig($settings, 'referral', 'global.referral');
+            $this->applyJsonConfig($settings, 'tickets',  'global.tickets');
+            $this->applyJsonConfig($settings, 'sliders',  'global.sliders');
+            $this->applyJsonConfig($settings, 'footer',   'global.footer');
+            $this->applyJsonConfig($settings, 'cache',    'global.cache');
+        } catch (\Throwable) {
+            // Database not ready (e.g. during migrations) — silently skip.
         }
     }
 
-    /**
-     * Apply general app settings.
-     */
-    private function applyAppSettings(array $settings): void
+    /*
+    |--------------------------------------------------------------------------
+    | General / Scalar Settings
+    |--------------------------------------------------------------------------
+    */
+
+    private function applyGeneralSettings(array $settings): void
     {
-        $mergedSettings = array_replace_recursive(config('settings', []), $settings);
-        Config::set('settings', $mergedSettings);
+        // Scalar fields are stored as individual DB rows (site_title, site_url, etc.)
+        // Merge them on top of the config defaults.
+        $general = config('global.general', []);
 
-        Config::set('app.name', $mergedSettings['site_title'] ?? config('app.name'));
-        Config::set('app.url', $mergedSettings['site_url']   ?? config('app.url'));
-
-        // Apply donate settings to override config defaults
-        $donateConfig = config('donate', []);
-        if (!empty($settings['donate']) && is_array($donateConfig)) {
-            foreach ($donateConfig as $gateway => $gatewayConfig) {
-                if (isset($gatewayConfig['fields']) && is_array($gatewayConfig['fields'])) {
-                    foreach ($gatewayConfig['fields'] as $fieldKey => $fieldConfig) {
-                        $currentValue = $settings['donate'][$gateway][$fieldKey] ?? null;
-                        $configValue = $gatewayConfig['fields'][$fieldKey]['placeholder'] ?? null;
-                        Config::set("donate.{$gateway}.{$fieldKey}", $currentValue ?? $configValue);
-                    }
-                }
+        foreach (array_keys($general) as $key) {
+            if (array_key_exists($key, $settings)) {
+                $general[$key] = $settings[$key];
             }
         }
 
-        if (!empty($mergedSettings['timezone'])) {
-            date_default_timezone_set($mergedSettings['timezone']);
+        Config::set('settings', $general);
+        Config::set('global.general', $general);
+        Config::set('app.name', $general['site_title'] ?? config('app.name'));
+        Config::set('app.url',  $general['site_url']   ?? config('app.url'));
+
+        if (! empty($general['timezone'])) {
+            date_default_timezone_set($general['timezone']);
         }
 
-        if (!empty($mergedSettings['theme'])) {
-            $themePath = resource_path('themes/' . $mergedSettings['theme'] . '/views');
+        if (! empty($general['theme'])) {
+            $themePath = resource_path('themes/' . $general['theme'] . '/views');
             if (is_dir($themePath)) {
                 $this->app['view']->getFinder()->prependLocation($themePath);
             }
         }
     }
 
-    /**
-     * Apply vote config — makes config('vote.*') available at runtime.
-     */
-    private function applyVoteSettings(array $settings): void
-    {
-        if (empty($settings['vote'])) {
-            return;
-        }
+    /*
+    |--------------------------------------------------------------------------
+    | Mail
+    |--------------------------------------------------------------------------
+    */
 
-        $vote = json_decode($settings['vote'], true);
-
-        if (!is_array($vote) || empty($vote)) {
-            return;
-        }
-
-        Config::set('vote', array_replace_recursive(config('vote', []), $vote));
-    }
-
-    /**
-     * Apply captcha settings from the stored JSON config.
-     */
-    private function applyCaptchaSettings(array $settings): void
-    {
-        if (empty($settings['captcha'])) {
-            return;
-        }
-
-        $captcha = json_decode($settings['captcha'], true);
-
-        if (!is_array($captcha) || empty($captcha)) {
-            return;
-        }
-
-        Config::set('captcha.enabled',          $captcha['enabled']             ?? config('captcha.enabled'));
-        Config::set('captcha.secret',           $captcha['secret']              ?? config('captcha.secret'));
-        Config::set('captcha.sitekey',          $captcha['sitekey']             ?? config('captcha.sitekey'));
-        Config::set('captcha.options.timeout',  $captcha['options']['timeout']  ?? 30);
-    }
-
-    /**
-     * Apply mail settings from the stored JSON config.
-     */
     private function applyMailSettings(array $settings): void
     {
-        if (empty($settings['mail'])) {
+        $mail = $this->decodeJson($settings['mail'] ?? null);
+
+        if (empty($mail)) {
             return;
         }
 
-        $mail = json_decode($settings['mail'], true);
+        $nullable = static fn ($v) => ($v === '' || $v === 'null' || $v === null) ? null : $v;
 
-        if (!is_array($mail) || empty($mail)) {
-            return;
-        }
-
-        $nullable = fn($v) => (!isset($v) || $v === 'null' || $v === '') ? null : $v;
-
-        Config::set('mail.default',               $mail['MAIL_MAILER']       ?? config('mail.default'));
+        Config::set('mail.default',                $mail['MAIL_MAILER']       ?? config('mail.default'));
         Config::set('mail.mailers.smtp.host',      $mail['MAIL_HOST']         ?? config('mail.mailers.smtp.host'));
         Config::set('mail.mailers.smtp.port',      $mail['MAIL_PORT']         ?? config('mail.mailers.smtp.port'));
         Config::set('mail.mailers.smtp.encryption',$nullable($mail['MAIL_SCHEME']   ?? config('mail.mailers.smtp.encryption')));
@@ -148,15 +100,74 @@ class SettingsServiceProvider extends ServiceProvider
         Config::set('mail.from.name',              $mail['MAIL_FROM_NAME']    ?? config('mail.from.name'));
     }
 
-    private function applyJsonSettings(array $settings, string $settingKey, string $configKey): void
+    /*
+    |--------------------------------------------------------------------------
+    | Captcha
+    |--------------------------------------------------------------------------
+    */
+
+    private function applyCaptchaSettings(array $settings): void
     {
-        if (empty($settings[$settingKey])) {
+        $captcha = $this->decodeJson($settings['captcha'] ?? null);
+
+        if (empty($captcha)) {
             return;
         }
 
-        $decoded = json_decode($settings[$settingKey], true);
-        if (is_array($decoded)) {
-            Config::set($configKey, array_replace_recursive(config($configKey, []), $decoded));
+        Config::set('captcha.enabled',         $captcha['enabled']            ?? config('captcha.enabled'));
+        Config::set('captcha.secret',          $captcha['secret']             ?? config('captcha.secret'));
+        Config::set('captcha.sitekey',         $captcha['sitekey']            ?? config('captcha.sitekey'));
+        Config::set('captcha.options.timeout', $captcha['options']['timeout'] ?? 30);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Vote
+    |--------------------------------------------------------------------------
+    */
+
+    private function applyVoteSettings(array $settings): void
+    {
+        $vote = $this->decodeJson($settings['vote'] ?? null);
+
+        if (empty($vote)) {
+            return;
         }
+
+        Config::set('vote', $vote);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Generic JSON → Config
+    |--------------------------------------------------------------------------
+    */
+
+    private function applyJsonConfig(array $settings, string $settingKey, string $configKey): void
+    {
+        $decoded = $this->decodeJson($settings[$settingKey] ?? null);
+
+        // Trust the saved value completely — do not merge back config defaults.
+        // Merging would re-inject items the user intentionally deleted.
+        if (! empty($decoded)) {
+            Config::set($configKey, $decoded);
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers
+    |--------------------------------------------------------------------------
+    */
+
+    private function decodeJson(mixed $value): array
+    {
+        if (empty($value)) {
+            return [];
+        }
+
+        $decoded = is_string($value) ? json_decode($value, true) : $value;
+
+        return is_array($decoded) ? $decoded : [];
     }
 }

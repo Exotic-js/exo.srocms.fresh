@@ -2,46 +2,99 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class Setting extends Model
 {
-    public $timestamps = false;
-
+    public $timestamps  = false;
     public $incrementing = false;
 
     protected $primaryKey = 'key';
+    protected $keyType    = 'string';
 
-    protected $keyType = 'string';
+    protected $fillable = ['key', 'value'];
 
-    protected $fillable = [
-        'key',
-        'value'
-    ];
+    /*
+    |--------------------------------------------------------------------------
+    | Cache Keys
+    |--------------------------------------------------------------------------
+    */
 
-    public static function get($key, $default = null)
+    protected static function itemCacheKey(string $key): string
     {
-        return Cache::rememberForever("setting_{$key}", function () use ($key, $default) {
-            return optional(self::where('key', $key)->first())->value ?? $default;
-        });
+        return "setting_{$key}";
     }
 
-    public static function set($key, $value)
+    protected static function allCacheKey(): string
     {
-        $setting = self::updateOrCreate(['key' => $key], ['value' => $value]);
+        return 'settings_all';
+    }
 
-        Cache::forget("setting_{$key}");
-        Cache::forget("settings_all");
+    /*
+    |--------------------------------------------------------------------------
+    | Getters
+    |--------------------------------------------------------------------------
+    */
+
+    public static function get(string $key, mixed $default = null): mixed
+    {
+        return Cache::rememberForever(
+            static::itemCacheKey($key),
+            fn () => optional(static::where('key', $key)->first())->value ?? $default
+        );
+    }
+
+    public static function cached(): Collection
+    {
+        return Cache::rememberForever(
+            static::allCacheKey(),
+            fn () => static::pluck('value', 'key')
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Setters
+    |--------------------------------------------------------------------------
+    */
+
+    public static function set(string $key, mixed $value): self
+    {
+        $setting = static::updateOrCreate(
+            ['key' => $key],
+            ['value' => is_array($value) ? json_encode($value) : $value]
+        );
+
+        Cache::forget(static::itemCacheKey($key));
+        Cache::forget(static::allCacheKey());
 
         return $setting;
     }
 
-    public static function cached()
+    public static function saveMany(array $items): void
     {
-        return cache()->rememberForever('settings_all', function () {
-            return self::pluck('value', 'key');
-        });
+        foreach ($items as $key => $value) {
+            static::updateOrCreate(
+                ['key' => $key],
+                ['value' => is_array($value) ? json_encode($value) : $value]
+            );
+
+            Cache::forget(static::itemCacheKey($key));
+        }
+
+        Cache::forget(static::allCacheKey());
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cache Helpers
+    |--------------------------------------------------------------------------
+    */
+
+    public static function flushCache(): void
+    {
+        Cache::forget(static::allCacheKey());
     }
 }

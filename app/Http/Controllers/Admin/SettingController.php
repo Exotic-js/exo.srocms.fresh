@@ -4,24 +4,27 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 
 class SettingController extends Controller
 {
-    public function index()
+    public function index(): \Illuminate\View\View
     {
-        return view('admin.settings.index', $this->settingsViewContext());
+        return view('admin.settings.index', $this->viewContext());
     }
 
-    public function general()
+    public function general(): \Illuminate\View\View
     {
-        return view('admin.settings.general', $this->settingsViewContext());
+        return view('admin.settings.general', $this->viewContext());
     }
 
-    public function widgets()
+    public function widgets(): \Illuminate\View\View
     {
-        $context = $this->settingsViewContext();
+        $context = $this->viewContext();
+        $widgets = $context['widgets'];
+
         $context['limitWidgets'] = [
             ['id' => 'globals_history', 'label' => 'Globals History'],
             ['id' => 'unique_history',  'label' => 'Unique History'],
@@ -33,53 +36,46 @@ class SettingController extends Controller
             ['id' => 'job_kills',       'label' => 'Job Kills'],
         ];
 
-        $widgets = $context['widgets'];
-
-        $context['discord'] = $widgets['discord'] ?? ['enabled' => false, 'server_id' => '', 'channel_id' => '', 'theme' => 'dark'];
-        $context['eventSchedule'] = [
-            'enabled' => $widgets['event_schedule']['enabled'] ?? false,
-            'names' => $widgets['event_schedule']['names'] ?? [],
-            'custom' => $widgets['event_schedule']['custom'] ?? [],
-        ];
-        $context['fortressWar'] = [
-            'enabled' => $widgets['fortress_war']['enabled'] ?? false,
-            'names' => $widgets['fortress_war']['names'] ?? [],
-        ];
-        $context['serverInfo'] = [
-            'enabled' => $widgets['server_info']['enabled'] ?? false,
-            'data' => $widgets['server_info']['data'] ?? [],
-        ];
-        $context['customWidgets'] = $widgets['custom'] ?? [];
+        $context['discord']       = $widgets['discord']        ?? ['enabled' => false, 'server_id' => '', 'channel_id' => '', 'theme' => 'dark'];
+        $context['eventSchedule'] = $widgets['event_schedule'] ?? ['enabled' => false, 'names' => [], 'custom' => []];
+        $context['fortressWar']   = $widgets['fortress_war']   ?? ['enabled' => false, 'names' => []];
+        $context['serverInfo']    = $widgets['server_info']    ?? ['enabled' => false, 'data' => []];
+        $context['customWidgets'] = $widgets['custom']         ?? [];
 
         return view('admin.settings.widgets', $context);
     }
 
-    public function donate()
+    public function donate(): \Illuminate\View\View
     {
-        $context = $this->settingsViewContext();
+        $context = $this->viewContext();
         $context['gateways'] = config('donate', []);
 
         return view('admin.settings.donate', $context);
     }
 
-    public function ranking()
+    public function ranking(): \Illuminate\View\View
     {
-        return view('admin.settings.ranking', $this->settingsViewContext());
+        return view('admin.settings.ranking', $this->viewContext());
     }
 
-    public function update(Request $request)
+    public function update(Request $request): RedirectResponse
     {
-        abort_unless(auth()->user()?->role->is_admin, 403);
+        abort_unless(auth()->user()?->role?->is_admin, 403);
 
-        $donateGateways = array_keys(config('donate', []));
-        $widgetKeys = array_keys(config('widgets', []));
+        $donateKeys = array_keys(config('donate', []));
+        $widgetKeys = array_merge(
+            array_keys(config('widgets', [])),
+            ['event_schedule', 'fortress_war', 'server_info', 'custom', 'discord']
+        );
 
-        $donate = $this->getJsonSetting('donate', config('donate', []));
+        // Load existing blobs so partial saves don't wipe other sub-keys
+        $donate  = $this->getJsonSetting('donate',  config('donate',  []));
         $widgets = $this->getJsonSetting('widgets', config('widgets', []));
 
         $toSave = [];
+
         foreach ($request->except('_token') as $key => $value) {
-            if (in_array($key, $donateGateways, true)) {
+            if (in_array($key, $donateKeys, true)) {
                 $decoded = json_decode($value, true);
                 if (is_array($decoded)) {
                     $donate[$key] = $decoded;
@@ -87,8 +83,7 @@ class SettingController extends Controller
                 continue;
             }
 
-            // Handle widget settings - include event_schedule, discord and other keys
-            if (in_array($key, $widgetKeys, true) || $key === 'event_schedule' || $key === 'fortress_war' || $key === 'server_info' || $key === 'custom' || $key === 'discord') {
+            if (in_array($key, $widgetKeys, true)) {
                 $decoded = json_decode($value, true);
                 if (is_array($decoded)) {
                     $widgets[$key] = $decoded;
@@ -96,117 +91,101 @@ class SettingController extends Controller
                 continue;
             }
 
+            // Scalar fields (General tab direct name= attributes) and other JSON blobs
             $toSave[$key] = is_array($value) ? json_encode($value) : $value;
         }
 
-        $toSave['donate'] = json_encode($donate);
+        $toSave['donate']  = json_encode($donate);
         $toSave['widgets'] = json_encode($widgets);
 
-        foreach ($toSave as $key => $value) {
-            Setting::set($key, $value);
-        }
+        Setting::saveMany($toSave);
+        Setting::flushCache();
 
-        // Clear all relevant caches
-        cache()->forget('settings');
-        cache()->forget('settings_all');
-        \Illuminate\Support\Facades\Config::set('widgets', $widgets);
-        \Illuminate\Support\Facades\Config::set('donate', $donate);
-        
-        \Log::info('=== SETTINGS UPDATE END ===');
-
-        return back()->with('success', 'Settings updated!');
+        return back()->with('success', __('Settings updated successfully.'));
     }
 
-    public function clearCache()
+    public function clearCache(): RedirectResponse
     {
-        abort_unless(auth()->user()?->role->is_admin, 403);
+        abort_unless(auth()->user()?->role?->is_admin, 403);
 
         Artisan::call('optimize:clear');
-        cache()->forget('settings');
-        cache()->forget('settings_all');
+        Setting::flushCache();
 
-        return back()->with('success', 'All caches have been cleared!');
+        return back()->with('success', __('All caches cleared successfully.'));
     }
 
-    private function settingsViewContext(): array
+    /*
+    |--------------------------------------------------------------------------
+    | View Context
+    |--------------------------------------------------------------------------
+    */
+
+    private function viewContext(): array
     {
         $data = Setting::cached()->toArray();
 
         return [
-            'data' => $data,
-            'settings' => $this->mergeScalarSettings($data, config('settings', [])),
-            'themes' => $this->loadThemes(),
+            'settings'  => $this->mergeScalarSettings($data, config('global.general', [])),
+            'themes'    => $this->loadThemes(),
             'languages' => config('global.languages', []),
-            'timezones' =>
-                method_exists('\DateTimeZone', 'listIdentifiers')
-                    ? \DateTimeZone::listIdentifiers()
-                    : [],
-            'appUrl' => config('app.url'),
-            'appName' => config('app.name'),
+            'timezones' => \DateTimeZone::listIdentifiers(),
+            'appUrl'    => config('app.url'),
+            'appName'   => config('app.name'),
+
             'referral' => $this->mergeJsonSetting($data, 'referral', config('global.referral', [])),
-            'tickets' => $this->mergeJsonSetting($data, 'tickets', config('global.tickets', [])),
-            'sliders' => $this->mergeJsonSetting($data, 'sliders', config('global.sliders', [])),
-            'footer' => $this->mergeJsonSetting($data, 'footer', config('global.footer', [])),
-            'mail' => $this->mergeJsonSetting($data, 'mail', []),
-            'captcha' => $this->mergeJsonSetting($data, 'captcha', [
-                'secret' => config('captcha.secret'),
-                'sitekey' => config('captcha.sitekey'),
-                'options' => [
-                    'timeout' => config('captcha.options.timeout'),
-                ],
-            ]),
-            'vote' => $this->mergeJsonSetting($data, 'vote', config('vote', [])),
-            'donate' => $this->mergeJsonSetting($data, 'donate', config('donate', [])),
-            'widgets' => $this->mergeJsonSetting($data, 'widgets', config('widgets', [])),
-            'ranking' => $this->mergeJsonSetting($data, 'ranking', config('ranking', [])),
-            'cache' => $this->mergeJsonSetting($data, 'cache', config('global.cache', [])),
+            'tickets'  => $this->mergeJsonSetting($data, 'tickets',  config('global.tickets',  [])),
+            'sliders'  => $this->mergeJsonSetting($data, 'sliders',  config('global.sliders',  [])),
+            'footer'   => $this->mergeJsonSetting($data, 'footer',   config('global.footer',   [])),
+            'mail'     => $this->mergeJsonSetting($data, 'mail',     []),
+            'captcha'  => $this->mergeJsonSetting($data, 'captcha',  config('captcha',          [])),
+            'vote'     => $this->mergeJsonSetting($data, 'vote',     config('vote',             [])),
+            'widgets'  => $this->mergeJsonSetting($data, 'widgets',  config('widgets',          [])),
+            'ranking'  => $this->mergeJsonSetting($data, 'ranking',  config('ranking',          [])),
+            'cache'    => $this->mergeJsonSetting($data, 'cache',    config('global.cache',     [])),
         ];
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Merge scalar settings stored as individual DB rows (General tab plain name= fields).
+     */
     private function mergeScalarSettings(array $data, array $defaults): array
     {
-        foreach ($defaults as $key => $value) {
+        foreach (array_keys($defaults) as $key) {
             if (array_key_exists($key, $data)) {
                 $defaults[$key] = $data[$key];
             }
         }
 
-        return $this->normalizeBooleans($defaults, [
-            'disable_register',
-            'register_confirm',
-            'duplicate_email',
-            'agree_terms',
-        ]);
+        return $defaults;
     }
 
+    /**
+     * Decode a JSON blob from the cached settings array.
+     *
+     * If the key has never been saved to the DB we fall back to $defaults.
+     * Once a value exists in the DB we trust it completely — no merging —
+     * so that rows deleted by the user are not re-injected from config defaults.
+     */
     private function mergeJsonSetting(array $data, string $key, array $defaults = []): array
     {
-        $value = $data[$key] ?? null;
-        if (!is_array($value)) {
-            $value = json_decode($value ?? '', true);
-        }
+        $raw     = $data[$key] ?? null;
+        $decoded = is_string($raw) ? json_decode($raw, true) : $raw;
 
-        if (!is_array($value)) {
-            $value = [];
-        }
-
-        return array_replace_recursive($defaults, $value);
+        return is_array($decoded) ? $decoded : $defaults;
     }
 
-    private function normalizeBooleans(array $settings, array $keys): array
-    {
-        foreach ($keys as $key) {
-            if (array_key_exists($key, $settings)) {
-                $settings[$key] = filter_var($settings[$key], FILTER_VALIDATE_BOOLEAN);
-            }
-        }
-
-        return $settings;
-    }
-
+    /**
+     * Load a JSON blob directly from the DB/cache.
+     */
     private function getJsonSetting(string $key, array $default = []): array
     {
-        $value = Setting::get($key, json_encode($default));
+        $value   = Setting::get($key, json_encode($default));
         $decoded = json_decode($value, true);
 
         return is_array($decoded) ? $decoded : $default;
@@ -214,22 +193,15 @@ class SettingController extends Controller
 
     private function loadThemes(): array
     {
-        $themePath = resource_path('themes');
-        if (!is_dir($themePath)) {
+        $path = resource_path('themes');
+
+        if (! is_dir($path)) {
             return [];
         }
 
-        $themes = [];
-        foreach (scandir($themePath) as $dir) {
-            if ($dir === '.' || $dir === '..') {
-                continue;
-            }
-
-            if (is_dir($themePath . '/' . $dir)) {
-                $themes[] = $dir;
-            }
-        }
-
-        return $themes;
+        return collect(scandir($path))
+            ->reject(fn ($item) => in_array($item, ['.', '..']) || ! is_dir($path . '/' . $item))
+            ->values()
+            ->all();
     }
 }
