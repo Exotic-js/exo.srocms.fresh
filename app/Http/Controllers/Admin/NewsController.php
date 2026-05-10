@@ -32,7 +32,7 @@ class NewsController extends Controller
         ]);
 
         $validated['author_id'] = auth()->id();
-        $validated['slug'] = Str::slug($validated['title']) . '-' . time();
+        $validated['slug'] = Str::slug($validated['title']);
 
         News::create($validated);
 
@@ -55,7 +55,7 @@ class NewsController extends Controller
         ]);
 
         if ($validated['title'] !== $news->title) {
-            $validated['slug'] = Str::slug($validated['title']) . '-' . time();
+            $validated['slug'] = Str::slug($validated['title']);
         }
 
         $news->update($validated);

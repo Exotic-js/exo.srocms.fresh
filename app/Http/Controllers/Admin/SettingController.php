@@ -67,10 +67,12 @@ class SettingController extends Controller
             array_keys(config('widgets', [])),
             ['event_schedule', 'fortress_war', 'server_info', 'custom', 'discord']
         );
+        $jsonKeys = ['donate', 'widgets', 'ranking', 'history', 'referral', 'tickets', 'sliders', 'footer', 'mail', 'captcha', 'vote', 'cache'];
 
         // Load existing blobs so partial saves don't wipe other sub-keys
         $donate  = $this->getJsonSetting('donate',  config('donate',  []));
         $widgets = $this->getJsonSetting('widgets', config('widgets', []));
+        $history = $this->getJsonSetting('history', config('global.history', []));
 
         $toSave = [];
 
@@ -91,12 +93,21 @@ class SettingController extends Controller
                 continue;
             }
 
+            if ($key === 'history') {
+                $decoded = json_decode($value, true);
+                if (is_array($decoded)) {
+                    $history = $decoded;
+                }
+                continue;
+            }
+
             // Scalar fields (General tab direct name= attributes) and other JSON blobs
             $toSave[$key] = is_array($value) ? json_encode($value) : $value;
         }
 
         $toSave['donate']  = json_encode($donate);
         $toSave['widgets'] = json_encode($widgets);
+        $toSave['history'] = json_encode($history);
 
         Setting::saveMany($toSave);
         Setting::flushCache();
@@ -141,6 +152,7 @@ class SettingController extends Controller
             'vote'     => $this->mergeJsonSetting($data, 'vote',     config('vote',             [])),
             'widgets'  => $this->mergeJsonSetting($data, 'widgets',  config('widgets',          [])),
             'ranking'  => $this->mergeJsonSetting($data, 'ranking',  config('ranking',          [])),
+            'history'  => $this->mergeJsonSetting($data, 'history',  config('global.history',   [])),
             'cache'    => $this->mergeJsonSetting($data, 'cache',    config('global.cache',     [])),
         ];
     }

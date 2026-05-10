@@ -1,4 +1,4 @@
-@if(config('widgets.unique_history.enabled'))
+@if(config('ranking.extra.character_unique_history', false))
 <div class="table-responsive">
     <table class="table table-striped">
         <thead class="table-dark">

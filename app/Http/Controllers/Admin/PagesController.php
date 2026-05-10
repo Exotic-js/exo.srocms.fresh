@@ -28,7 +28,7 @@ class PagesController extends Controller
             'content' => 'required|string',
         ]);
 
-        $validated['slug'] = Str::slug($validated['title']) . '-' . time();
+        $validated['slug'] = Str::slug($validated['title']);
 
         Pages::create($validated);
 
@@ -48,7 +48,7 @@ class PagesController extends Controller
         ]);
 
         if ($validated['title'] !== $pages->title) {
-            $validated['slug'] = Str::slug($validated['title']) . '-' . time();
+            $validated['slug'] = Str::slug($validated['title']);
         }
 
         $pages->update($validated);

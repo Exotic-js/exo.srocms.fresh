@@ -473,32 +473,32 @@
 
                 {{-- ===================== HISTORY ===================== --}}
                 <div class="tab-pane fade" id="tab-history" role="tabpanel">
-                    {{-- ranking hidden inputs live here because ranking.extra is serialized as part of ranking JSON --}}
-                    <input type="hidden" id="ranking_source" value="{{ json_encode($ranking, JSON_UNESCAPED_SLASHES) }}">
-                    <input type="hidden" id="ranking_payload" name="ranking" value="{{ json_encode($ranking, JSON_UNESCAPED_SLASHES) }}">
 
-                    <h5 class="fw-semibold mb-3">{{ __('History') }}</h5>
+                    <h5 class="fw-semibold mb-3">{{ __('History Features') }}</h5>
+                    <p class="text-muted small mb-3">{{ __('Enable or disable history tracking features.') }}</p>
 
                     <div class="d-flex flex-column gap-2">
                         @foreach([
-                            'event_schedule'          => __('Event schedule'),
-                            'unique_tracker'          => __('Unique tracker'),
-                            'advanced_unique_tracker' => __('Advanced unique tracker'),
-                            'fortress_history'        => __('Fortress history'),
-                            'global_history'          => __('Global history'),
-                            'pvp_kill_logs'           => __('PvP kill logs'),
-                            'job_kill_logs'           => __('Job kill logs'),
-                            'item_plus_logs'          => __('Item plus logs'),
-                            'item_drop_logs'          => __('Item drop logs'),
+                            'event_schedule'          => __('Event Schedule'),
+                            'unique_tracker'          => __('Unique Tracker'),
+                            'advanced_unique_tracker' => __('Advanced Unique Tracker'),
+                            'fortress_history'        => __('Fortress History'),
+                            'global_history'          => __('Global History'),
+                            'pvp_kill_logs'           => __('PvP Kill Logs'),
+                            'job_kill_logs'           => __('Job Kill Logs'),
+                            'item_plus_logs'          => __('Item Plus Logs'),
+                            'item_drop_logs'          => __('Item Drop Logs'),
                         ] as $key => $label)
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox"
-                                       id="extra_{{ $key }}" data-rk="extra" data-key="{{ $key }}"
-                                    {{ !empty($ranking['extra'][$key]) ? 'checked' : '' }}>
-                                <label class="form-check-label" for="extra_{{ $key }}">{{ $label }}</label>
+                                       id="history_{{ $key }}" data-hist="{{ $key }}"
+                                    {{ !empty($history[$key]) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="history_{{ $key }}">{{ $label }}</label>
                             </div>
                         @endforeach
                     </div>
+
+                    <input type="hidden" id="history" name="history">
                 </div>
 
                 {{-- ===================== REFERRAL ===================== --}}
@@ -654,22 +654,6 @@
         }
 
         // ─── Ranking (History extra toggles) ─────────────────────────────────────────
-        function serializeRanking() {
-            let ranking = {};
-            try {
-                ranking = JSON.parse(document.getElementById('ranking_source').value || '{}');
-            } catch {
-                ranking = {};
-            }
-
-            ranking.extra = {};
-            document.querySelectorAll('[data-rk="extra"]').forEach(input => {
-                ranking.extra[input.dataset.key] = input.checked;
-            });
-
-            document.getElementById('ranking_payload').value = JSON.stringify(ranking);
-        }
-
         // ─── Tickets ──────────────────────────────────────────────────────────────────
         function addTicketCategory() {
             const tbody = document.querySelector('#ticketCategoriesTable tbody');
@@ -876,9 +860,17 @@
             });
         }
 
+        // ─── History ──────────────────────────────────────────────────────────────────
+        function serializeHistory() {
+            const history = {};
+            document.querySelectorAll('[data-hist]').forEach(input => {
+                history[input.dataset.hist] = input.checked;
+            });
+            document.getElementById('history').value = JSON.stringify(history);
+        }
+
         // ─── Main ─────────────────────────────────────────────────────────────────────
         function serializeGeneral() {
-            serializeRanking();
             serializeReferral();
             serializeTickets();
             serializeSliders();
@@ -886,6 +878,7 @@
             serializeVote();
             serializeMail();
             serializeCaptcha();
+            serializeHistory();
         }
     </script>
 @endsection

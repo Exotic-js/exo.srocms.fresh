@@ -84,6 +84,7 @@ class PanelController extends Controller
 
     public function referral(Request $request)
     {
+        abort_if(!config('global.referral.enabled', false), 404);
         $user = $request->user();
 
         $fingerprint = $request->query('fingerprint');
@@ -139,6 +140,7 @@ class PanelController extends Controller
 
     public function ticket()
     {
+        abort_if(!config('global.tickets.enabled', false), 404);
         $data = Ticket::getUserTickets(auth()->id(), 20);
 
         return view('profile.panel.ticket', compact('data'));
@@ -196,6 +198,7 @@ class PanelController extends Controller
 
     public function vote(Request $request)
     {
+        abort_if(!config('global.vote.enabled', false), 404);
         $data = Vote::getVotes($request, session('fingerprint'));
 
         return view('profile.panel.vote', compact('data'));

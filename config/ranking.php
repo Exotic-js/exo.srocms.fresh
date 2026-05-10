@@ -135,16 +135,6 @@ return [
         'character_global_history' => false,
         'character_pvp_kill' => false,
         'character_job_kill' => false,
-
-        'event_schedule' => false,
-        'fortress_history' => false,
-        'global_history' => false,
-        'unique_tracker' => false,
-        'advanced_unique_tracker' => false,
-        'pvp_kill_logs' => false,
-        'job_kill_logs' => false,
-        'item_plus_logs' => false,
-        'item_drop_logs' => false,
     ],
     'uniques' => [
         'MOB_CH_TIGERWOMAN' => [

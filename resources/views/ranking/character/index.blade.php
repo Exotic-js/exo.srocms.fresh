@@ -20,7 +20,7 @@
                                 <h2>{{ $data->CharName16 }}</h2>
                                 <p class="m-0">{{ __('Item Points:') }} <span class="">{{ $data->ItemPoint }}</span></p>
 
-                                @if(config('ranking.extra.character_build') && $data->buildInfo)
+                                @if(config('ranking.extra.character_build', false) && $data->buildInfo)
                                 <p class="mb-0">
                                     @foreach($data->buildInfo as $key => $row)
                                         @if(isset(config('ranking.skill_mastery')[$row->MasteryID]))
@@ -29,7 +29,7 @@
                                     @endforeach
                                 </p>
                                 @endif
-                                @if(config('ranking.extra.character_buff') && $data->buffInfo)
+                                @if(config('ranking.extra.character_buff', false) && $data->buffInfo)
                                 <ul class="list-unstyled d-flex">
                                     @foreach($data->buffInfo as $row)
                                         <li class="me-1">
@@ -43,7 +43,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="row mt-3 justify-content-end">
-                            @if(config('ranking.extra.character_job') && $data->charJob->JobType)
+                            @if(config('ranking.extra.character_job', false) && $data->charJob->JobType)
                                 <div class="col-md-4">
                                     <div class="d-flex">
                                         <div class="d-flex align-items-center">
@@ -89,17 +89,27 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-tab-pane" type="button" role="tab" aria-controls="info-tab-pane" aria-selected="true">{{ __('Information') }}</button>
                             </li>
-                            @if(config('widgets.globals_history.enabled'))
+                            @if(config('ranking.extra.character_global_history', false))
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="globals-tab" data-bs-toggle="tab" data-bs-target="#globals-tab-pane" type="button" role="tab" aria-controls="globals-tab-pane" aria-selected="false">{{ __('Global Chat') }}</button>
                             </li>
                             @endif
-                            @if(config('widgets.unique_history.enabled'))
+                            @if(config('ranking.extra.character_unique_history', false))
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="uniques-tab" data-bs-toggle="tab" data-bs-target="#uniques-tab-pane" type="button" role="tab" aria-controls="uniques-tab-pane" aria-selected="false">{{ __('Unique Kills') }}</button>
                             </li>
                             @endif
-                            @if(config('widgets.custom.owned_titles.enabled'))
+                            @if(config('ranking.extra.character_job_kill', false))
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="job-tab" data-bs-toggle="tab" data-bs-target="#job-tab-pane" type="button" role="tab" aria-controls="job-tab-pane" aria-selected="false">{{ __('Job Kills') }}</button>
+                            </li>
+                            @endif
+                            @if(config('ranking.extra.character_pvp_kill', false))
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pvp-tab" data-bs-toggle="tab" data-bs-target="#pvp-tab-pane" type="button" role="tab" aria-controls="pvp-tab-pane" aria-selected="false">{{ __('Pvp Kills') }}</button>
+                            </li>
+                            @endif
+                            @if(config('widgets.custom.owned_titles.enabled', false))
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="titles-tab" data-bs-toggle="tab" data-bs-target="#titles-tab-pane" type="button" role="tab" aria-controls="titles-tab-pane" aria-selected="false">{{ __('Owned Titles') }}</button>
                             </li>
@@ -114,6 +124,12 @@
                             </div>
                             <div class="tab-pane fade" id="uniques-tab-pane" role="tabpanel" aria-labelledby="uniques-tab" tabindex="0">
                                 @include('ranking.character.partials.character-unique-history')
+                            </div>
+                            <div class="tab-pane fade" id="job-tab-pane" role="tabpanel" aria-labelledby="job-tab" tabindex="0">
+                                @include('ranking.character.partials.character-job-kill')
+                            </div>
+                            <div class="tab-pane fade" id="pvp-tab-pane" role="tabpanel" aria-labelledby="pvp-tab" tabindex="0">
+                                @include('ranking.character.partials.character-pvp-kill')
                             </div>
                             <div class="tab-pane fade" id="titles-tab-pane" role="tabpanel" aria-labelledby="titles-tab" tabindex="0">
                                 @include('partials.character-owned-titles', ['Limit' => 5, 'CharID' => $data->CharID])

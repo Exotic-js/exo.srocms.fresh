@@ -29,6 +29,7 @@ class SettingsServiceProvider extends ServiceProvider
             $this->applyJsonConfig($settings, 'donate',  'donate');
             $this->applyJsonConfig($settings, 'widgets', 'widgets');
             $this->applyJsonConfig($settings, 'ranking', 'ranking');
+            $this->applyJsonConfig($settings, 'history', 'global.history');
             $this->applyJsonConfig($settings, 'referral', 'global.referral');
             $this->applyJsonConfig($settings, 'tickets',  'global.tickets');
             $this->applyJsonConfig($settings, 'sliders',  'global.sliders');
@@ -134,7 +135,18 @@ class SettingsServiceProvider extends ServiceProvider
             return;
         }
 
+        $hasEnabledSite = false;
+
+        foreach ($vote as $site) {
+            if (is_array($site) && !empty($site['enabled'])) {
+                $hasEnabledSite = true;
+                break;
+            }
+        }
+
         Config::set('vote', $vote);
+
+        Config::set('global.vote.enabled', $hasEnabledSite);
     }
 
     /*

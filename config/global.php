@@ -85,11 +85,11 @@ return [
         ]
     ],
     'history' => [
-        'event_schedule' => false,
-        'unique_tracker' => false,
+        'event_schedule' => true,
+        'unique_tracker' => true,
         'advanced_unique_tracker' => false,
-        'fortress_history' => false,
-        'global_history' => false,
+        'fortress_history' => true,
+        'global_history' => true,
         'pvp_kill_logs' => false,
         'job_kill_logs' => false,
         'item_plus_logs' => false,

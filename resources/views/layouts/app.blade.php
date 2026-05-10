@@ -44,19 +44,19 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-md-9">
+            <div class="col-lg-8 mb-5">
                 @yield('content')
             </div>
-            <div class="col-md-3">
+            <div class="col-lg-4">
                 @section('sidebar')
                     @include('layouts.sidebar')
                 @show
             </div>
         </div>
     </div><!-- /.container -->
-
-    @include('layouts.footer')
 </main>
+
+@include('layouts.footer')
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
