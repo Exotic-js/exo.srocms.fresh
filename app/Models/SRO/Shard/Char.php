@@ -66,8 +66,6 @@ class Char extends Model
 
     public static function getPlayerRanking($limit = 25, $CharID = 0, $CharName = '')
     {
-        $CharName = substr(preg_replace('/[^a-zA-Z0-9_]/', '', $CharName), 0, 50);
-
         return Cache::remember("ranking_player_fast_{$limit}_{$CharID}_{$CharName}", config('global.cache.ranking_player', 3600), function () use ($limit, $CharID, $CharName) {
             $query = self::from(DB::raw('_Char WITH (NOLOCK)'))
             ->select(

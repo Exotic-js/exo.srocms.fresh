@@ -26,10 +26,11 @@ class SettingsServiceProvider extends ServiceProvider
             $this->applyMailSettings($settings);
             $this->applyCaptchaSettings($settings);
             $this->applyVoteSettings($settings);
+            $this->applyHistorySettings($settings);
             $this->applyJsonConfig($settings, 'donate',  'donate');
             $this->applyJsonConfig($settings, 'widgets', 'widgets');
             $this->applyJsonConfig($settings, 'ranking', 'ranking');
-            $this->applyJsonConfig($settings, 'history', 'global.history');
+            $this->applyRankingSettings();
             $this->applyJsonConfig($settings, 'referral', 'global.referral');
             $this->applyJsonConfig($settings, 'tickets',  'global.tickets');
             $this->applyJsonConfig($settings, 'sliders',  'global.sliders');
@@ -147,6 +148,49 @@ class SettingsServiceProvider extends ServiceProvider
         Config::set('vote', $vote);
 
         Config::set('global.vote.enabled', $hasEnabledSite);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | History
+    |--------------------------------------------------------------------------
+    */
+
+    private function applyHistorySettings(array $settings): void
+    {
+        $history = $this->decodeJson($settings['history'] ?? null);
+
+        if (empty($history)) {
+            return;
+        }
+
+        $hasEnabledFeature = false;
+
+        foreach ($history as $key => $value) {
+            if ($key !== 'enabled' && !empty($value)) {
+                $hasEnabledFeature = true;
+                break;
+            }
+        }
+
+        Config::set('global.history', $history);
+
+        Config::set('global.history.enabled', $hasEnabledFeature);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ranking
+    |--------------------------------------------------------------------------
+    */
+
+    private function applyRankingSettings(): void
+    {
+        $hasEnabledRanking = collect(config('ranking.menu', []))
+            ->merge(config('ranking.custom', []))
+            ->contains(fn ($item) => is_array($item) && !empty($item['enabled']));
+
+        Config::set('ranking.enabled', $hasEnabledRanking);
     }
 
     /*

@@ -21,7 +21,7 @@ class RankingController extends Controller
     {
         $validated = $request->validate([
             'type' => 'nullable|in:player,guild',
-            'search' => 'nullable|string|max:255',
+            'search' => ['nullable', 'string', 'max:64', 'regex:/^[\[\]a-zA-Z0-9_ ]{1,64}$/'],
         ]);
 
         $type = $validated['type'] ?? 'player';

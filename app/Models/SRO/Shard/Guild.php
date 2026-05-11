@@ -54,8 +54,6 @@ class Guild extends Model
 
     public static function getGuildRanking(int $limit = 25, int $GuildID = 0, string $Name = '')
     {
-        $Name = substr(preg_replace('/[^a-zA-Z0-9_]/', '', $Name), 0, 50);
-
         return Cache::remember("ranking_guild_{$limit}_{$GuildID}_{$Name}", config('global.cache.ranking_guild', 3600), function () use ($limit, $GuildID, $Name) {
             $query = self::from(DB::raw('_Guild WITH (NOLOCK)'))
             ->select(

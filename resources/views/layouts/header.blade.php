@@ -10,8 +10,11 @@
                     <li><a href="{{ url('/') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }} px-2 text-white">{{ __('Home') }}</a></li>
                     <li><a href="{{ route('news') }}" class="nav-link {{ request()->routeIs('news') ? 'active' : '' }} px-2 text-white">{{ __('News') }}</a></li>
                     <li><a href="{{ route('download') }}" class="nav-link {{ request()->routeIs('download') ? 'active' : '' }} px-2 text-white">{{ __('Download') }}</a></li>
-                    <li><a href="{{ route('ranking') }}" class="nav-link {{ request()->routeIs('ranking') ? 'active' : '' }} px-2 text-white">{{ __('Ranking') }}</a></li>
+                    @if(config('ranking.enabled', false))
+                        <li><a href="{{ route('ranking') }}" class="nav-link {{ request()->routeIs('ranking') ? 'active' : '' }} px-2 text-white">{{ __('Ranking') }}</a></li>
+                    @endif
 
+                    @if(config("global.history.enabled", false))
                     <li class="dropdown">
                         <a href="{{ route('history') }}" class="nav-link px-2 text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{{ __('Server History') }}</a>
                         <ul class="dropdown-menu" style="">
@@ -44,7 +47,9 @@
                             @endif
                         </ul>
                     </li>
+                    @endif
 
+                    @if(count($pageNames) > 0)
                     <li class="dropdown">
                         <a href="#" class="nav-link px-2 text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{{ __('Pages') }}</a>
                         <ul class="dropdown-menu" style="">
@@ -55,6 +60,7 @@
                             @endforelse
                         </ul>
                     </li>
+                    @endif
                 </ul>
 
                 <div class="d-flex text-end">

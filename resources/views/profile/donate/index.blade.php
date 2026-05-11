@@ -26,42 +26,53 @@
                 @endif
 
                 <div class="row justify-content-center">
-                    <div class="col-12 mb-4 text-center">
-                        <p>Select Payment Method</p>
-                        <div class="d-flex justify-content-center flex-wrap">
-                            @foreach($data as $key => $row)
-                                @if($row['enabled'])
-                                    <div class="card m-2 d-flex {{ $key == 0 ? 'selected' : '' }}" role="button" data-method="{{ $key }}" style="width: 120px;">
+                    @if(collect($data)->filter(fn ($row) => is_array($row) && !empty($row['enabled']))->isNotEmpty())
+                        <div class="col-12 mb-4 text-center">
+                            <p>Select Payment Method</p>
+                            <div class="d-flex justify-content-center flex-wrap">
+                                @foreach(collect($data)->filter(fn ($row) => is_array($row) && !empty($row['enabled'])) as $key => $row)
+                                    <div class="card m-2 d-flex {{ $loop->first ? 'selected' : '' }}" role="button" data-method="{{ $key }}" style="width: 120px;">
                                         <img src="{{ asset($row['image']) }}" class="card-img-top object-fit-contain p-2" height="50" alt="{{ $row['name'] }}">
                                         <div class="card-body text-center p-2">
                                             <strong>{{ $row['name'] }}</strong>
                                         </div>
                                     </div>
-                                @endif
-                            @endforeach
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12 mb-4">
-                        <p>Select Package</p>
-                        <div id="content-donate">
-                            @php $method = array_key_first(array_filter($data, fn($v) => $v['enabled'])); @endphp
-                            @include('profile.donate.' . $method, ['data' => $data[$method]])
+                        <div class="col-12 mb-4">
+                            <p>Select Package</p>
+                            <div id="content-donate">
+                                @foreach(collect($data)->filter(fn ($row) => is_array($row) && !empty($row['enabled'])) as $key => $row)
+                                    @include('profile.donate.' . $key, ['data' => $data[$key]])
+                                    @break
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12 mb-4">
-                        <p>Order Details</p>
-                        <div id="content-donate-details">
-                            <form action="{{ route('profile.donate.process', ['method' => $method]) }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="price" value="0">
-                                <hr>
-                                <p class="package-name text-muted mb-0 mt-2">Select a package</p>
-                                <p class="package-price mb-0">Total amount: 0 USD</p>
-                                <hr>
-                                <button type="submit" class="btn w-100 btn-primary" disabled>{{ __('Buy Now') }}</button>
-                            </form>
+                        <div class="col-12 mb-4">
+                            <p>Order Details</p>
+                            <div id="content-donate-details">
+                                @foreach(collect($data)->filter(fn ($row) => is_array($row) && !empty($row['enabled'])) as $key => $row)
+                                    <form action="{{ route('profile.donate.process', ['method' => $key]) }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="price" value="0">
+                                        <hr>
+                                        <p class="package-name text-muted mb-0 mt-2">Select a package</p>
+                                        <p class="package-price mb-0">Total amount: 0 USD</p>
+                                        <hr>
+                                        <button type="submit" class="btn w-100 btn-primary" disabled>{{ __('Buy Now') }}</button>
+                                    </form>
+                                    @break
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
+                    @else
+                        <div class="col-12">
+                            <div class="alert alert-info mb-0 text-center">
+                                {{ __('All donation methods are currently disabled.') }}
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
