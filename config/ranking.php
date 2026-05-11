@@ -20,7 +20,7 @@ return [
             'image' => 'fa fa-users',
             'route' => 'ranking.job',
         ],
-        'ranking-honor' => [
+        'ranking_honor' => [
             'enabled' => true,
             'name' => 'Honor Ranking',
             'image' => 'fa fa-users',
@@ -32,31 +32,31 @@ return [
             'image' => 'fa fa-users',
             'route' => 'ranking.unique',
         ],
-        'ranking_unique-monthly' => [
+        'ranking_unique_monthly' => [
             'enabled' => false,
             'name' => 'Unique Ranking (Monthly)',
             'image' => 'fa fa-users',
             'route' => 'ranking.unique-monthly',
         ],
-        'ranking-fortress-player' => [
+        'ranking_fortress_player' => [
             'enabled' => false,
             'name' => 'Fortress War (Player)',
             'image' => 'fa fa-users',
             'route' => 'ranking.fortress-player',
         ],
-        'ranking-fortress-guild' => [
+        'ranking_fortress_guild' => [
             'enabled' => false,
             'name' => 'Fortress War (Guild)',
             'image' => 'fa fa-users',
             'route' => 'ranking.fortress-guild',
         ],
-        'ranking-pvp-kd' => [
+        'ranking_pvp_kd' => [
             'enabled' => false,
             'name' => 'Pvp K/D Ranking',
             'image' => 'fa fa-users',
             'route' => 'ranking.pvp-kd',
         ],
-        'ranking-job-kd' => [
+        'ranking_job_kd' => [
             'enabled' => false,
             'name' => 'Job K/D Ranking',
             'image' => 'fa fa-users',

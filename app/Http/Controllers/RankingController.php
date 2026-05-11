@@ -44,6 +44,7 @@ class RankingController extends Controller
 
     public function playerRanking()
     {
+        abort_if(!config('ranking.menu.ranking_player.enabled', false), 404);
         $data = Char::getPlayerRanking();
 
         return view('ranking.ranking.player', compact('data'));
@@ -51,6 +52,7 @@ class RankingController extends Controller
 
     public function guildRanking()
     {
+        abort_if(!config('ranking.menu.ranking_guild.enabled', false), 404);
         $data = Guild::getGuildRanking();
 
         return view('ranking.ranking.guild', compact('data'));
@@ -58,6 +60,7 @@ class RankingController extends Controller
 
     public function uniqueRanking()
     {
+        abort_if(!config('ranking.menu.ranking_unique.enabled', false), 404);
         $data = LogInstanceWorldInfo::getUniqueRanking();
 
         return view('ranking.ranking.unique', compact('data'));
@@ -65,6 +68,7 @@ class RankingController extends Controller
 
     public function uniqueMonthlyRanking()
     {
+        abort_if(!config('ranking.menu.ranking_unique_monthly.enabled', false), 404);
         $data = LogInstanceWorldInfo::getUniqueRanking(25, 1);
 
         return view('ranking.ranking.unique-monthly', compact('data'));
@@ -72,6 +76,7 @@ class RankingController extends Controller
 
     public function fortressPlayerRanking()
     {
+        abort_if(!config('ranking.menu.ranking_fortress_player.enabled', false), 404);
         $data = GuildMember::getFortressPlayerRanking();
 
         return view('ranking.ranking.fortress-player', compact('data'));
@@ -79,6 +84,7 @@ class RankingController extends Controller
 
     public function fortressGuildRanking()
     {
+        abort_if(!config('ranking.menu.ranking_fortress_guild.enabled', false), 404);
         $data = Guild::getFortressGuildRanking();
 
         return view('ranking.ranking.fortress-guild', compact('data'));
@@ -86,6 +92,7 @@ class RankingController extends Controller
 
     public function honorRanking()
     {
+        abort_if(!config('ranking.menu.ranking_honor.enabled', false), 404);
         $data = TrainingCampHonorRank::getHonorRanking();
 
         return view('ranking.ranking.honor', compact('data'));
@@ -93,6 +100,7 @@ class RankingController extends Controller
 
     public function jobRanking()
     {
+        abort_if(!config('ranking.menu.ranking_job.enabled', false), 404);
         if (config('global.server.version') === 'vSRO') {
             $data = CharTrijob::getJobRanking();
         } else {
@@ -109,6 +117,7 @@ class RankingController extends Controller
 
     public function jobAllRanking()
     {
+        abort_if(!config('ranking.job_menu.ranking_job_all.enabled', false), 404);
         if (config('global.server.version') === 'vSRO') {
             $data = CharTrijob::getJobRanking();
         } else {
@@ -120,6 +129,7 @@ class RankingController extends Controller
 
     public function jobHunterRanking()
     {
+        abort_if(!config('ranking.job_menu.ranking_job_hunters.enabled', false), 404);
         if (config('global.server.version') === 'vSRO') {
             $data = CharTrijob::getJobRanking(25, 3);
         } else {
@@ -131,6 +141,7 @@ class RankingController extends Controller
 
     public function jobThieveRanking()
     {
+        abort_if(!config('ranking.job_menu.ranking_job_thieves.enabled', false), 404);
         if (config('global.server.version') === 'vSRO') {
             $data = CharTrijob::getJobRanking(25, 2);
         } else {
@@ -142,6 +153,7 @@ class RankingController extends Controller
 
     public function jobTraderRanking()
     {
+        abort_if(!config('ranking.job_menu.ranking_job_traders.enabled', false), 404);
         if (config('global.server.version') === 'vSRO') {
             $data = CharTrijob::getJobRanking(25, 1);
         } else {
@@ -153,6 +165,7 @@ class RankingController extends Controller
 
     public function pvpKDRanking()
     {
+        abort_if(!config('ranking.menu.ranking_pvp_kd.enabled', false), 404);
         $data = LogEventChar::getKillDeathRanking('pvp', 25);
 
         return view('ranking.ranking.pvp-kd', compact('data'));
@@ -160,6 +173,7 @@ class RankingController extends Controller
 
     public function jobKDRanking()
     {
+        abort_if(!config('ranking.menu.ranking_job_kd.enabled', false), 404);
         $data = LogEventChar::getKillDeathRanking('job', 25);
 
         return view('ranking.ranking.job-kd', compact('data'));
