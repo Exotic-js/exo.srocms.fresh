@@ -374,4 +374,13 @@ return [
             ],
         ],
     ],
+    'custom' => [
+        'enabled' => false,
+        'name' => 'Custom Donate',
+        'route' => 'custom',
+        'currency' => 'USD',
+        'image' => 'images/donate/custom.png',
+        'html' => '',
+        'package' => [],
+    ],
 ];

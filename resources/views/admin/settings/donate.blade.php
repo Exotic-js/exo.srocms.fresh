@@ -44,35 +44,70 @@
                             </div>
                         @endif
 
-                        <h5 class="fw-semibold mb-3">{{ __('General') }}</h5>
+                        @if($key === 'custom')
+                            <h5 class="fw-semibold mb-3">{{ __('Custom Donate Method') }}</h5>
 
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox"
-                                       id="{{ $key }}_enabled"
-                                    {{ !empty($gateway['enabled']) ? 'checked' : '' }}>
-                                <label class="form-check-label fw-semibold" for="{{ $key }}_enabled">{{ __('Enabled') }}</label>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                           id="{{ $key }}_enabled"
+                                        {{ !empty($gateway['enabled']) ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-semibold" for="{{ $key }}_enabled">{{ __('Enabled') }}</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">{{ __('Display Name') }}</label>
-                            <input type="text" class="form-control" id="{{ $key }}_name"
-                                   value="{{ $gateway['name'] ?? ucfirst($key) }}">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">{{ __('Currency') }}</label>
-                            <input type="text" class="form-control" id="{{ $key }}_currency"
-                                   value="{{ $gateway['currency'] ?? 'USD' }}" placeholder="USD">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">{{ __('Image Path') }}</label>
-                            <input type="text" class="form-control" id="{{ $key }}_image"
-                                   value="{{ $gateway['image'] ?? '' }}">
-                        </div>
 
-                        <h5 class="fw-semibold mb-3 mt-4">{{ __('Credentials') }}</h5>
+                            <div class="mb-3">
+                                <label class="form-label">{{ __('Method Title') }}</label>
+                                <input type="text" class="form-control" id="{{ $key }}_name"
+                                       value="{{ $gateway['name'] ?? '' }}"
+                                       placeholder="{{ $gateway['name'] ?? '' }}">
+                            </div>
 
-                        @if($key === 'paypal')
+                            <div class="mb-3">
+                                <label class="form-label">{{ __('Image Path') }}</label>
+                                <input type="text" class="form-control" id="{{ $key }}_image"
+                                       value="{{ $gateway['image'] ?? '' }}"
+                                       placeholder="{{ $gateway['image'] ?? '' }}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">{{ __('HTML Body') }}</label>
+                                <textarea class="form-control" id="{{ $key }}_html" rows="12"
+                                          placeholder="<div>...</div>">{{ $gateway['html'] ?? '' }}</textarea>
+                                <div class="form-text">{{ __('This HTML will be shown to users on the donate page.') }}</div>
+                            </div>
+
+                            <input type="hidden" id="payload-{{ $key }}" name="{{ $key }}">
+                        @else
+                            <h5 class="fw-semibold mb-3">{{ __('General') }}</h5>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                           id="{{ $key }}_enabled"
+                                        {{ !empty($gateway['enabled']) ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-semibold" for="{{ $key }}_enabled">{{ __('Enabled') }}</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">{{ __('Display Name') }}</label>
+                                <input type="text" class="form-control" id="{{ $key }}_name"
+                                       value="{{ $gateway['name'] ?? ucfirst($key) }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">{{ __('Currency') }}</label>
+                                <input type="text" class="form-control" id="{{ $key }}_currency"
+                                       value="{{ $gateway['currency'] ?? 'USD' }}" placeholder="USD">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">{{ __('Image Path') }}</label>
+                                <input type="text" class="form-control" id="{{ $key }}_image"
+                                       value="{{ $gateway['image'] ?? '' }}">
+                            </div>
+
+                            <h5 class="fw-semibold mb-3 mt-4">{{ __('Credentials') }}</h5>
+
+                            @if($key === 'paypal')
                             <div class="mb-3">
                                 <label class="form-label">{{ __('Mode') }}</label>
                                 <select class="form-select" id="{{ $key }}_mode">
@@ -97,7 +132,7 @@
                                        value="{{ $gateway['client_secret'] ?? '' }}" placeholder="PAYPAL_CLIENT_SECRET">
                             </div>
 
-                        @elseif($key === 'stripe')
+                            @elseif($key === 'stripe')
                             <div class="mb-3">
                                 <label class="form-label">{{ __('Endpoint') }}</label>
                                 <input type="text" class="form-control" id="{{ $key }}_endpoint"
@@ -114,7 +149,7 @@
                                        value="{{ $gateway['publishable_key'] ?? '' }}" placeholder="STRIPE_PUBLISHABLE_KEY">
                             </div>
 
-                        @elseif($key === 'paymentwall')
+                            @elseif($key === 'paymentwall')
                             <div class="mb-3">
                                 <label class="form-label">{{ __('Public Key') }}</label>
                                 <input type="text" class="form-control" id="{{ $key }}_public_key"
@@ -150,7 +185,7 @@
                                 <div class="form-text">{{ __('One CIDR range per line') }}</div>
                             </div>
 
-                        @elseif($key === 'coinpayments')
+                            @elseif($key === 'coinpayments')
                             <div class="mb-3">
                                 <label class="form-label">{{ __('Endpoint') }}</label>
                                 <input type="text" class="form-control" id="{{ $key }}_endpoint"
@@ -172,7 +207,7 @@
                                        value="{{ $gateway['client_secret'] ?? '' }}" placeholder="COINPAYMENTS_CLIENT_SECRET">
                             </div>
 
-                        @elseif($key === 'fawaterk')
+                            @elseif($key === 'fawaterk')
                             <div class="mb-3">
                                 <label class="form-label">{{ __('Mode') }}</label>
                                 <select class="form-select" id="{{ $key }}_mode">
@@ -196,7 +231,7 @@
                                        value="{{ $gateway['provider_key'] ?? '' }}" placeholder="FAWATERK_PROVIDER_KEY">
                             </div>
 
-                        @elseif($key === 'maxicard')
+                            @elseif($key === 'maxicard')
                             <div class="mb-3">
                                 <label class="form-label">{{ __('Endpoint') }}</label>
                                 <input type="text" class="form-control" id="{{ $key }}_endpoint"
@@ -213,7 +248,7 @@
                                        value="{{ $gateway['api_password'] ?? '' }}" placeholder="MAXICARD_API_PASSWORD">
                             </div>
 
-                        @elseif($key === 'hipocard')
+                            @elseif($key === 'hipocard')
                             <div class="mb-3">
                                 <label class="form-label">{{ __('Mode') }}</label>
                                 <select class="form-select" id="{{ $key }}_mode">
@@ -238,7 +273,7 @@
                                        value="{{ $gateway['api_password'] ?? '' }}" placeholder="HIPOCARD_API_PASSWORD">
                             </div>
 
-                        @elseif($key === 'hipopay')
+                            @elseif($key === 'hipopay')
                             <div class="mb-3">
                                 <label class="form-label">{{ __('Commission Type') }}</label>
                                 <select class="form-select" id="{{ $key }}_commission_type">
@@ -263,41 +298,42 @@
                                        value="{{ $gateway['api_password'] ?? '' }}" placeholder="HIPOPAY_API_PASSWORD">
                             </div>
 
-                        @else
-                            <div class="alert alert-info">
-                                {{ __('No specific credential fields available for this gateway.') }}
-                            </div>
-                        @endif
+                            @else
+                                <div class="alert alert-info">
+                                    {{ __('No specific credential fields available for this gateway.') }}
+                                </div>
+                            @endif
 
-                        <h5 class="fw-semibold mb-3 mt-4">{{ __('Packages') }}</h5>
+                            <h5 class="fw-semibold mb-3 mt-4">{{ __('Packages') }}</h5>
 
-                        <button type="button" class="btn btn-secondary btn-sm mb-3"
-                                onclick="addPackageRow('pkg-table-{{ $key }}')">
-                            {{ __('+ Add Package') }}
-                        </button>
+                            <button type="button" class="btn btn-secondary btn-sm mb-3"
+                                    onclick="addPackageRow('pkg-table-{{ $key }}')">
+                                {{ __('+ Add Package') }}
+                            </button>
 
-                        <table class="table table-bordered align-middle" id="pkg-table-{{ $key }}">
-                            <thead class="table-light">
-                            <tr>
-                                <th>{{ __('Name') }}</th>
-                                <th style="width: 130px;">{{ __('Price') }}</th>
-                                <th style="width: 130px;">{{ __('Silk Value') }}</th>
-                                <th style="width: 80px;">{{ __('Action') }}</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach($gateway['package'] ?? [] as $pkg)
+                            <table class="table table-bordered align-middle" id="pkg-table-{{ $key }}">
+                                <thead class="table-light">
                                 <tr>
-                                    <td><input type="text"   class="form-control form-control-sm" data-pkg="name"  value="{{ $pkg['name']  ?? '' }}"></td>
-                                    <td><input type="number" class="form-control form-control-sm" data-pkg="price" value="{{ $pkg['price'] ?? '' }}" step="0.01" min="0"></td>
-                                    <td><input type="number" class="form-control form-control-sm" data-pkg="value" value="{{ $pkg['value'] ?? '' }}" min="0"></td>
-                                    <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
+                                    <th>{{ __('Name') }}</th>
+                                    <th style="width: 130px;">{{ __('Price') }}</th>
+                                    <th style="width: 130px;">{{ __('Silk Value') }}</th>
+                                    <th style="width: 80px;">{{ __('Action') }}</th>
                                 </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                @foreach($gateway['package'] ?? [] as $pkg)
+                                    <tr>
+                                        <td><input type="text"   class="form-control form-control-sm" data-pkg="name"  value="{{ $pkg['name']  ?? '' }}"></td>
+                                        <td><input type="number" class="form-control form-control-sm" data-pkg="price" value="{{ $pkg['price'] ?? '' }}" step="0.01" min="0"></td>
+                                        <td><input type="number" class="form-control form-control-sm" data-pkg="value" value="{{ $pkg['value'] ?? '' }}" min="0"></td>
+                                        <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">{{ __('Remove') }}</button></td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
 
-                        <input type="hidden" id="payload-{{ $key }}" name="{{ $key }}">
+                            <input type="hidden" id="payload-{{ $key }}" name="{{ $key }}">
+                        @endif
                     </div>
                 @endforeach
             </div>
@@ -307,8 +343,17 @@
             </div>
         </form>
     </div>
+@endsection
 
+@push('styles')
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs5.min.css" rel="stylesheet">
+@endpush
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs5.min.js"></script>
     <script>
+        const donateCustomDefaults = @json($donateCustomDefaults ?? []);
+
         function addPackageRow(tableId) {
             const tbody = document.getElementById(tableId).querySelector('tbody');
             const row   = tbody.insertRow();
@@ -321,6 +366,39 @@
 
         function serializeGateway(key) {
             const commonFields = ['enabled', 'name', 'currency', 'image'];
+
+            if (key === 'custom') {
+                const title = document.getElementById(key + '_name').value;
+                const image = document.getElementById(key + '_image').value;
+                const enabled = document.getElementById(key + '_enabled').checked;
+                const $editor = $('#' + key + '_html');
+                let htmlBody = '';
+                
+                // Try to get HTML from Summernote editor if it exists and is initialized
+                if ($editor.length && typeof $editor.summernote === 'function') {
+                    try {
+                        htmlBody = $editor.summernote('code');
+                    } catch (e) {
+                        // Fallback to textarea value if Summernote fails
+                        htmlBody = document.getElementById(key + '_html').value;
+                    }
+                } else {
+                    // Fallback to textarea value
+                    htmlBody = document.getElementById(key + '_html').value;
+                }
+                
+                const payload = {
+                    enabled,
+                    name: title || (donateCustomDefaults.name || ''),
+                    route: key,
+                    currency: donateCustomDefaults.currency || 'USD',
+                    image: (image || '').trim() || (donateCustomDefaults.image || ''),
+                    html: htmlBody,
+                    package: [],
+                };
+                document.getElementById('payload-' + key).value = JSON.stringify(payload);
+                return;
+            }
 
             const payload = {
                 enabled:  document.getElementById(key + '_enabled').checked,
@@ -369,6 +447,16 @@
                     });
                 }
             });
+
+            if ($('#custom_html').length && typeof $('#custom_html').summernote === 'function') {
+                $('#custom_html').summernote({
+                    placeholder: 'Add your custom donate HTML content...',
+                    tabsize: 2,
+                    height: 320,
+                    codeviewFilter: false,
+                    codeviewIframeFilter: true
+                });
+            }
         });
 
         document.getElementById('donateForm').addEventListener('submit', function () {
@@ -376,4 +464,4 @@
             gateways.forEach(serializeGateway);
         });
     </script>
-@endsection
+@endpush

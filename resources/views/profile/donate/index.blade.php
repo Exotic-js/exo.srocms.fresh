@@ -32,7 +32,7 @@
                             <div class="d-flex justify-content-center flex-wrap">
                                 @foreach(collect($data)->filter(fn ($row) => is_array($row) && !empty($row['enabled'])) as $key => $row)
                                     <div class="card m-2 d-flex {{ $loop->first ? 'selected' : '' }}" role="button" data-method="{{ $key }}" style="width: 120px;">
-                                        <img src="{{ asset($row['image']) }}" class="card-img-top object-fit-contain p-2" height="50" alt="{{ $row['name'] }}">
+                                        <img src="{{ asset(!empty($row['image']) ? $row['image'] : config('donate.'.$key.'.image', '')) }}" class="card-img-top object-fit-contain p-2" height="50" alt="{{ $row['name'] }}">
                                         <div class="card-body text-center p-2">
                                             <strong>{{ $row['name'] }}</strong>
                                         </div>
@@ -123,10 +123,16 @@
                     $('#content-donate').html('<div class="alert alert-danger">Failed to load package options.</div>');
                 });
 
-                if (['maxicard', 'hipocard'].includes(method)) {
+                if (['maxicard', 'hipocard', 'custom'].includes(method)) {
                     $('#content-donate-details button[type=submit]').prop('disabled', true).text('Not Available');
                 } else {
                     $('#content-donate-details button[type=submit]').prop('disabled', false).text('Buy Now');
+                }
+
+                if (method === 'custom') {
+                    const customTitle = $(this).find('strong').text() || 'Custom Donate';
+                    $('#content-donate-details .package-name').text(`Method: ${customTitle}`);
+                    $('#content-donate-details .package-price').text('Total amount: --');
                 }
             });
 
