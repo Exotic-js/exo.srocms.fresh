@@ -62,18 +62,17 @@ class SettingController extends Controller
     {
         abort_unless(auth()->user()?->role?->is_admin, 403);
 
-        // Explicitly enumerate every widget sub-key so they are never accidentally
-        // matched by $donateKeys (which overlaps — donate config has a 'custom' key
-        // that was swallowing the widgets 'custom' payload). Widget keys checked FIRST.
+        // The donate 'custom' gateway and the widgets 'custom' sub-key share the same
+        // POST field name "custom". To eliminate the collision permanently, the widgets
+        // form submits it as "widgets_custom" (see blade) and we map it back here.
         $widgetKeys = [
             'discord', 'globals_history', 'unique_history', 'top_player', 'top_guild',
             'sox_plus', 'sox_drop', 'pvp_kills', 'job_kills',
-            'server_info', 'event_schedule', 'fortress_war', 'custom',
+            'server_info', 'event_schedule', 'fortress_war',
+            'widgets_custom',   // renamed from 'custom' to avoid donate key collision
         ];
 
-        // Exclude widget keys from donate keys to prevent overlap.
-        $donateKeys = array_values(array_diff(array_keys(config('donate', [])), $widgetKeys));
-
+        $donateKeys = array_keys(config('donate', []));   // includes 'custom' (gateway)
         $jsonKeys = ['donate', 'widgets', 'ranking', 'history', 'referral', 'tickets', 'sliders', 'footer', 'mail', 'captcha', 'vote', 'cache'];
 
         // Load existing blobs so partial saves don't wipe other sub-keys
@@ -84,19 +83,20 @@ class SettingController extends Controller
         $toSave = [];
 
         foreach ($request->except('_token') as $key => $value) {
-            // Widget keys are checked FIRST to prevent donate key overlap.
-            if (in_array($key, $widgetKeys, true)) {
-                $decoded = json_decode($value, true);
-                if (is_array($decoded)) {
-                    $widgets[$key] = $decoded;
-                }
-                continue;
-            }
-
             if (in_array($key, $donateKeys, true)) {
                 $decoded = json_decode($value, true);
                 if (is_array($decoded)) {
                     $donate[$key] = $decoded;
+                }
+                continue;
+            }
+
+            if (in_array($key, $widgetKeys, true)) {
+                $decoded = json_decode($value, true);
+                if (is_array($decoded)) {
+                    // 'widgets_custom' is the renamed field — store it under the real key 'custom'
+                    $storeKey = $key === 'widgets_custom' ? 'custom' : $key;
+                    $widgets[$storeKey] = $decoded;
                 }
                 continue;
             }

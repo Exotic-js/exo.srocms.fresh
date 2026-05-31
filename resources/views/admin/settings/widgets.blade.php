@@ -384,7 +384,7 @@
 
                 {{-- ===================== CUSTOM WIDGETS ===================== --}}
                 <div class="tab-pane fade" id="tab-custom-widgets" role="tabpanel">
-                    <input type="hidden" id="custom_payload" name="custom">
+                    <input type="hidden" id="custom_payload" name="widgets_custom">
 
                     <p class="text-muted small mb-3">{{ __('Each custom widget has a unique key, an optional Blade template, an optional SQL query, and an enable toggle.') }}</p>
 

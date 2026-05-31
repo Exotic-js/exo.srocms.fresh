@@ -108,195 +108,195 @@
                             <h5 class="fw-semibold mb-3 mt-4">{{ __('Credentials') }}</h5>
 
                             @if($key === 'paypal')
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Mode') }}</label>
-                                <select class="form-select" id="{{ $key }}_mode">
-                                    <option value="sandbox" {{ ($gateway['mode'] ?? 'sandbox') === 'sandbox' ? 'selected' : '' }}>Sandbox</option>
-                                    <option value="live"    {{ ($gateway['mode'] ?? 'sandbox') === 'live'    ? 'selected' : '' }}>Live</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Endpoint') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_endpoint"
-                                       value="{{ $gateway['endpoint'] ?? '' }}"
-                                       placeholder="https://api-m.sandbox.paypal.com">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Client ID') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_client_id"
-                                       value="{{ $gateway['client_id'] ?? '' }}" placeholder="PAYPAL_CLIENT_ID">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Client Secret') }}</label>
-                                <input type="password" class="form-control" id="{{ $key }}_client_secret"
-                                       value="{{ $gateway['client_secret'] ?? '' }}" placeholder="PAYPAL_CLIENT_SECRET">
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Mode') }}</label>
+                                    <select class="form-select" id="{{ $key }}_mode">
+                                        <option value="sandbox" {{ ($gateway['mode'] ?? 'sandbox') === 'sandbox' ? 'selected' : '' }}>Sandbox</option>
+                                        <option value="live"    {{ ($gateway['mode'] ?? 'sandbox') === 'live'    ? 'selected' : '' }}>Live</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Endpoint') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_endpoint"
+                                           value="{{ $gateway['endpoint'] ?? '' }}"
+                                           placeholder="https://api-m.sandbox.paypal.com">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Client ID') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_client_id"
+                                           value="{{ $gateway['client_id'] ?? '' }}" placeholder="PAYPAL_CLIENT_ID">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Client Secret') }}</label>
+                                    <input type="password" class="form-control" id="{{ $key }}_client_secret"
+                                           value="{{ $gateway['client_secret'] ?? '' }}" placeholder="PAYPAL_CLIENT_SECRET">
+                                </div>
 
                             @elseif($key === 'stripe')
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Endpoint') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_endpoint"
-                                       value="{{ $gateway['endpoint'] ?? '' }}" placeholder="https://api.stripe.com">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Secret Key') }}</label>
-                                <input type="password" class="form-control" id="{{ $key }}_secret_key"
-                                       value="{{ $gateway['secret_key'] ?? '' }}" placeholder="STRIPE_SECRET_KEY">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Publishable Key') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_publishable_key"
-                                       value="{{ $gateway['publishable_key'] ?? '' }}" placeholder="STRIPE_PUBLISHABLE_KEY">
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Endpoint') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_endpoint"
+                                           value="{{ $gateway['endpoint'] ?? '' }}" placeholder="https://api.stripe.com">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Secret Key') }}</label>
+                                    <input type="password" class="form-control" id="{{ $key }}_secret_key"
+                                           value="{{ $gateway['secret_key'] ?? '' }}" placeholder="STRIPE_SECRET_KEY">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Publishable Key') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_publishable_key"
+                                           value="{{ $gateway['publishable_key'] ?? '' }}" placeholder="STRIPE_PUBLISHABLE_KEY">
+                                </div>
 
                             @elseif($key === 'paymentwall')
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Public Key') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_public_key"
-                                       value="{{ $gateway['public_key'] ?? '' }}" placeholder="YOUR_PROJECT_KEY">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Private Key') }}</label>
-                                <input type="password" class="form-control" id="{{ $key }}_private_key"
-                                       value="{{ $gateway['private_key'] ?? '' }}" placeholder="YOUR_SECRET_KEY">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Widget Code') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_widget_code"
-                                       value="{{ $gateway['widget_code'] ?? '' }}" placeholder="p1_1">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('API Type') }}</label>
-                                <select class="form-select" id="{{ $key }}_api_type">
-                                    <option value="vc"     {{ ($gateway['api_type'] ?? 'vc') === 'vc'     ? 'selected' : '' }}>VC</option>
-                                    <option value="direct" {{ ($gateway['api_type'] ?? 'vc') === 'direct' ? 'selected' : '' }}>Direct</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Authorized IPs') }}</label>
-                                <textarea class="form-control" id="{{ $key }}_authorized_ips" rows="4"
-                                          placeholder="174.36.92.186">{{ implode("\n", $gateway['authorized_ips'] ?? []) }}</textarea>
-                                <div class="form-text">{{ __('One IP per line') }}</div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Authorized Ranges') }}</label>
-                                <textarea class="form-control" id="{{ $key }}_authorized_ranges" rows="4"
-                                          placeholder="216.127.71.0/24">{{ implode("\n", $gateway['authorized_ranges'] ?? []) }}</textarea>
-                                <div class="form-text">{{ __('One CIDR range per line') }}</div>
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Public Key') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_public_key"
+                                           value="{{ $gateway['public_key'] ?? '' }}" placeholder="YOUR_PROJECT_KEY">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Private Key') }}</label>
+                                    <input type="password" class="form-control" id="{{ $key }}_private_key"
+                                           value="{{ $gateway['private_key'] ?? '' }}" placeholder="YOUR_SECRET_KEY">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Widget Code') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_widget_code"
+                                           value="{{ $gateway['widget_code'] ?? '' }}" placeholder="p1_1">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('API Type') }}</label>
+                                    <select class="form-select" id="{{ $key }}_api_type">
+                                        <option value="vc"     {{ ($gateway['api_type'] ?? 'vc') === 'vc'     ? 'selected' : '' }}>VC</option>
+                                        <option value="direct" {{ ($gateway['api_type'] ?? 'vc') === 'direct' ? 'selected' : '' }}>Direct</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Authorized IPs') }}</label>
+                                    <textarea class="form-control" id="{{ $key }}_authorized_ips" rows="4"
+                                              placeholder="174.36.92.186">{{ implode("\n", $gateway['authorized_ips'] ?? []) }}</textarea>
+                                    <div class="form-text">{{ __('One IP per line') }}</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Authorized Ranges') }}</label>
+                                    <textarea class="form-control" id="{{ $key }}_authorized_ranges" rows="4"
+                                              placeholder="216.127.71.0/24">{{ implode("\n", $gateway['authorized_ranges'] ?? []) }}</textarea>
+                                    <div class="form-text">{{ __('One CIDR range per line') }}</div>
+                                </div>
 
                             @elseif($key === 'coinpayments')
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Endpoint') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_endpoint"
-                                       value="{{ $gateway['endpoint'] ?? '' }}" placeholder="https://api.coinpayments.com">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Merchant ID') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_merchant_id"
-                                       value="{{ $gateway['merchant_id'] ?? '' }}" placeholder="COINPAYMENTS_MERCHANT_ID">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Client ID') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_client_id"
-                                       value="{{ $gateway['client_id'] ?? '' }}" placeholder="COINPAYMENTS_CLIENT_ID">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Client Secret') }}</label>
-                                <input type="password" class="form-control" id="{{ $key }}_client_secret"
-                                       value="{{ $gateway['client_secret'] ?? '' }}" placeholder="COINPAYMENTS_CLIENT_SECRET">
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Endpoint') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_endpoint"
+                                           value="{{ $gateway['endpoint'] ?? '' }}" placeholder="https://api.coinpayments.com">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Merchant ID') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_merchant_id"
+                                           value="{{ $gateway['merchant_id'] ?? '' }}" placeholder="COINPAYMENTS_MERCHANT_ID">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Client ID') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_client_id"
+                                           value="{{ $gateway['client_id'] ?? '' }}" placeholder="COINPAYMENTS_CLIENT_ID">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Client Secret') }}</label>
+                                    <input type="password" class="form-control" id="{{ $key }}_client_secret"
+                                           value="{{ $gateway['client_secret'] ?? '' }}" placeholder="COINPAYMENTS_CLIENT_SECRET">
+                                </div>
 
                             @elseif($key === 'fawaterk')
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Mode') }}</label>
-                                <select class="form-select" id="{{ $key }}_mode">
-                                    <option value="staging"    {{ ($gateway['mode'] ?? 'staging') === 'staging'    ? 'selected' : '' }}>Staging</option>
-                                    <option value="production" {{ ($gateway['mode'] ?? 'staging') === 'production' ? 'selected' : '' }}>Production</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Endpoint') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_endpoint"
-                                       value="{{ $gateway['endpoint'] ?? '' }}" placeholder="https://staging.fawaterk.com">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('API Key') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_api_key"
-                                       value="{{ $gateway['api_key'] ?? '' }}" placeholder="FAWATERK_API_KEY">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Provider Key') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_provider_key"
-                                       value="{{ $gateway['provider_key'] ?? '' }}" placeholder="FAWATERK_PROVIDER_KEY">
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Mode') }}</label>
+                                    <select class="form-select" id="{{ $key }}_mode">
+                                        <option value="staging"    {{ ($gateway['mode'] ?? 'staging') === 'staging'    ? 'selected' : '' }}>Staging</option>
+                                        <option value="production" {{ ($gateway['mode'] ?? 'staging') === 'production' ? 'selected' : '' }}>Production</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Endpoint') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_endpoint"
+                                           value="{{ $gateway['endpoint'] ?? '' }}" placeholder="https://staging.fawaterk.com">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('API Key') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_api_key"
+                                           value="{{ $gateway['api_key'] ?? '' }}" placeholder="FAWATERK_API_KEY">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Provider Key') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_provider_key"
+                                           value="{{ $gateway['provider_key'] ?? '' }}" placeholder="FAWATERK_PROVIDER_KEY">
+                                </div>
 
                             @elseif($key === 'maxicard')
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Endpoint') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_endpoint"
-                                       value="{{ $gateway['endpoint'] ?? '' }}" placeholder="https://www.maxigame.org/epin/yukle.php">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('API Key') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_api_key"
-                                       value="{{ $gateway['api_key'] ?? '' }}" placeholder="MAXICARD_API_KEY">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('API Password') }}</label>
-                                <input type="password" class="form-control" id="{{ $key }}_api_password"
-                                       value="{{ $gateway['api_password'] ?? '' }}" placeholder="MAXICARD_API_PASSWORD">
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Endpoint') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_endpoint"
+                                           value="{{ $gateway['endpoint'] ?? '' }}" placeholder="https://www.maxigame.org/epin/yukle.php">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('API Key') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_api_key"
+                                           value="{{ $gateway['api_key'] ?? '' }}" placeholder="MAXICARD_API_KEY">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('API Password') }}</label>
+                                    <input type="password" class="form-control" id="{{ $key }}_api_password"
+                                           value="{{ $gateway['api_password'] ?? '' }}" placeholder="MAXICARD_API_PASSWORD">
+                                </div>
 
                             @elseif($key === 'hipocard')
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Mode') }}</label>
-                                <select class="form-select" id="{{ $key }}_mode">
-                                    <option value="sandbox"    {{ ($gateway['mode'] ?? 'sandbox') === 'sandbox'    ? 'selected' : '' }}>Sandbox</option>
-                                    <option value="production" {{ ($gateway['mode'] ?? 'sandbox') === 'production' ? 'selected' : '' }}>Production</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Endpoint') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_endpoint"
-                                       value="{{ $gateway['endpoint'] ?? '' }}"
-                                       placeholder="https://www.hipopotamya.com/api/sandbox/v1/hipocard/epins">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('API Key') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_api_key"
-                                       value="{{ $gateway['api_key'] ?? '' }}" placeholder="HIPOCARD_API_KEY">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('API Password') }}</label>
-                                <input type="password" class="form-control" id="{{ $key }}_api_password"
-                                       value="{{ $gateway['api_password'] ?? '' }}" placeholder="HIPOCARD_API_PASSWORD">
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Mode') }}</label>
+                                    <select class="form-select" id="{{ $key }}_mode">
+                                        <option value="sandbox"    {{ ($gateway['mode'] ?? 'sandbox') === 'sandbox'    ? 'selected' : '' }}>Sandbox</option>
+                                        <option value="production" {{ ($gateway['mode'] ?? 'sandbox') === 'production' ? 'selected' : '' }}>Production</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Endpoint') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_endpoint"
+                                           value="{{ $gateway['endpoint'] ?? '' }}"
+                                           placeholder="https://www.hipopotamya.com/api/sandbox/v1/hipocard/epins">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('API Key') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_api_key"
+                                           value="{{ $gateway['api_key'] ?? '' }}" placeholder="HIPOCARD_API_KEY">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('API Password') }}</label>
+                                    <input type="password" class="form-control" id="{{ $key }}_api_password"
+                                           value="{{ $gateway['api_password'] ?? '' }}" placeholder="HIPOCARD_API_PASSWORD">
+                                </div>
 
                             @elseif($key === 'hipopay')
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Commission Type') }}</label>
-                                <select class="form-select" id="{{ $key }}_commission_type">
-                                    <option value="1" {{ ($gateway['commission_type'] ?? 1) == 1 ? 'selected' : '' }}>{{ __('Type 1') }}</option>
-                                    <option value="2" {{ ($gateway['commission_type'] ?? 1) == 2 ? 'selected' : '' }}>{{ __('Type 2') }}</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('Endpoint') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_endpoint"
-                                       value="{{ $gateway['endpoint'] ?? '' }}"
-                                       placeholder="https://www.hipopotamya.com/api/v1/merchants/payment/token">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('API Key') }}</label>
-                                <input type="text" class="form-control" id="{{ $key }}_api_key"
-                                       value="{{ $gateway['api_key'] ?? '' }}" placeholder="HIPOPAY_API_KEY">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('API Password') }}</label>
-                                <input type="password" class="form-control" id="{{ $key }}_api_password"
-                                       value="{{ $gateway['api_password'] ?? '' }}" placeholder="HIPOPAY_API_PASSWORD">
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Commission Type') }}</label>
+                                    <select class="form-select" id="{{ $key }}_commission_type">
+                                        <option value="1" {{ ($gateway['commission_type'] ?? 1) == 1 ? 'selected' : '' }}>{{ __('Type 1') }}</option>
+                                        <option value="2" {{ ($gateway['commission_type'] ?? 1) == 2 ? 'selected' : '' }}>{{ __('Type 2') }}</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Endpoint') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_endpoint"
+                                           value="{{ $gateway['endpoint'] ?? '' }}"
+                                           placeholder="https://www.hipopotamya.com/api/v1/merchants/payment/token">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('API Key') }}</label>
+                                    <input type="text" class="form-control" id="{{ $key }}_api_key"
+                                           value="{{ $gateway['api_key'] ?? '' }}" placeholder="HIPOPAY_API_KEY">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('API Password') }}</label>
+                                    <input type="password" class="form-control" id="{{ $key }}_api_password"
+                                           value="{{ $gateway['api_password'] ?? '' }}" placeholder="HIPOPAY_API_PASSWORD">
+                                </div>
 
                             @else
                                 <div class="alert alert-info">
@@ -373,20 +373,16 @@
                 const enabled = document.getElementById(key + '_enabled').checked;
                 const $editor = $('#' + key + '_html');
                 let htmlBody = '';
-                
-                // Try to get HTML from Summernote editor if it exists and is initialized
-                if ($editor.length && typeof $editor.summernote === 'function') {
-                    try {
-                        htmlBody = $editor.summernote('code');
-                    } catch (e) {
-                        // Fallback to textarea value if Summernote fails
-                        htmlBody = document.getElementById(key + '_html').value;
-                    }
+
+                // Use Summernote only if it fully initialized (summernoteReady flag).
+                // Falling back to the raw textarea avoids sending empty HTML when
+                // Summernote hasn't finished booting (the intermittent wipe bug).
+                if (summernoteReady && $editor.length) {
+                    htmlBody = $editor.summernote('code');
                 } else {
-                    // Fallback to textarea value
                     htmlBody = document.getElementById(key + '_html').value;
                 }
-                
+
                 const payload = {
                     enabled,
                     name: title || (donateCustomDefaults.name || ''),
@@ -437,6 +433,8 @@
             hipocard: { sandbox: 'https://www.hipopotamya.com/api/sandbox/v1/hipocard/epins', production: 'https://www.hipopotamya.com/api/v1/hipocard/epins' },
         };
 
+        let summernoteReady = false;
+
         document.addEventListener('DOMContentLoaded', function () {
             Object.entries(endpointMap).forEach(([key, modes]) => {
                 const modeEl     = document.getElementById(key + '_mode');
@@ -448,13 +446,16 @@
                 }
             });
 
-            if ($('#custom_html').length && typeof $('#custom_html').summernote === 'function') {
+            if ($('#custom_html').length && typeof $.fn.summernote === 'function') {
                 $('#custom_html').summernote({
                     placeholder: 'Add your custom donate HTML content...',
                     tabsize: 2,
                     height: 320,
                     codeviewFilter: false,
-                    codeviewIframeFilter: true
+                    codeviewIframeFilter: true,
+                    callbacks: {
+                        onInit: function () { summernoteReady = true; }
+                    }
                 });
             }
         });
