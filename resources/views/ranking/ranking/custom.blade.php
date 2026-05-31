@@ -41,7 +41,7 @@
             @endforeach
         @else
             <tr>
-                <td colspan="{{ count($columns) + 1 }}" class="text-center">{{ __('No Records Found!') }}</td>
+                <td colspan="1" class="text-center">{{ __('No Records Found!') }}</td>
             </tr>
         @endif
         </tbody>
