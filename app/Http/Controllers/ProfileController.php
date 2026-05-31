@@ -197,6 +197,8 @@ class ProfileController extends Controller
             Setting::updateOrCreate(['key' => $key], ['value' => is_array($value) ? json_encode($value) : $value]);
         }
 
+        Setting::flushCache();
+
         return back()->with('success', 'Settings updated!');
     }
 }

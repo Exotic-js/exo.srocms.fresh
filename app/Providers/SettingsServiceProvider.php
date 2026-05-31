@@ -49,14 +49,20 @@ class SettingsServiceProvider extends ServiceProvider
 
     private function applyGeneralSettings(array $settings): void
     {
-        // Scalar fields are stored as individual DB rows (site_title, site_url, etc.)
-        // Merge them on top of the config defaults.
+        // Start with config defaults
         $general = config('global.general', []);
 
-        foreach (array_keys($general) as $key) {
-            if (array_key_exists($key, $settings)) {
-                $general[$key] = $settings[$key];
+        // Merge ALL scalar DB settings on top (not just keys from config)
+        // This catches dynamic keys like item_stats_jid_2, job_name_jid_2, verify_jid_2
+        foreach ($settings as $key => $value) {
+            // Skip known JSON blob keys — they're handled by applyJsonConfig
+            $jsonKeys = ['donate', 'widgets', 'ranking', 'history', 'referral', 'tickets', 'sliders', 'footer', 'mail', 'captcha', 'vote', 'cache'];
+            if (in_array($key, $jsonKeys, true)) {
+                continue;
             }
+
+            // Store every scalar setting
+            $general[$key] = $value;
         }
 
         Config::set('settings', $general);
