@@ -62,11 +62,18 @@ class SettingController extends Controller
     {
         abort_unless(auth()->user()?->role?->is_admin, 403);
 
-        $donateKeys = array_keys(config('donate', []));
-        $widgetKeys = array_merge(
-            array_keys(config('widgets', [])),
-            ['event_schedule', 'fortress_war', 'server_info', 'custom', 'discord']
-        );
+        // Explicitly enumerate every widget sub-key so they are never accidentally
+        // matched by $donateKeys (which overlaps — donate config has a 'custom' key
+        // that was swallowing the widgets 'custom' payload). Widget keys checked FIRST.
+        $widgetKeys = [
+            'discord', 'globals_history', 'unique_history', 'top_player', 'top_guild',
+            'sox_plus', 'sox_drop', 'pvp_kills', 'job_kills',
+            'server_info', 'event_schedule', 'fortress_war', 'custom',
+        ];
+
+        // Exclude widget keys from donate keys to prevent overlap.
+        $donateKeys = array_values(array_diff(array_keys(config('donate', [])), $widgetKeys));
+
         $jsonKeys = ['donate', 'widgets', 'ranking', 'history', 'referral', 'tickets', 'sliders', 'footer', 'mail', 'captcha', 'vote', 'cache'];
 
         // Load existing blobs so partial saves don't wipe other sub-keys
@@ -77,18 +84,19 @@ class SettingController extends Controller
         $toSave = [];
 
         foreach ($request->except('_token') as $key => $value) {
-            if (in_array($key, $donateKeys, true)) {
-                $decoded = json_decode($value, true);
-                if (is_array($decoded)) {
-                    $donate[$key] = $decoded;
-                }
-                continue;
-            }
-
+            // Widget keys are checked FIRST to prevent donate key overlap.
             if (in_array($key, $widgetKeys, true)) {
                 $decoded = json_decode($value, true);
                 if (is_array($decoded)) {
                     $widgets[$key] = $decoded;
+                }
+                continue;
+            }
+
+            if (in_array($key, $donateKeys, true)) {
+                $decoded = json_decode($value, true);
+                if (is_array($decoded)) {
+                    $donate[$key] = $decoded;
                 }
                 continue;
             }

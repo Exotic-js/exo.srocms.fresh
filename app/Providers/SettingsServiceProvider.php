@@ -203,11 +203,21 @@ class SettingsServiceProvider extends ServiceProvider
     {
         $decoded = $this->decodeJson($settings[$settingKey] ?? null);
 
-        // Trust the saved value completely — do not merge back config defaults.
-        // Merging would re-inject items the user intentionally deleted.
-        if (! empty($decoded)) {
-            Config::set($configKey, $decoded);
+        if (empty($decoded)) {
+            return;
         }
+
+        // Deep-merge: DB value wins for keys it contains, but config-file defaults
+        // fill in any keys the user has never explicitly saved (e.g. a new widget
+        // added in a later release that doesn't exist in the DB blob yet).
+        $defaults = config($configKey, []);
+        if (is_array($defaults) && is_array($decoded)) {
+            $merged = array_replace_recursive($defaults, $decoded);
+        } else {
+            $merged = $decoded;
+        }
+
+        Config::set($configKey, $merged);
     }
 
     /*
