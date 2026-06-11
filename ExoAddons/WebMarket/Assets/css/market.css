@@ -1,0 +1,782 @@
+/* ==========================================================================
+   WEB MARKET — Inherits from Revenor Global Theme (revenor.css)
+   Uses CSS vars: --gold-primary, --gold-light, --gold-dark, --bg-dark, --bg-panel,
+                  --border-gold, --font-heading, --font-body
+   ========================================================================== */
+
+/* ===================== MARKET SUBNAV (see subnav.blade.php) =============== */
+.market-subnav {
+    padding-top: 10px;
+}
+
+/* ==================== FILTER BAR ==================== */
+.market-filters-bar {
+    background: rgba(8, 7, 5, 0.9);
+    border: 1px solid #2e2210;
+    border-left: 3px solid var(--gold-primary);
+    padding: 18px 24px;
+    margin-bottom: 2rem;
+}
+
+.market-filters-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
+    gap: 14px;
+    align-items: end;
+}
+
+@media (max-width: 1100px) {
+    .market-filters-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .filter-actions { grid-column: span 3; }
+}
+
+@media (max-width: 640px) {
+    .market-filters-grid {
+        grid-template-columns: 1fr;
+    }
+    .filter-actions { grid-column: span 1; }
+}
+
+.filter-group label {
+    font-family: var(--font-heading);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gold-primary);
+    margin-bottom: 6px;
+    display: block;
+}
+
+.filter-control {
+    background: #050403;
+    border: 1px solid #3a2c14;
+    color: #e0d0a6;
+    padding: 8px 12px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    border-radius: 0;
+    width: 100%;
+    transition: border-color 0.2s;
+}
+
+.filter-control:focus {
+    border-color: var(--gold-primary);
+    outline: none;
+    box-shadow: 0 0 6px rgba(205, 159, 82, 0.25);
+    background: #080604;
+    color: #fff;
+}
+
+.filter-control option {
+    background: #080604;
+    color: #e0d0a6;
+}
+
+.btn-market-search {
+    background: linear-gradient(180deg, #cfad6b 0%, #7a5423 100%);
+    border: none;
+    color: #000;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 9px 24px;
+    cursor: pointer;
+    transition: filter 0.2s;
+    clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0% 50%);
+}
+
+.btn-market-search:hover {
+    filter: brightness(1.2);
+}
+
+/* ==================== LISTINGS GRID ==================== */
+.listings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+}
+
+/* ==================== ITEM CARD ==================== */
+.item-card {
+    background: rgba(10, 9, 7, 0.92);
+    border: 1px solid #2e2210;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.item-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #4a381c, transparent);
+    transition: background 0.3s;
+}
+
+.item-card:hover {
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 20px rgba(205, 159, 82, 0.2);
+    transform: translateY(-3px);
+}
+
+.item-card:hover::before {
+    background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+}
+
+.item-card.is-sox {
+    border-color: rgba(0, 191, 255, 0.3);
+}
+.item-card.is-sox::before {
+    background: linear-gradient(90deg, transparent, rgba(0,191,255,0.5), transparent);
+}
+.item-card.is-sox:hover {
+    border-color: #00bfff;
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.2);
+}
+
+.item-icon-box {
+    width: 60px;
+    height: 60px;
+    background: #000;
+    border: 1px solid #2e2210;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    flex-shrink: 0;
+}
+
+.item-icon-box img {
+    max-width: 100%;
+    max-height: 100%;
+    image-rendering: pixelated;
+}
+
+.item-card-header {
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid #1a140b;
+}
+
+.item-title-meta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.item-name-title {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--gold-light);
+    margin: 0;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sox-badge {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.65rem;
+    padding: 2px 7px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+.sox-badge.seal-star  { background: linear-gradient(90deg,#c8a84b,#ffe680); color:#000; }
+.sox-badge.seal-moon  { background: linear-gradient(90deg,#0088cc,#00bfff); color:#fff; }
+.sox-badge.seal-sun   { background: linear-gradient(90deg,#cc2200,#ff6633); color:#fff; }
+.sox-badge.seal-nova  { background: linear-gradient(90deg,#7700cc,#ba55d3); color:#fff; }
+
+.plus-badge {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    font-weight: 900;
+    background: linear-gradient(180deg, #cfad6b, #7a5423);
+    color: #000;
+    padding: 1px 7px;
+    margin-left: 4px;
+}
+
+.item-card-body {
+    padding: 14px 16px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.item-specs-list {
+    font-size: 0.8rem;
+    color: #8a7a5a;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.item-spec-row {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #12100a;
+    padding-bottom: 3px;
+}
+
+.spec-val-highlight { color: #c8b897; font-weight: 500; }
+
+.price-display-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #69cf69;
+    border-top: 1px solid #1a140b;
+    padding-top: 10px;
+    margin-top: auto;
+}
+
+.currency-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 900;
+    color: #000;
+    font-family: var(--font-heading);
+}
+.currency-icon.gold   { background: linear-gradient(135deg, #cfad6b, #f3d474); }
+.currency-icon.silk   { background: linear-gradient(135deg, #0077aa, #00bfff); color:#fff; }
+.currency-icon.points { background: linear-gradient(135deg, #6600aa, #ba55d3); color:#fff; }
+
+.item-card-actions {
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid #1a140b;
+}
+
+.btn-golden-buy {
+    display: block;
+    width: 100%;
+    padding: 9px;
+    background: linear-gradient(180deg, #cfad6b 0%, #7a5423 100%);
+    border: none;
+    color: #000;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+    cursor: pointer;
+    clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0% 50%);
+    transition: filter 0.2s, box-shadow 0.2s;
+}
+.btn-golden-buy:hover {
+    filter: brightness(1.18);
+    box-shadow: 0 0 15px rgba(207, 173, 107, 0.35);
+}
+
+/* ===================== INVENTORY / SELL PAGE ===================== */
+.inventory-container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.character-panel {
+    background: rgba(8, 7, 5, 0.92);
+    border: 1px solid #2e2210;
+    border-left: 3px solid var(--gold-primary);
+    padding: 20px;
+    height: fit-content;
+}
+
+.char-select-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #1a140b;
+    transition: all 0.2s ease;
+}
+
+.char-select-item:hover,
+.char-select-item.active {
+    background: rgba(207, 173, 107, 0.08);
+    border-color: var(--gold-primary);
+}
+
+.char-avatar {
+    width: 38px;
+    height: 38px;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background: linear-gradient(135deg, #2a1f0e, #cfad6b);
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 900;
+    color: #000;
+    flex-shrink: 0;
+}
+
+.inventory-grid-panel {
+    background: rgba(8, 7, 5, 0.92);
+    border: 1px solid #2e2210;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sro-inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 56px);
+    grid-gap: 6px;
+    background: #040302;
+    border: 1px solid #2e2210;
+    padding: 10px;
+    width: fit-content;
+    align-self: center;
+}
+
+.sro-slot {
+    width: 56px;
+    height: 56px;
+    background: #080604;
+    border: 1px solid #1a140b;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.sro-slot:hover {
+    border-color: var(--gold-primary);
+    background: rgba(207, 173, 107, 0.06);
+    box-shadow: 0 0 8px rgba(207, 173, 107, 0.2);
+}
+
+.sro-slot.occupied { background: #0a0805; }
+
+.sro-slot img {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+}
+
+.sro-slot.is-sox {
+    border-color: rgba(0, 191, 255, 0.4);
+    box-shadow: 0 0 5px rgba(0, 191, 255, 0.25);
+}
+
+.slot-amount {
+    position: absolute;
+    bottom: 2px;
+    right: 3px;
+    font-size: 0.6rem;
+    color: #69cf69;
+    font-weight: 700;
+    text-shadow: 0 0 4px #000;
+}
+
+/* ===================== TOOLTIP ===================== */
+.sro-tooltip {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    width: 270px;
+    background: rgba(4, 3, 2, 0.98);
+    border: 1px solid #4a381c;
+    border-top: 2px solid var(--gold-primary);
+    padding: 12px;
+    color: #e0d0a6;
+    font-size: 12px;
+    font-family: var(--font-body);
+    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.9);
+    pointer-events: none;
+    line-height: 1.5;
+}
+
+.tooltip-header { border-bottom: 1px solid #2e2210; padding-bottom: 6px; margin-bottom: 6px; }
+.tooltip-item-name { font-family: var(--font-heading); font-size: 0.9rem; font-weight: 700; color: var(--gold-light); }
+.tooltip-white-info { color: #e0e0e0; margin-top: 5px; }
+.tooltip-blue-info  { color: #87cefa; margin-top: 5px; }
+.tooltip-desc       { color: #6a6050; font-style: italic; margin-top: 5px; }
+
+/* ===================== LISTING MODAL ===================== */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 1999;
+}
+
+.list-item-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(8, 7, 5, 0.98);
+    border: 1px solid #4a381c;
+    border-top: 3px solid var(--gold-primary);
+    padding: 28px;
+    z-index: 2000;
+    width: 420px;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
+}
+
+.list-item-modal h5 {
+    font-family: var(--font-heading);
+    color: var(--gold-light);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* Form inputs inside market pages */
+.market-input {
+    background: #050403 !important;
+    border: 1px solid #3a2c14 !important;
+    border-radius: 0 !important;
+    color: #e0d0a6 !important;
+    font-family: var(--font-body) !important;
+    font-size: 13px !important;
+}
+.market-input:focus {
+    border-color: var(--gold-primary) !important;
+    box-shadow: 0 0 6px rgba(205,159,82,0.2) !important;
+    background: #080604 !important;
+}
+.market-input option { background: #050403; }
+
+/* ===================== PAGINATION ===================== */
+.pagination .page-link {
+    background: #050403;
+    border: 1px solid #2e2210;
+    color: var(--gold-primary);
+    border-radius: 0 !important;
+    font-family: var(--font-heading);
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+.pagination .page-link:hover {
+    background: rgba(207, 173, 107, 0.1);
+    border-color: var(--gold-primary);
+    color: var(--gold-light);
+}
+.pagination .page-item.active .page-link {
+    background: linear-gradient(180deg, #cfad6b, #7a5423);
+    border-color: #cfad6b;
+    color: #000;
+    font-weight: 900;
+}
+
+/* ===================== RESET / SECONDARY BUTTONS ===================== */
+.btn-market-reset {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 14px;
+    background: #080604;
+    border: 1px solid #3a2c14;
+    color: #8a7a5a;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+.btn-market-reset:hover {
+    border-color: var(--gold-primary);
+    color: var(--gold-primary);
+    background: #0f0c07;
+}
+
+/* ===================== DANGER BUTTON ===================== */
+.btn-market-danger {
+    display: block;
+    width: 100%;
+    padding: 9px;
+    background: rgba(120, 20, 20, 0.6);
+    border: 1px solid #5a1a1a;
+    color: #ff8080;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-market-danger:hover {
+    background: rgba(160, 30, 30, 0.8);
+    border-color: #cc3333;
+    color: #fff;
+}
+
+/* ===================== EMPTY STATE ===================== */
+.market-empty-state {
+    background: rgba(8, 7, 5, 0.85);
+    border: 1px solid #2e2210;
+    border-top: 2px solid #4a381c;
+    padding: 60px 40px;
+    text-align: center;
+}
+.market-empty-icon {
+    font-size: 3rem;
+    color: #3a2c14;
+    margin-bottom: 16px;
+}
+.market-empty-state h3 {
+    font-family: var(--font-heading);
+    color: var(--gold-primary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+.market-empty-state p {
+    color: #6a5a3a;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+/* ===================== GOLDEN ALERTS ===================== */
+.golden-alert {
+    padding: 12px 18px;
+    border-left: 3px solid;
+    font-family: var(--font-body);
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+.golden-alert-success {
+    background: rgba(10, 30, 10, 0.8);
+    border-color: #2e7d32;
+    color: #69cf69;
+}
+.golden-alert-danger {
+    background: rgba(30, 10, 10, 0.8);
+    border-color: #7a2020;
+    color: #ff8080;
+}
+
+/* ===================== GOLDEN MODAL ===================== */
+.golden-modal {
+    background: #08070500;
+    background-color: #0e0c09;
+    border: 1px solid #4a381c;
+    border-radius: 0;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.95);
+}
+.golden-modal-header {
+    background: rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid #2e2210;
+    padding: 16px 20px;
+}
+.golden-modal-header .modal-title {
+    font-family: var(--font-heading);
+    color: var(--gold-light);
+    font-size: 1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+.golden-modal-body {
+    background: transparent;
+    padding: 20px;
+}
+.golden-modal-footer {
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid #2e2210;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+.golden-modal-item-preview {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #2e2210;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+}
+.golden-modal-item-icon {
+    width: 52px;
+    height: 52px;
+    image-rendering: pixelated;
+    border: 1px solid #2e2210;
+    background: #000;
+    padding: 3px;
+}
+.golden-modal-item-name {
+    font-family: var(--font-heading);
+    color: var(--gold-light);
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+.golden-modal-price {
+    color: #69cf69;
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-top: 4px;
+}
+.golden-modal-note {
+    color: #6a5a3a;
+    font-size: 12px;
+    border-left: 2px solid #4a381c;
+    padding-left: 10px;
+    margin-bottom: 14px;
+}
+.golden-modal-note strong { color: #e0d0a6; }
+
+/* ===================== MARKET NOTICE (Requirements) ===================== */
+.market-notice {
+    background: rgba(5, 4, 2, 0.9);
+    border: 1px solid #4a381c;
+    border-left: 3px solid #cfad6b;
+    padding: 16px 20px;
+}
+.market-notice-title {
+    font-family: var(--font-heading);
+    color: var(--gold-primary);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+.market-notice-title i { margin-right: 8px; }
+.market-notice-list {
+    color: #a09070;
+    font-size: 13px;
+    margin: 0;
+    padding-left: 20px;
+    line-height: 1.8;
+}
+.market-notice-list strong { color: #e0d0a6; }
+
+/* ===================== CLAIMS GRID ===================== */
+.claims-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+}
+
+/* ===================== CLAIM CARD ===================== */
+.claim-card {
+    background: rgba(10, 9, 7, 0.92);
+    border: 1px solid #2e2210;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    transition: border-color 0.25s, box-shadow 0.25s;
+}
+.claim-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #4a381c, transparent);
+}
+.claim-card:hover {
+    border-color: #4a381c;
+    box-shadow: 0 0 20px rgba(207, 173, 107, 0.12);
+}
+
+.claim-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background: rgba(0, 0, 0, 0.35);
+    border-bottom: 1px solid #1a140b;
+}
+
+/* Claim type badges */
+.claim-badge {
+    font-family: var(--font-heading);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+}
+.claim-badge-purchase { background: rgba(30, 80, 30, 0.8); color: #69cf69; border: 1px solid #2e6a2e; }
+.claim-badge-return   { background: rgba(40, 40, 40, 0.8); color: #a09070; border: 1px solid #3a3020; }
+.claim-badge-gold     { background: rgba(80, 55, 10, 0.8); color: var(--gold-primary); border: 1px solid #4a381c; }
+
+.claim-time {
+    font-size: 11px;
+    color: #5a4a2a;
+    font-family: var(--font-body);
+}
+
+.claim-card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex-grow: 1;
+}
+
+.claim-item-preview {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid #1a140b;
+    padding: 12px 14px;
+}
+
+.claim-item-name {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--gold-light);
+    line-height: 1.3;
+}
+
+.claim-item-sub {
+    font-size: 11px;
+    color: #6a5a3a;
+    margin-top: 4px;
+}
+
+.claim-form { display: flex; flex-direction: column; gap: 6px; }
+
+/* Fix golden-modal duplicate background property */
+.golden-modal {
+    background-color: #0e0c09 !important;
+    border: 1px solid #4a381c;
+    border-radius: 0;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.95);
+}
+

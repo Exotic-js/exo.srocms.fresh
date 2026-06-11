@@ -6,4 +6,5 @@ return [
     App\Providers\SettingsServiceProvider::class,
     App\Providers\ViewServiceProvider::class,
     Barryvdh\Debugbar\ServiceProvider::class,
+    ExoAddons\Dashboard\DashboardServiceProvider::class,  
 ];

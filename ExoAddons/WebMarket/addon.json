@@ -1,0 +1,11 @@
+{
+    "name": "ExoAddons.WebMarket",
+    "slug": "web-market",
+    "description": "Player-to-Player Web Market — Buy and sell items for Gold, Silk, or Web Points.",
+    "version": "1.0.0",
+    "author": "ExoProject",
+    "provider": "ExoAddons\\WebMarket\\WebMarketServiceProvider",
+    "requires": [],
+    "health_check": true,
+    "settings_view": "web-market::admin.settings"
+}
