@@ -1,0 +1,5 @@
+@include('profile.sidebar')
+@include('partials.unique-history')
+@include('partials.globals-history')
+@include('partials.sox-drop')
+@include('partials.sox-plus')
